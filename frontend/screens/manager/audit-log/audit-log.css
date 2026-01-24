@@ -1,0 +1,145 @@
+/* 
+   GLOBAL STYLES
+ */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f9;
+}
+
+/* 
+   TOP NAV
+ */
+.top-nav {
+  background: #263238;
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  width: 36px;
+}
+
+.btn-back {
+  background: #ff9800;
+  border: none;
+  padding: 8px 14px;
+  color: white;
+  border-radius: 5px;
+}
+
+/* 
+   CONTAINER
+ */
+.container {
+  padding: 20px;
+}
+
+/* 
+   INTRO
+ */
+.intro {
+  background: #fff;
+  padding: 15px;
+  border-left: 5px solid #263238;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+/* 
+   FILTERS
+ */
+.filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.filters select,
+.filters input,
+.btn-filter {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.btn-filter {
+  background: #263238;
+  color: white;
+  border: none;
+}
+
+/* 
+   AUDIT TABLE
+ */
+.audit-table {
+  background: white;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 12px;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 14px;
+}
+
+th {
+  background: #eceff1;
+  text-align: left;
+}
+
+/* 
+   STATUS TAGS
+ */
+.tag {
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+.info {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.success {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.critical {
+  background: #ffebee;
+  color: #c62828;
+}
+
+/* 
+   FOOTER
+ */
+.footer {
+  background: #263238;
+  color: white;
+  text-align: center;
+  padding: 15px;
+  margin-top: 40px;
+}
+
+/* 
+   RESPONSIVE
+ */
+@media (max-width: 768px) {
+  th,
+  td {
+    font-size: 13px;
+  }
+}

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- 
+         META & TITLE
+     -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KGL | Staff Performance Leaderboard</title>
+
+    <!-- 
+         STYLESHEET
+     -->
+    <link rel="stylesheet" href="staff-performance.css" />
+  </head>
+  <body>
+    <!-- 
+         HEADER / NAV
+     -->
+    <header class="top-nav">
+      <div class="nav-left">
+        <img
+          src="../../../assets/logos/kgl-logo.png"
+          alt="KGL Logo"
+          class="logo"
+        />
+        <h2>Staff Performance Leaderboard</h2>
+      </div>
+      <button class="btn-back">← Dashboard</button>
+    </header>
+
+    <!-- 
+         MAIN CONTENT
+     -->
+    <main class="container">
+      <!-- 
+             SUMMARY INSIGHT
+         -->
+      <section class="summary">
+        <h3>Performance Overview</h3>
+        <p>
+          Track staff productivity based on sales value (UGX) and transaction
+          volume across both KGL branches.
+        </p>
+      </section>
+
+      <!-- 
+             FILTER CONTROLS
+         -->
+      <section class="filters">
+        <select>
+          <option>All Branches</option>
+          <option>Branch A</option>
+          <option>Branch B</option>
+        </select>
+
+        <select>
+          <option>This Month</option>
+          <option>This Week</option>
+          <option>Today</option>
+        </select>
+
+        <button class="btn-apply">Apply</button>
+      </section>
+
+      <!-- 
+             LEADERBOARD TABLE
+         -->
+      <section class="leaderboard">
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Staff Name</th>
+              <th>Branch</th>
+              <th>Total Sales (UGX)</th>
+              <th>Transactions</th>
+              <th>Badge</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr class="rank-1">
+              <td>🥇 1</td>
+              <td>Sarah K.</td>
+              <td>Branch A</td>
+              <td>UGX 12,450,000</td>
+              <td>186</td>
+              <td><span class="badge gold">Top Seller</span></td>
+            </tr>
+
+            <tr class="rank-2">
+              <td>🥈 2</td>
+              <td>Michael T.</td>
+              <td>Branch B</td>
+              <td>UGX 9,870,000</td>
+              <td>142</td>
+              <td><span class="badge silver">Consistent</span></td>
+            </tr>
+
+            <tr class="rank-3">
+              <td>🥉 3</td>
+              <td>Daniel A.</td>
+              <td>Branch A</td>
+              <td>UGX 7,430,000</td>
+              <td>118</td>
+              <td><span class="badge bronze">Rising Star</span></td>
+            </tr>
+
+            <tr>
+              <td>4</td>
+              <td>Grace N.</td>
+              <td>Branch B</td>
+              <td>UGX 5,980,000</td>
+              <td>96</td>
+              <td>-</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 
+             CHART PLACEHOLDER
+         -->
+      <section class="chart">
+        <h3>Sales Comparison Chart</h3>
+        <div class="chart-placeholder">
+          Chart will render here (Backend / Chart.js integration)
+        </div>
+      </section>
+    </main>
+
+    <!-- 
+         FOOTER
+     -->
+    <footer class="footer">
+      <p>© 2026 Karibu Groceries Limited</p>
+      <p>Performance • Growth • Accountability</p>
+    </footer>
+
+    <!-- 
+         JAVASCRIPT
+     -->
+    <script src="staff-performance.js"></script>
+  </body>
+</html>

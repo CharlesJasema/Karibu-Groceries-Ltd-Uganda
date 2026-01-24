@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- 
+         META & TITLE
+     -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KGL | Managerial Audit Trail</title>
+
+    <!-- 
+         STYLESHEET
+     -->
+    <link rel="stylesheet" href="audit-log.css" />
+  </head>
+  <body>
+    <!-- 
+         HEADER / NAV
+     -->
+    <header class="top-nav">
+      <div class="nav-left">
+        <img
+          src="../../../assets/logos/kgl-logo.png"
+          alt="KGL Logo"
+          class="logo"
+        />
+        <h2>Managerial Audit Trail Log</h2>
+      </div>
+      <button class="btn-back">← Dashboard</button>
+    </header>
+
+    <!-- 
+         MAIN CONTENT
+     -->
+    <main class="container">
+      <!-- 
+             SCREEN INTRO
+         -->
+      <section class="intro">
+        <p>
+          This log provides a secure, read-only history of all critical actions
+          performed across KGL branches. Records cannot be altered.
+        </p>
+      </section>
+
+      <!-- 
+             FILTER CONTROLS
+         -->
+      <section class="filters">
+        <select>
+          <option>All Actions</option>
+          <option>Stock Update</option>
+          <option>Account Creation</option>
+          <option>Account Deletion</option>
+          <option>Payment Processing</option>
+        </select>
+
+        <select>
+          <option>All Roles</option>
+          <option>Manager</option>
+          <option>Staff</option>
+        </select>
+
+        <select>
+          <option>All Branches</option>
+          <option>Branch A</option>
+          <option>Branch B</option>
+        </select>
+
+        <input type="date" />
+        <button class="btn-filter">Apply</button>
+      </section>
+
+      <!-- 
+             AUDIT LOG TABLE
+         -->
+      <section class="audit-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Date & Time</th>
+              <th>User</th>
+              <th>Role</th>
+              <th>Action</th>
+              <th>Module</th>
+              <th>Branch</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td>2026-01-26 09:14:32</td>
+              <td>James O.</td>
+              <td>Manager</td>
+              <td>Stock Adjustment</td>
+              <td>Inventory</td>
+              <td>All</td>
+              <td><span class="tag info">Info</span></td>
+            </tr>
+
+            <tr>
+              <td>2026-01-26 10:02:11</td>
+              <td>Sarah K.</td>
+              <td>Staff</td>
+              <td>Payment Recorded</td>
+              <td>Sales</td>
+              <td>Branch A</td>
+              <td><span class="tag success">Success</span></td>
+            </tr>
+
+            <tr>
+              <td>2026-01-26 11:45:58</td>
+              <td>James O.</td>
+              <td>Manager</td>
+              <td>Account Deletion</td>
+              <td>User Management</td>
+              <td>Branch B</td>
+              <td><span class="tag critical">Critical</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <!-- 
+         FOOTER
+     -->
+    <footer class="footer">
+      <p>© 2026 Karibu Groceries Limited</p>
+      <p>Audit Trail • Compliance • Transparency</p>
+    </footer>
+
+    <!-- 
+         JAVASCRIPT
+     -->
+    <script src="audit-log.js"></script>
+  </body>
+</html>

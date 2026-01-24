@@ -1,0 +1,109 @@
+/* 
+   BASE STYLES
+ */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f9;
+}
+
+/* 
+   TOP NAV
+ */
+.top-nav {
+  background: #0b6623;
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  width: 38px;
+}
+
+.btn-back {
+  background: #ff9800;
+  border: none;
+  padding: 8px 14px;
+  color: white;
+  border-radius: 5px;
+}
+
+/* 
+   MAIN CONTAINER
+ */
+.container {
+  padding: 20px;
+}
+
+/* 
+   FILTER CONTROLS
+ */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.filters select {
+  padding: 8px;
+  border-radius: 5px;
+}
+
+/* 
+   CHART SECTIONS
+ */
+.chart-section {
+  background: white;
+  padding: 20px;
+  margin-bottom: 30px;
+  border-radius: 8px;
+}
+
+.chart-section canvas {
+  width: 100%;
+  height: 300px;
+}
+
+.chart-note {
+  font-size: 14px;
+  color: #666;
+  margin-top: 10px;
+}
+
+/* 
+   INSIGHTS
+ */
+.insights {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.insights ul {
+  margin-top: 10px;
+  padding-left: 20px;
+}
+
+/* 
+   FOOTER
+ */
+.footer {
+  background: #0b6623;
+  color: white;
+  text-align: center;
+  padding: 15px;
+  margin-top: 40px;
+}
+
+/* 
+   RESPONSIVENESS
+ */
+@media (max-width: 768px) {
+  .chart-section canvas {
+    height: 220px;
+  }
+}

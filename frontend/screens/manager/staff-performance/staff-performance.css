@@ -1,0 +1,170 @@
+/* =========================================
+   GLOBAL
+========================================= */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f7fa;
+}
+
+/* =========================================
+   NAV
+========================================= */
+.top-nav {
+    background: #1b5e20;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    width: 36px;
+}
+
+.btn-back {
+    background: #ff9800;
+    border: none;
+    padding: 8px 14px;
+    color: white;
+    border-radius: 5px;
+}
+
+/* =========================================
+   CONTAINER
+========================================= */
+.container {
+    padding: 20px;
+}
+
+/* =========================================
+   SUMMARY
+========================================= */
+.summary {
+    background: white;
+    padding: 15px;
+    border-left: 5px solid #1b5e20;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+/* =========================================
+   FILTERS
+========================================= */
+.filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.filters select,
+.btn-apply {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.btn-apply {
+    background: #1b5e20;
+    color: white;
+    border: none;
+}
+
+/* =========================================
+   LEADERBOARD
+========================================= */
+.leaderboard {
+    background: white;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+}
+
+th {
+    background: #e8f5e9;
+    text-align: left;
+}
+
+/* =========================================
+   RANK HIGHLIGHTS
+========================================= */
+.rank-1 {
+    background: #fffde7;
+}
+.rank-2 {
+    background: #f3f4f6;
+}
+.rank-3 {
+    background: #fff3e0;
+}
+
+/* 
+   BADGES
+ */
+.badge {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.gold {
+    background: #ffd700;
+}
+.silver {
+    background: #cfd8dc;
+}
+.bronze {
+    background: #ffccbc;
+}
+
+/* 
+   CHART
+ */
+.chart {
+    background: white;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+}
+
+.chart-placeholder {
+    height: 200px;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #777;
+}
+
+/* 
+   FOOTER
+ */
+.footer {
+    background: #1b5e20;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    margin-top: 40px;
+}
+
+/* 
+   RESPONSIVE
+ */
+@media (max-width: 768px) {
+    th, td {
+        font-size: 13px;
+    }
+}

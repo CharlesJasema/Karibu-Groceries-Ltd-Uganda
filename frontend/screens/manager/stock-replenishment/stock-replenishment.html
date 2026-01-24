@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- 
+         META & TITLE
+     -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KGL | Stock Replenishment</title>
+
+    <!-- 
+         STYLESHEET
+     -->
+    <link rel="stylesheet" href="stock-replenishment.css" />
+  </head>
+  <body>
+    <!-- 
+         TOP NAVIGATION
+     -->
+    <header class="top-nav">
+      <div class="nav-left">
+        <img
+          src="../../../assets/logos/kgl-logo.png"
+          class="logo"
+          alt="KGL Logo"
+        />
+        <h2>Stock Replenishment</h2>
+      </div>
+      <button class="btn-back">← Dashboard</button>
+    </header>
+
+    <!-- 
+         MAIN CONTENT
+     -->
+    <main class="container">
+      <!-- 
+             INVENTORY OVERVIEW
+         -->
+      <section class="inventory-overview">
+        <h3>Inventory Status (All Branches)</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Produce</th>
+              <th>Branch</th>
+              <th>Available Qty (kg)</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryTable">
+            <!-- JS will populate -->
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 
+             PROCUREMENT FORM
+         -->
+      <section class="procurement-form">
+        <h3>Log New Procurement</h3>
+
+        <form id="replenishmentForm">
+          <!-- Branch Selection -->
+          <label>Branch</label>
+          <select id="branch" required>
+            <option value="">Select Branch</option>
+            <option value="Branch A">Branch A</option>
+            <option value="Branch B">Branch B</option>
+          </select>
+
+          <!-- Produce -->
+          <label>Produce</label>
+          <select id="produce" required>
+            <option value="">Select Produce</option>
+            <option>Beans</option>
+            <option>Soya Beans</option>
+            <option>Maize</option>
+            <option>Sorghum</option>
+            <option>Millet</option>
+            <option>Cassava</option>
+            <option>Tomatoes</option>
+            <option>Onions</option>
+            <option>Cabbage</option>
+            <option>Irish potato</option>
+            <option>Rice</option>
+            <option>Carrots</option>
+          </select>
+
+          <!-- Dealer Details -->
+          <label>Dealer Name</label>
+          <input
+            type="text"
+            id="dealer"
+            placeholder="Dealer / Supplier Name"
+            required
+          />
+
+          <!-- Quantity -->
+          <label>Quantity (kg)</label>
+          <input type="number" id="quantity" required />
+
+          <!-- Cost -->
+          <label>Cost per kg (UGX)</label>
+          <input type="number" id="cost" required />
+
+          <!-- Auto Total -->
+          <p class="total">Total Cost: <span id="totalCost">UGX 0</span></p>
+
+          <!-- Submit -->
+          <button type="submit">Save Procurement</button>
+        </form>
+      </section>
+    </main>
+
+    <!-- 
+         FOOTER
+     -->
+    <footer class="footer">
+      <p>© 2026 Karibu Groceries Limited</p>
+      <p>Inventory & Procurement Module</p>
+    </footer>
+
+    <!-- 
+         JAVASCRIPT
+     -->
+    <script src="stock-replenishment.js"></script>
+  </body>
+</html>

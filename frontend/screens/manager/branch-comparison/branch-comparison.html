@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- 
+         META & TITLE
+     -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KGL | Branch Performance Comparison</title>
+
+    <!-- 
+         STYLESHEET
+     -->
+    <link rel="stylesheet" href="branch-comparison.css" />
+  </head>
+  <body>
+    <!-- 
+         TOP NAVIGATION
+     -->
+    <header class="top-nav">
+      <div class="nav-left">
+        <img
+          src="../../../assets/logos/kgl-logo.png"
+          alt="KGL Logo"
+          class="logo"
+        />
+        <h2>Branch Performance Comparison</h2>
+      </div>
+      <button class="btn-back">← Dashboard</button>
+    </header>
+
+    <!-- 
+         MAIN CONTENT
+     -->
+    <main class="container">
+      <!-- 
+             KPI COMPARISON
+         -->
+      <section class="kpi-compare">
+        <div class="branch-kpi">
+          <h3>Branch A</h3>
+          <p>Sales: <strong>UGX 18,400,000</strong></p>
+          <p>Procurement: UGX 11,200,000</p>
+          <p>Credit: UGX 2,300,000</p>
+          <span class="badge profit">High Profit</span>
+        </div>
+
+        <div class="branch-kpi">
+          <h3>Branch B</h3>
+          <p>Sales: <strong>UGX 14,950,000</strong></p>
+          <p>Procurement: UGX 10,800,000</p>
+          <p>Credit: UGX 3,100,000</p>
+          <span class="badge warning">Credit Risk</span>
+        </div>
+      </section>
+
+      <!-- 
+             BAR CHART COMPARISON
+         -->
+      <section class="chart-section">
+        <h3>Sales vs Procurement vs Credit</h3>
+        <canvas id="comparisonChart"></canvas>
+        <p class="chart-note">
+          Visual comparison of key financial metrics (UGX).
+        </p>
+      </section>
+
+      <!--
+             PRODUCE LEADERBOARD
+         -->
+      <section class="leaderboard">
+        <h3>Top Performing Produce (Combined)</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Produce</th>
+              <th>Total Sales (UGX)</th>
+              <th>Best Branch</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Maize</td>
+              <td>UGX 8,600,000</td>
+              <td>Branch A</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Beans</td>
+              <td>UGX 7,900,000</td>
+              <td>Branch B</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Rice</td>
+              <td>UGX 6,100,000</td>
+              <td>Branch A</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <!-- 
+         FOOTER
+     -->
+    <footer class="footer">
+      <p>© 2026 Karibu Groceries Limited</p>
+      <p>Branch Analytics & Performance Insights</p>
+    </footer>
+
+    <!-- 
+         JAVASCRIPT
+     -->
+    <script src="branch-comparison.js"></script>
+  </body>
+</html>

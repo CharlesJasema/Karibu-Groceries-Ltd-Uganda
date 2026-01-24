@@ -1,0 +1,136 @@
+/* 
+   BASE STYLES
+ */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f9;
+}
+
+/* 
+   TOP NAV
+ */
+.top-nav {
+  background: #0b6623;
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  width: 38px;
+}
+
+.btn-back {
+  background: #ff9800;
+  border: none;
+  padding: 8px 14px;
+  color: white;
+  border-radius: 5px;
+}
+
+/* 
+   MAIN CONTAINER
+ */
+.container {
+  padding: 20px;
+}
+
+/* 
+   KPI COMPARISON
+ */
+.kpi-compare {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.branch-kpi {
+  background: white;
+  padding: 20px;
+  flex: 1;
+  min-width: 260px;
+  border-radius: 8px;
+}
+
+.badge {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 13px;
+}
+
+.profit {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.warning {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+/* 
+   CHART SECTION
+ */
+.chart-section {
+  background: white;
+  margin-top: 30px;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.chart-section canvas {
+  width: 100%;
+  height: 300px;
+}
+
+.chart-note {
+  font-size: 14px;
+  color: #666;
+  margin-top: 10px;
+}
+
+/* 
+   LEADERBOARD
+ */
+.leaderboard {
+  background: white;
+  margin-top: 30px;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.leaderboard table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.leaderboard th,
+.leaderboard td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+/* 
+   FOOTER
+ */
+.footer {
+  background: #0b6623;
+  color: white;
+  text-align: center;
+  padding: 15px;
+  margin-top: 40px;
+}
+
+/* 
+   RESPONSIVENESS
+ */
+@media (max-width: 768px) {
+  .chart-section canvas {
+    height: 220px;
+  }
+}
