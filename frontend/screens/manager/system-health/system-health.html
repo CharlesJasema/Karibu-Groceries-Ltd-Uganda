@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- =====================================
+         META & TITLE
+    ====================================== -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KGL | System Maintenance & Health</title>
+
+    <!-- =====================================
+         STYLESHEET
+    ====================================== -->
+    <link rel="stylesheet" href="system-health.css" />
+  </head>
+  <body>
+    <!-- =====================================
+         HEADER / NAV
+    ====================================== -->
+    <header class="top-nav">
+      <div class="nav-left">
+        <img
+          width="280px"
+          height="40px"
+          src="../../assets/logo/kgl-logo.png"
+          alt="KGL Logo"
+          class="logo"
+        />
+        <h2>System Maintenance & Health</h2>
+      </div>
+      <button class="btn-back">← Dashboard</button>
+    </header>
+
+    <!-- =====================================
+         MAIN CONTENT
+    ====================================== -->
+    <main class="container">
+      <!-- ===============================
+             MAINTENANCE MODE BANNER
+        ================================ -->
+      <section class="maintenance-banner hidden" id="maintenanceBanner">
+        <strong>Maintenance Mode Enabled</strong>
+        <p>All client and staff activities are temporarily disabled.</p>
+      </section>
+
+      <!-- ===============================
+             SYSTEM STATUS CARDS
+        ================================ -->
+      <section class="status-grid">
+        <!-- BACKEND STATUS -->
+        <div class="status-card">
+          <h3>Node.js Backend</h3>
+          <p class="status online">● Online</p>
+          <small>Last checked: 26 Jan 2026, 12:10 PM</small>
+        </div>
+
+        <!-- DATABASE STATUS -->
+        <div class="status-card">
+          <h3>MongoDB Database</h3>
+          <p class="status online">● Connected</p>
+          <small>Last checked: 26 Jan 2026, 12:10 PM</small>
+        </div>
+
+        <!-- SYSTEM UPTIME -->
+        <div class="status-card">
+          <h3>System Uptime</h3>
+          <p><strong>99.98%</strong></p>
+          <small>Last 30 days</small>
+        </div>
+      </section>
+
+      <!-- ===============================
+             BACKUP CONTROLS
+        ================================ -->
+      <section class="backup-section">
+        <h3>Data Backup</h3>
+        <p>
+          Create a secure backup of all system data including users, inventory,
+          transactions, and audit logs.
+        </p>
+        <button class="btn-backup">Run Manual Backup</button>
+
+        <!-- BACKUP HISTORY -->
+        <ul class="backup-history">
+          <li>26 Jan 2026 – 02:00 AM (Auto)</li>
+          <li>25 Jan 2026 – 02:00 AM (Auto)</li>
+          <li>24 Jan 2026 – 11:40 AM (Manual)</li>
+        </ul>
+      </section>
+
+      <!-- ===============================
+             MAINTENANCE MODE TOGGLE
+        ================================ -->
+      <section class="maintenance-toggle">
+        <h3>Maintenance Mode</h3>
+        <p>
+          Enable maintenance mode during system updates or stock-taking. Clients
+          and staff will be temporarily blocked.
+        </p>
+
+        <label class="switch">
+          <input type="checkbox" id="maintenanceToggle" />
+          <span class="slider"></span>
+        </label>
+      </section>
+    </main>
+
+    <!-- =====================================
+         FOOTER
+    ====================================== -->
+    <footer class="footer">
+      <p>© 2026 Karibu Groceries Limited</p>
+      <p>System Integrity • Data Protection • Reliability</p>
+    </footer>
+
+    <!-- =====================================
+         JAVASCRIPT
+    ====================================== -->
+    <script src="system-health.js"></script>
+  </body>
+</html>
