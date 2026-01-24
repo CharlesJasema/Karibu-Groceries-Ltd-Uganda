@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- 
+         META CONFIGURATION
+     -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KGL | Manager Dashboard</title>
+
+    <!-- 
+         STYLESHEET
+     -->
+    <link rel="stylesheet" href="manager-dashboard.css" />
+  </head>
+  <body>
+    <!-- 
+         TOP NAVIGATION BAR
+     -->
+    <header class="top-nav">
+      <div class="nav-left">
+        <img
+          src="../../../assets/logos/kgl-logo.png"
+          alt="KGL Logo"
+          class="logo"
+        />
+        <h2>Manager Dashboard</h2>
+      </div>
+
+      <div class="nav-right">
+        <span class="manager-name">Welcome, Manager</span>
+        <button class="icon-btn">🔔</button>
+        <button class="btn-logout">Logout</button>
+      </div>
+    </header>
+
+    <!-- 
+         MAIN DASHBOARD CONTAINER
+     -->
+    <main class="dashboard-container">
+      <!-- 
+             KPI SUMMARY CARDS
+         -->
+      <section class="kpi-section">
+        <div class="kpi-card">
+          <h4>Total Sales</h4>
+          <p class="kpi-value">UGX 12,450,000</p>
+        </div>
+
+        <div class="kpi-card">
+          <h4>Inventory Status</h4>
+          <p class="kpi-value">9 In Stock | 3 Low</p>
+        </div>
+
+        <div class="kpi-card">
+          <h4>Outstanding Credit</h4>
+          <p class="kpi-value">UGX 3,200,000</p>
+        </div>
+
+        <div class="kpi-card">
+          <h4>Active Staff</h4>
+          <p class="kpi-value">4 / 4</p>
+        </div>
+      </section>
+
+      <!-- 
+             BRANCH COMPARISON
+         -->
+      <section class="branch-overview">
+        <h3>Branch Performance Overview</h3>
+
+        <div class="branch-cards">
+          <div class="branch-box">
+            <h4>Branch A</h4>
+            <p>Sales Today: UGX 4,800,000</p>
+            <p>Stock Issues: 1</p>
+          </div>
+
+          <div class="branch-box">
+            <h4>Branch B</h4>
+            <p>Sales Today: UGX 3,950,000</p>
+            <p>Stock Issues: 2</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 
+             INVENTORY SNAPSHOT
+         -->
+      <section class="inventory-section">
+        <h3>Inventory Snapshot</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Produce</th>
+              <th>Price (UGX)</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Beans</td>
+              <td>3,500</td>
+              <td class="good">Good</td>
+            </tr>
+            <tr>
+              <td>Maize</td>
+              <td>2,200</td>
+              <td class="low">Low</td>
+            </tr>
+            <tr>
+              <td>Rice</td>
+              <td>4,800</td>
+              <td class="out">Out</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 
+             STAFF ACTIVITY LOG
+         -->
+      <section class="activity-section">
+        <h3>Recent Staff Activity</h3>
+
+        <ul>
+          <li>John (Branch A) recorded a sale – 10:45 AM</li>
+          <li>Mary (Branch B) approved credit – 9:30 AM</li>
+          <li>Paul (Branch A) updated inventory – 8:15 AM</li>
+        </ul>
+      </section>
+
+      <!-- 
+             QUICK ACTIONS
+         -->
+      <section class="quick-actions">
+        <button>Replenish Stock</button>
+        <button>View Reports</button>
+        <button>Manage Staff</button>
+        <button>Audit Logs</button>
+      </section>
+    </main>
+
+    <!-- 
+         FOOTER
+     -->
+    <footer class="footer">
+      <p>© 2026 Karibu Groceries Limited</p>
+      <p>System Version 1.0 | Uganda</p>
+    </footer>
+
+    <!-- 
+         JAVASCRIPT
+     -->
+    <script src="manager-dashboard.js"></script>
+  </body>
+</html>

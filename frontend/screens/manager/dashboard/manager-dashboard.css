@@ -1,0 +1,161 @@
+/* 
+   GLOBAL BASE STYLES
+ */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f9;
+}
+
+/* 
+   TOP NAVIGATION
+ */
+.top-nav {
+  background: #0b6623;
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  width: 40px;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-right {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.btn-logout {
+  background: #ff5252;
+  border: none;
+  padding: 8px 14px;
+  color: white;
+  border-radius: 5px;
+}
+
+/* 
+   DASHBOARD CONTAINER
+ */
+.dashboard-container {
+  padding: 20px;
+}
+
+/* 
+   KPI SECTION
+ */
+.kpi-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.kpi-card {
+  background: white;
+  padding: 20px;
+  flex: 1;
+  min-width: 200px;
+  border-radius: 8px;
+}
+
+/* 
+   BRANCH OVERVIEW
+ */
+.branch-overview {
+  margin-top: 30px;
+}
+
+.branch-cards {
+  display: flex;
+  gap: 20px;
+}
+
+.branch-box {
+  background: white;
+  padding: 15px;
+  flex: 1;
+  border-radius: 8px;
+}
+
+/* 
+   INVENTORY TABLE
+ */
+.inventory-section table {
+  width: 100%;
+  background: white;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.inventory-section th,
+.inventory-section td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.good {
+  color: green;
+}
+.low {
+  color: orange;
+}
+.out {
+  color: red;
+}
+
+/* 
+   ACTIVITY LOG
+ */
+.activity-section {
+  margin-top: 30px;
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+/* 
+   QUICK ACTIONS
+ */
+.quick-actions {
+  margin-top: 25px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.quick-actions button {
+  padding: 10px 15px;
+  border: none;
+  background: #ff9800;
+  color: white;
+  border-radius: 5px;
+}
+
+/* 
+   FOOTER
+ */
+.footer {
+  background: #0b6623;
+  color: white;
+  text-align: center;
+  padding: 15px;
+  margin-top: 40px;
+}
+
+/* 
+   RESPONSIVENESS
+ */
+@media (max-width: 768px) {
+  .branch-cards {
+    flex-direction: column;
+  }
+}
