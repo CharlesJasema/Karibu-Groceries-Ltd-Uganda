@@ -11,6 +11,16 @@
     <!-- 
          STYLESHEET
      -->
+          <!-- Shared CSS -->
+    <link rel="stylesheet" href="../../shared/css/reset.css" />
+    <link rel="stylesheet" href="../../shared/css/variables.css" />
+    <link rel="stylesheet" href="../../shared/css/layout.css" />
+    <link rel="stylesheet" href="../../shared/css/utilities.css" />
+
+<!-- Manager-specific shared styles -->
+<link rel="stylesheet" href="../../shared/css/manager-sidebar.css">
+
+    <!-- Screen CSS -->
     <link rel="stylesheet" href="manager-dashboard.css" />
   </head>
   <body>
@@ -31,7 +41,6 @@
 
       <div class="nav-right">
         <span class="manager-name">Welcome, Manager</span>
-        <button class="icon-btn">🔔</button>
         <button class="btn-logout">Logout</button>
       </div>
     </header>
@@ -155,6 +164,11 @@
     <!-- 
          JAVASCRIPT
      -->
+         <script src="../../shared/js/auth-guard.js"></script>
+    <script src="../../shared/components/sidebar.js"></script>
+    <script src="../../shared/components/header.js"></script>
+
+    <!-- Screen Logic -->
     <script src="manager-dashboard.js"></script>
   </body>
 </html>

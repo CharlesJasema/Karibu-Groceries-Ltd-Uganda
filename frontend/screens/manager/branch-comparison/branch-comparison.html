@@ -11,12 +11,24 @@
     <!-- 
          STYLESHEET
      -->
+          <!-- Shared CSS -->
+    <link rel="stylesheet" href="../../shared/css/reset.css" />
+    <link rel="stylesheet" href="../../shared/css/variables.css" />
+    <link rel="stylesheet" href="../../shared/css/layout.css" />
+    <link rel="stylesheet" href="../../shared/css/utilities.css" />
+
+<!-- Manager-specific shared styles -->
+<link rel="stylesheet" href="../../shared/css/manager-sidebar.css">
+
+    <!-- Screen CSS -->
     <link rel="stylesheet" href="branch-comparison.css" />
   </head>
   <body>
     <!-- 
          TOP NAVIGATION
      -->
+         <div class="kgl-sidebar manager-sidebar"></div>
+
     <header class="top-nav">
       <div class="nav-left">
         <img
@@ -28,7 +40,6 @@
         />
         <h2>Branch Performance Comparison</h2>
       </div>
-      <button class="btn-back">← Dashboard</button>
     </header>
 
     <!-- 
@@ -117,6 +128,11 @@
     <!-- 
          JAVASCRIPT
      -->
+         <script src="../../shared/js/auth-guard.js"></script>
+    <script src="../../shared/components/sidebar.js"></script>
+    <script src="../../shared/components/header.js"></script>
+
+    <!-- Screen Logic -->
     <script src="branch-comparison.js"></script>
   </body>
 </html>

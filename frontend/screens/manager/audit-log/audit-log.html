@@ -11,9 +11,20 @@
     <!-- 
          STYLESHEET
      -->
-    <link rel="stylesheet" href="audit-log.css" />
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="../../shared/css/reset.css" />
+    <link rel="stylesheet" href="../../shared/css/variables.css" />
+    <link rel="stylesheet" href="../../shared/css/layout.css" />
+    <link rel="stylesheet" href="../../shared/css/utilities.css" />
+
+<!-- Manager-specific shared styles -->
+<link rel="stylesheet" href="../../shared/css/manager-sidebar.css">
+
+    <!-- Screen CSS -->
+    <link rel="stylesheet" href="./audit-log.css" />
   </head>
   <body>
+  
     <!-- 
          HEADER / NAV
      -->
@@ -26,11 +37,12 @@
           alt="KGL Logo"
           class="logo"
         />
+        
         <h2>Managerial Audit Trail Log</h2>
       </div>
-      <button class="btn-back">← Dashboard</button>
-    </header>
 
+    </header>
+    <div class="kgl-sidebar manager-sidebar"></div>
     <!-- 
          MAIN CONTENT
      -->
@@ -136,6 +148,11 @@
     <!-- 
          JAVASCRIPT
      -->
-    <script src="audit-log.js"></script>
+    <script src="../../shared/js/auth-guard.js"></script>
+    <script src="../../shared/components/sidebar.js"></script>
+    <script src="../../shared/components/header.js"></script>
+
+    <!-- Screen Logic -->
+    <script src="./audit-log.js"></script>
   </body>
 </html>

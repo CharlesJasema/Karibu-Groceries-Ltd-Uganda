@@ -1,22 +1,32 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <!-- =====================================
+    <!-- 
          META & TITLE
-    ====================================== -->
+    -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>KGL | System Maintenance & Health</title>
 
-    <!-- =====================================
+    <!-- 
          STYLESHEET
-    ====================================== -->
+    -->
+          <!-- Shared CSS -->
+    <link rel="stylesheet" href="../../shared/css/reset.css" />
+    <link rel="stylesheet" href="../../shared/css/variables.css" />
+    <link rel="stylesheet" href="../../shared/css/layout.css" />
+    <link rel="stylesheet" href="../../shared/css/utilities.css" />
+
+<!-- Manager-specific shared styles -->
+<link rel="stylesheet" href="../../shared/css/manager-sidebar.css">
+
+    <!-- Screen CSS -->
     <link rel="stylesheet" href="system-health.css" />
   </head>
   <body>
-    <!-- =====================================
+    <!-- 
          HEADER / NAV
-    ====================================== -->
+     -->
     <header class="top-nav">
       <div class="nav-left">
         <img
@@ -28,24 +38,23 @@
         />
         <h2>System Maintenance & Health</h2>
       </div>
-      <button class="btn-back">← Dashboard</button>
     </header>
 
-    <!-- =====================================
+    <!-- 
          MAIN CONTENT
-    ====================================== -->
+     -->
     <main class="container">
-      <!-- ===============================
+      <!-- 
              MAINTENANCE MODE BANNER
-        ================================ -->
+         -->
       <section class="maintenance-banner hidden" id="maintenanceBanner">
         <strong>Maintenance Mode Enabled</strong>
         <p>All client and staff activities are temporarily disabled.</p>
       </section>
 
-      <!-- ===============================
+      <!-- 
              SYSTEM STATUS CARDS
-        ================================ -->
+         -->
       <section class="status-grid">
         <!-- BACKEND STATUS -->
         <div class="status-card">
@@ -69,9 +78,9 @@
         </div>
       </section>
 
-      <!-- ===============================
+      <!-- 
              BACKUP CONTROLS
-        ================================ -->
+         -->
       <section class="backup-section">
         <h3>Data Backup</h3>
         <p>
@@ -88,9 +97,9 @@
         </ul>
       </section>
 
-      <!-- ===============================
+      <!-- 
              MAINTENANCE MODE TOGGLE
-        ================================ -->
+        -->
       <section class="maintenance-toggle">
         <h3>Maintenance Mode</h3>
         <p>
@@ -105,17 +114,22 @@
       </section>
     </main>
 
-    <!-- =====================================
+    <!-- 
          FOOTER
-    ====================================== -->
+     -->
     <footer class="footer">
       <p>© 2026 Karibu Groceries Limited</p>
       <p>System Integrity • Data Protection • Reliability</p>
     </footer>
 
-    <!-- =====================================
+    <!-- 
          JAVASCRIPT
-    ====================================== -->
+     -->
+         <script src="../../shared/js/auth-guard.js"></script>
+    <script src="../../shared/components/sidebar.js"></script>
+    <script src="../../shared/components/header.js"></script>
+
+    <!-- Screen Logic -->
     <script src="system-health.js"></script>
   </body>
 </html>

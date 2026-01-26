@@ -1,15 +1,15 @@
-/* =========================================
+
    GLOBAL
-========================================= */
+ */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
   background: #f4f6f9;
 }
 
-/* =========================================
+/* 
    NAV
-========================================= */
+ */
 .top-nav {
   background: #37474f;
   color: white;
@@ -31,16 +31,16 @@ body {
   border-radius: 5px;
 }
 
-/* =========================================
+/* 
    CONTAINER
-========================================= */
+ */
 .container {
   padding: 20px;
 }
 
-/* =========================================
+/* 
    MAINTENANCE BANNER
-========================================= */
+ */
 .maintenance-banner {
   background: #ffebee;
   border-left: 6px solid #d32f2f;
@@ -53,9 +53,9 @@ body {
   display: none;
 }
 
-/* =========================================
+/* 
    STATUS GRID
-========================================= */
+ */
 .status-grid {
   display: flex;
   gap: 15px;
@@ -82,9 +82,9 @@ body {
   color: #c62828;
 }
 
-/* =========================================
+/* 
    BACKUP SECTION
-========================================= */
+ */
 .backup-section {
   background: white;
   padding: 20px;
@@ -106,9 +106,9 @@ body {
   padding-left: 20px;
 }
 
-/* =========================================
+/* 
    MAINTENANCE TOGGLE
-========================================= */
+ */
 .maintenance-toggle {
   background: white;
   padding: 20px;
@@ -155,9 +155,9 @@ input:checked + .slider:before {
   transform: translateX(24px);
 }
 
-/* =========================================
+/* 
    FOOTER
-========================================= */
+ */
 .footer {
   background: #37474f;
   color: white;
@@ -166,9 +166,9 @@ input:checked + .slider:before {
   margin-top: 40px;
 }
 
-/* =========================================
+/* 
    RESPONSIVE
-========================================= */
+ */
 @media (max-width: 768px) {
   .status-grid {
     flex-direction: column;

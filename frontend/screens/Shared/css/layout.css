@@ -1,0 +1,15 @@
+.kgl-app {
+  display: flex;
+  min-height: 100vh;
+}
+
+.kgl-main {
+  flex: 1;
+  padding: 1rem;
+  background: var(--secondary);
+}
+
+.kgl-content {
+  max-width: 1400px;
+  margin: auto;
+}

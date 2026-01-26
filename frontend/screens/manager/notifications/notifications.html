@@ -1,22 +1,32 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <!-- =====================================
+    <!-- 
          META & TITLE
-    ====================================== -->
+     -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>KGL | Manager Notification Center</title>
 
-    <!-- =====================================
+    <!-- 
          STYLESHEET
-    ====================================== -->
+     -->
+          <!-- Shared CSS -->
+    <link rel="stylesheet" href="../../shared/css/reset.css" />
+    <link rel="stylesheet" href="../../shared/css/variables.css" />
+    <link rel="stylesheet" href="../../shared/css/layout.css" />
+    <link rel="stylesheet" href="../../shared/css/utilities.css" />
+
+<!-- Manager-specific shared styles -->
+<link rel="stylesheet" href="../../shared/css/manager-sidebar.css">
+
+    <!-- Screen CSS -->
     <link rel="stylesheet" href="notifications.css" />
   </head>
   <body>
-    <!-- =====================================
+    <!-- 
          HEADER / NAV
-    ====================================== -->
+    -->
     <header class="top-nav">
       <div class="nav-left">
         <img
@@ -28,16 +38,15 @@
         />
         <h2>Notification Center</h2>
       </div>
-      <button class="btn-back">← Dashboard</button>
     </header>
 
-    <!-- =====================================
+    <!-- 
          MAIN CONTENT
-    ====================================== -->
+     -->
     <main class="container">
-      <!-- ===============================
+      <!-- 
              INTRO
-        ================================ -->
+         -->
       <section class="intro">
         <p>
           Real-time alerts across both branches. Prioritize critical issues and
@@ -45,9 +54,9 @@
         </p>
       </section>
 
-      <!-- ===============================
+      <!-- 
              NOTIFICATIONS LIST
-        ================================ -->
+        -->
       <section class="notifications">
         <!-- CRITICAL -->
         <div class="alert critical unread">
@@ -92,17 +101,22 @@
       </section>
     </main>
 
-    <!-- =====================================
+    <!-- 
          FOOTER
-    ====================================== -->
+    -->
     <footer class="footer">
       <p>© 2026 Karibu Groceries Limited</p>
       <p>Alerts • Decisions • Control</p>
     </footer>
 
-    <!-- =====================================
+    <!-- 
          JAVASCRIPT
-    ====================================== -->
+     -->
+         <script src="../../shared/js/auth-guard.js"></script>
+    <script src="../../shared/components/sidebar.js"></script>
+    <script src="../../shared/components/header.js"></script>
+
+    <!-- Screen Logic -->
     <script src="notifications.js"></script>
   </body>
 </html>

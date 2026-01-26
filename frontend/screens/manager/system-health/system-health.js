@@ -1,7 +1,7 @@
-/* =====================================================
+/* 
    SYSTEM MAINTENANCE & HEALTH
    - Admin critical actions
-===================================================== */
+ */
 
 const toggle = document.getElementById("maintenanceToggle");
 const banner = document.getElementById("maintenanceBanner");
