@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KGL | Credit Tracker</title>
+
+    <!-- Shared CSS -->
+    <link
+      rel="stylesheet"
+      href="../../../screens/auth/reset-password/reset-password.css"
+    />
+    <link rel="stylesheet" href="../../../screens/Shared/css/variables.css" />
+    <link rel="stylesheet" href="../../../screens/Shared/css/layout.css" />
+    <link rel="stylesheet" href="../../../screens/Shared/css/utilities.css" />
+
+    <!-- Screen CSS -->
+    <link rel="stylesheet" href="credit-tracker.css" />
+  </head>
+  <body>
+    <!-- 
+         TOP NAVIGATION
+     -->
+    <div class="kgl-sidebar manager-sidebar"></div>
+
+    <header class="top-nav">
+      <div class="nav-left">
+        <div class="logo-container">
+          <img
+            src="../../assets/logo/kgl-logo.png"
+            alt="KGL Logo"
+            class="app-logo"
+          />
+        </div>
+        <h2>Credit Tracker</h2>
+      </div>
+    </header>
+
+    <!-- Auth Protection -->
+    <script src="../../../shared/js/auth-guard.js"></script>
+
+    <!-- Sidebar -->
+    <div id="managerSidebar"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <div id="managerHeader"></div>
+
+      <!-- Page Title -->
+      <section class="page-header">
+        <h1>Credit & Due Date Tracker</h1>
+        <button class="btn-primary" onclick="goToDashboard()">
+          ⬅ Back to Dashboard
+        </button>
+      </section>
+
+      <!-- Credit Summary Cards -->
+      <section class="credit-summary">
+        <div class="card">
+          Total Credit Issued (UGX)<span id="totalCredit"></span>
+        </div>
+        <div class="card warning">
+          Overdue Accounts<span id="overdueCount"></span>
+        </div>
+        <div class="card success">
+          Cleared Credits<span id="clearedCount"></span>
+        </div>
+      </section>
+
+      <!-- Credit Table -->
+      <section class="card">
+        <h3>Active Credit Accounts</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Client</th>
+              <th>Branch</th>
+              <th>Produce</th>
+              <th>Amount (UGX)</th>
+              <th>Due Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="creditTable"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <!-- Shared Components -->
+    <script src="../../../screens/Shared/components/sidebar.js"></script>
+    <script src="../../Shared/components/header.js"></script>
+
+    <!-- Screen Logic -->
+    <script src="./credit-tracker.js"></script>
+  </body>
+</html>

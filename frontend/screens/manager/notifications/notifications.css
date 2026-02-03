@@ -1,17 +1,17 @@
-/* =========================================
+/* 
    GLOBAL
-========================================= */
+ */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
   background: #f4f6f9;
 }
 
-/* =========================================
+/* 
    NAV
-========================================= */
+ */
 .top-nav {
-  background: #263238;
+  background: #0b6623;
   color: white;
   padding: 15px 20px;
   display: flex;
@@ -19,10 +19,23 @@ body {
   align-items: center;
 }
 
-.logo {
-  width: 36px;
+.logo-container {
+  width: 300px;
 }
 
+.app-logo {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding-left: 10px;
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
 .btn-back {
   background: #ff9800;
   border: none;
@@ -31,16 +44,16 @@ body {
   border-radius: 5px;
 }
 
-/* =========================================
+/* 
    CONTAINER
-========================================= */
+ */
 .container {
   padding: 20px;
 }
 
-/* =========================================
+/* 
    INTRO
-========================================= */
+ */
 .intro {
   background: white;
   padding: 15px;
@@ -49,9 +62,9 @@ body {
   margin-bottom: 20px;
 }
 
-/* =========================================
+/* 
    ALERTS
-========================================= */
+ */
 .notifications {
   display: flex;
   flex-direction: column;
@@ -71,9 +84,9 @@ body {
   border-left: 6px solid;
 }
 
-/* =========================================
+/* 
    ALERT TYPES
-========================================= */
+*/
 .alert.critical {
   border-color: #d32f2f;
 }
@@ -86,16 +99,16 @@ body {
   border-color: #1976d2;
 }
 
-/* =========================================
+/* 
    ALERT ICON
-========================================= */
+ */
 .alert-icon {
   font-size: 28px;
 }
 
-/* =========================================
+/* 
    CONTENT
-========================================= */
+ */
 .alert-content h4 {
   margin: 0 0 5px;
 }
@@ -109,9 +122,9 @@ body {
   color: #777;
 }
 
-/* =========================================
+/* 
    ACTIONS
-========================================= */
+ */
 .alert-actions {
   margin-left: auto;
   display: flex;
@@ -133,20 +146,20 @@ body {
   border-radius: 5px;
 }
 
-/* =========================================
+/* 
    FOOTER
-========================================= */
+ */
 .footer {
-  background: #263238;
+  background: #0b6623;
   color: white;
   text-align: center;
   padding: 15px;
   margin-top: 40px;
 }
 
-/* =========================================
+/* 
    RESPONSIVE
-========================================= */
+ */
 @media (max-width: 768px) {
   .alert {
     flex-direction: column;

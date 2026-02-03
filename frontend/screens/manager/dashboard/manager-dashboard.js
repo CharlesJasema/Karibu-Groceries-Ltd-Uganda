@@ -24,3 +24,10 @@ document.querySelector(".btn-logout").addEventListener("click", () => {
 setInterval(() => {
   console.log("Refreshing dashboard analytics...");
 }, 5000);
+
+document.querySelectorAll(".action-card").forEach(card => {
+  card.addEventListener("click", () => {
+    const link = card.dataset.link;
+    window.location.href = link;
+  });
+});

@@ -11,7 +11,7 @@ body {
    NAV
  */
 .top-nav {
-  background: #37474f;
+  background: #0b6623;
   color: white;
   padding: 15px 20px;
   display: flex;
@@ -19,8 +19,22 @@ body {
   align-items: center;
 }
 
-.logo {
-  width: 36px;
+.logo-container {
+  width: 300px;
+}
+
+.app-logo {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding-left: 10px;
+  margin-top: 1px;
+  margin-bottom: 1px;
 }
 
 .btn-back {
@@ -159,7 +173,7 @@ input:checked + .slider:before {
    FOOTER
  */
 .footer {
-  background: #37474f;
+  background: #0b6623;
   color: white;
   text-align: center;
   padding: 15px;

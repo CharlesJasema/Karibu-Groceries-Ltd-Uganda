@@ -1,0 +1,30 @@
+{
+  "name": "karibu-groceries-ltd-uganda",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CharlesJasema/Karibu-Groceries-Ltd-Uganda.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/CharlesJasema/Karibu-Groceries-Ltd-Uganda/issues"
+  },
+  "homepage": "https://github.com/CharlesJasema/Karibu-Groceries-Ltd-Uganda#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-validator": "^7.3.1",
+    "mongoose": "^9.1.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}

@@ -11,14 +11,9 @@
     <!-- 
          STYLESHEET
      -->
-          <!-- Shared CSS -->
-    <link rel="stylesheet" href="../../shared/css/reset.css" />
-    <link rel="stylesheet" href="../../shared/css/variables.css" />
-    <link rel="stylesheet" href="../../shared/css/layout.css" />
-    <link rel="stylesheet" href="../../shared/css/utilities.css" />
-
-<!-- Manager-specific shared styles -->
-<link rel="stylesheet" href="../../shared/css/manager-sidebar.css">
+    <link rel="stylesheet" href="../../../screens/Shared/css/variables.css" />
+    <link rel="stylesheet" href="../../../screens/Shared/css/layout.css" />
+    <link rel="stylesheet" href="../../../screens/Shared/css/utilities.css" />
 
     <!-- Screen CSS -->
     <link rel="stylesheet" href="manager-dashboard.css" />
@@ -29,13 +24,13 @@
      -->
     <header class="top-nav">
       <div class="nav-left">
-        <img
-          width="280px"
-          height="40px"
-          src="../../assets/logo/kgl-logo.png"
-          alt="KGL Logo"
-          class="logo"
-        />
+        <div class="logo-container">
+          <img
+            src="../../assets/logo/kgl-logo.png"
+            alt="KGL Logo"
+            class="app-logo"
+          />
+        </div>
         <h2>Manager Dashboard</h2>
       </div>
 
@@ -50,8 +45,41 @@
      -->
     <main class="dashboard-container">
       <!-- 
-             KPI SUMMARY CARDS
+             QUICK ACTION CARDS
          -->
+
+      <section class="quick-actions">
+        <div
+          class="action-card"
+          data-link="../credit-tracker/credit-tracker.html"
+        >
+          <h4>Credit Tracker</h4>
+          <p>Monitor client credit, reminders & approvals</p>
+        </div>
+
+        <div
+          class="action-card"
+          data-link="../stock-replenishment/stock-replenishment.html"
+        >
+          <h4>Stock Replenishment</h4>
+          <p>Manage procurement and restocking</p>
+        </div>
+
+        <div class="action-card" data-link="../audit-log/audit-log.html">
+          <h4>Audit Logs</h4>
+          <p>Track all system activity</p>
+        </div>
+
+        <div
+          class="action-card"
+          data-link="../system-health/system-health.html"
+        >
+          <h4>System Health</h4>
+          <p>Monitor uptime & performance</p>
+        </div>
+      </section>
+
+      <!-- KPI SUMMARY CARDS -->
       <section class="kpi-section">
         <div class="kpi-card">
           <h4>Total Sales</h4>
@@ -141,16 +169,6 @@
           <li>Paul (Branch A) updated inventory – 8:15 AM</li>
         </ul>
       </section>
-
-      <!-- 
-             QUICK ACTIONS
-         -->
-      <section class="quick-actions">
-        <button>Replenish Stock</button>
-        <button>View Reports</button>
-        <button>Manage Staff</button>
-        <button>Audit Logs</button>
-      </section>
     </main>
 
     <!-- 
@@ -164,9 +182,9 @@
     <!-- 
          JAVASCRIPT
      -->
-         <script src="../../shared/js/auth-guard.js"></script>
-    <script src="../../shared/components/sidebar.js"></script>
-    <script src="../../shared/components/header.js"></script>
+    <!-- Shared Components -->
+    <script src="../../../screens/Shared/components/sidebar.js"></script>
+    <script src="../../Shared/components/header.js"></script>
 
     <!-- Screen Logic -->
     <script src="manager-dashboard.js"></script>
