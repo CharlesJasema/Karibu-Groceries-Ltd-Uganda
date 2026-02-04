@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KGL | Staff Profile</title>
+
+  <!-- Shared CSS -->
+  <link rel="stylesheet" href="../../shared/css/reset.css">
+  <link rel="stylesheet" href="../../shared/css/variables.css">
+  <link rel="stylesheet" href="../../shared/css/layout.css">
+  <link rel="stylesheet" href="../../shared/css/utilities.css">
+  <link rel="stylesheet" href="../../Shared/css/sidebar.css">
+  <!-- Screen CSS -->
+  <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="kgl-sidebar"></aside>
+
+  <div class="kgl-app">
+    <header class="kgl-header"></header>
+
+    <main class="kgl-main">
+      <section class="kgl-content">
+
+        <div class="page-header">
+          <h2>My Profile</h2>
+          <button id="backDashboard" class="btn-outline">
+            ← Back to Dashboard
+          </button>
+        </div>
+
+        <div class="profile-card">
+
+          <!-- Profile Summary -->
+          <div class="profile-summary">
+            <img id="profileImage" src="../../assets/logo/kgl-logo.png" alt="Profile Image">
+            <h3 id="profileName"></h3>
+            <p id="profileMeta"></p>
+          </div>
+
+          <!-- Profile Update -->
+          <form id="profileForm">
+            <h4>Update Personal Information</h4>
+
+            <label>Full Name</label>
+            <input type="text" id="fullName" required>
+
+            <label>Phone Number</label>
+            <input type="tel" id="phone">
+
+            <button type="submit" class="btn-primary">Save Changes</button>
+          </form>
+
+          <!-- Password Change -->
+          <form id="passwordForm">
+            <h4>Change Password</h4>
+
+            <label>New Password</label>
+            <input type="password" id="newPassword" required>
+
+            <label>Confirm Password</label>
+            <input type="password" id="confirmPassword" required>
+
+            <button type="submit" class="btn-danger">Update Password</button>
+          </form>
+
+          <button id="logoutBtn" class="btn-outline logout-btn">
+            Logout
+          </button>
+
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <!-- Shared JS -->
+  <script src="../../shared/js/auth-guard.js"></script>
+  <script src="../../shared/components/header.js"></script>
+  <script src="../../Shared/components/sidebar.js"></script>
+
+  <!-- Screen JS -->
+  <script src="profile.js"></script>
+</body>
+</html>

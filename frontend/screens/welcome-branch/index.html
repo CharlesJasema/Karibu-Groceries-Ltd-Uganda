@@ -13,6 +13,13 @@
          GLOBAL & SCREEN-SPECIFIC STYLES
 -->
     <link rel="stylesheet" href="welcome.css" />
+
+    <!-- 
+         STYLESHEET
+     -->
+    <link rel="stylesheet" href="../../screens/Shared/css/variables.css" />
+    <link rel="stylesheet" href="../../screens/Shared/css/layout.css" />
+    <link rel="stylesheet" href="../../screens/Shared/css/utilities.css" />
   </head>
   <body>
     <!-- 
@@ -31,12 +38,23 @@
         />
         <h2 class="brand-name">Karibu Groceries Ltd</h2>
       </div>
-
+      
       <!-- Navigation Buttons -->
-      <div class="nav-actions">
-        <button class="btn-outline" id="loginBtn">Login</button>
-        <button class="btn-primary" id="registerBtn">Create Account</button>
-      </div>
+      <button class="btn-outline" id="loginBtn">Login</button>
+      <button class="btn-primary" id="registerBtn">Create Account</button>
+
+      <script>
+        const loginBtn = document.getElementById("loginBtn");
+        const registerBtn = document.getElementById("registerBtn");
+
+        loginBtn.onclick = () => {
+          window.location.assign("/login");
+        };
+
+        registerBtn.onclick = () => {
+          window.location.assign("/register");
+        };
+      </script>
     </header>
 
     <!--
@@ -61,7 +79,9 @@
 
       <!-- Hero Background Image -->
       <div class="hero-image">
-        <img width="700" height="400"
+        <img
+          width="700"
+          height="400"
           src="../assets/images/kgl-hero-image.png"
           alt="KGL Produce Warehouse"
         />
@@ -79,7 +99,9 @@
       <div class="branch-cards">
         <!-- Branch 1 -->
         <div class="branch-card" data-branch="branchA">
-          <img width="700" height="400"
+          <img
+            width="700"
+            height="400"
             src="../../screens/assets/images/KGL-Main-Branch.png"
             alt="Branch A"
           />
@@ -90,7 +112,9 @@
 
         <!-- Branch 2 -->
         <div class="branch-card" data-branch="branchB">
-          <img width="700" height="400"
+          <img
+            width="700"
+            height="400"
             src="../../screens/assets/images/KGL-Branch-B.png"
             alt="Branch B"
           />
@@ -120,6 +144,8 @@
     <!-- 
          SCREEN-SPECIFIC JAVASCRIPT
 -->
+    <script src="../../screens/Shared/js/auth-guard.js"></script>
+
     <script src="index.js"></script>
   </body>
 </html>

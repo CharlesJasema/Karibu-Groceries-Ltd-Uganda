@@ -1,0 +1,64 @@
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.form-card {
+  max-width: 520px;
+  background: rgb(131, 202, 165);
+  padding: 20px;
+  border-radius: var(--radius);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group select {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #035d14;
+}
+
+.form-summary {
+  margin: 15px 0;
+  font-size: 1.1rem;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: white;
+  font-size: 1rem;
+}
+.btn-primary:hover {
+  background: #156834;
+} 
+.table-container {
+  margin-top: 30px;
+  overflow-x: auto;
+}
+.sales-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.sales-table th,
+.sales-table td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  text-align: left;
+}

@@ -1,0 +1,72 @@
+.profile-card {
+  background: #56b076;
+  padding: 25px;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  max-width: 700px;
+}
+
+.profile-summary {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.profile-summary img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+.profile-summary h3 {
+  margin: 5px 0;
+}
+
+.profile-summary p {
+  color: #777;
+  font-size: 0.9rem;
+}
+
+form {
+  margin-bottom: 25px;
+}
+
+form h4 {
+  margin-bottom: 10px;
+}
+
+form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  border: 1px solid #025115;
+}
+
+.logout-btn {
+  width: 100%;
+}
+.logout-btn {
+  padding: 12px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--danger);
+  color: white;
+  font-size: 1rem;
+}
+.logout-btn:hover {
+  background: #c53030;
+}
+.success-message {
+  color: var(--success);
+  margin-bottom: 15px;
+}
+.error-message {
+  color: var(--danger);
+  margin-bottom: 15px;
+}
+@media (max-width: 600px) {
+  .profile-card {
+    padding: 15px;
+  }
+}

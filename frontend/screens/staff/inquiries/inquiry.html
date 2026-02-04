@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KGL | Staff Inquiry</title>
+
+  <!-- Shared CSS -->
+  <link rel="stylesheet" href="../../shared/css/reset.css">
+  <link rel="stylesheet" href="../../shared/css/variables.css">
+  <link rel="stylesheet" href="../../shared/css/layout.css">
+  <link rel="stylesheet" href="../../shared/css/utilities.css">
+  <link rel="stylesheet" href="../../Shared/css/sidebar.css">
+
+  <!-- Screen CSS -->
+  <link rel="stylesheet" href="inquiry.css">
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="kgl-sidebar"></aside>
+
+  <div class="kgl-app">
+    <header class="kgl-header"></header>
+
+    <main class="kgl-main">
+      <section class="kgl-content">
+
+        <div class="page-header">
+          <h2>Submit Inquiry</h2>
+          <button id="backDashboard" class="btn-outline">
+            ← Back to Dashboard
+          </button>
+        </div>
+
+        <div class="inquiry-card">
+          <form id="inquiryForm">
+            <label for="subject">Subject</label>
+            <input type="text" id="subject" required placeholder="Short description of issue">
+
+            <label for="priority">Priority</label>
+            <select id="priority" required>
+              <option value="">Select Priority</option>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+            </select>
+
+            <label for="details">Details</label>
+            <textarea id="details" rows="4" placeholder="Provide more information" required></textarea>
+
+            <button type="submit" class="btn-primary">Submit Inquiry</button>
+          </form>
+        </div>
+
+        <div class="table-card">
+          <h3>My Inquiry History</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Subject</th>
+                <th>Priority</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="inquiryBody"></tbody>
+          </table>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <!-- Shared JS -->
+  <script src="../../shared/js/auth-guard.js"></script>
+  <script src="../../shared/components/header.js"></script>
+  <script src="../../Shared/components/sidebar.js"></script>
+
+  <!-- Screen JS -->
+  <script src="inquiry.js"></script>
+</body>
+</html>

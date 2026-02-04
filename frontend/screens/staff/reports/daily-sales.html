@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KGL | Daily Sales Report</title>
+
+  <!-- Shared Styles -->
+  <link rel="stylesheet" href="../../shared/css/reset.css" />
+  <link rel="stylesheet" href="../../shared/css/variables.css" />
+  <link rel="stylesheet" href="../../shared/css/layout.css" />
+  <link rel="stylesheet" href="../../shared/css/utilities.css" />
+  <link rel="stylesheet" href="../../Shared/css/sidebar.css" />
+  <!-- Screen CSS -->
+  <link rel="stylesheet" href="daily-sales.css" />
+</head>
+<body>
+
+  <aside class="kgl-sidebar"></aside>
+
+  <div class="kgl-app">
+    <header class="kgl-header"></header>
+
+    <main class="kgl-main">
+      <section class="kgl-content">
+
+        <div class="page-header">
+          <h2>Daily Sales Report</h2>
+          <button id="backDashboard" class="btn-outline">
+            ← Back to Dashboard
+          </button>
+        </div>
+
+        <!-- SUMMARY -->
+        <div class="summary-card">
+          <h3>Total Sales Today</h3>
+          <p id="totalSales">UGX 0</p>
+        </div>
+
+        <!-- SALES TABLE -->
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Produce</th>
+                <th>Quantity (Kg)</th>
+                <th>Unit Price (UGX)</th>
+                <th>Total (UGX)</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody id="salesBody">
+              <!-- JS injects rows -->
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <!-- Guards & Components -->
+  <script src="../../shared/js/auth-guard.js"></script>
+  <script src="../../shared/components/header.js"></script>
+  <script src="../../Shared/components/sidebar.js"></script>
+
+  <!-- Screen Logic -->
+  <script src="daily-sales.js"></script>
+</body>
+</html>
