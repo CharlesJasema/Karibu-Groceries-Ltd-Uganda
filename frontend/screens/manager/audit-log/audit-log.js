@@ -14,10 +14,22 @@ document.querySelector(".btn-filter").addEventListener("click", () => {
     alert("Filters applied (backend integration pending)");
 });
 
-/*
-  Future Enhancements:
-  - Date range filtering
-  - CSV / PDF export
-  - Real-time log streaming
-  - Tamper detection indicators
-*/
+
+const logs =
+  JSON.parse(localStorage.getItem("kgl_activity_logs")) || [];
+
+const tableBody = document.querySelector("tbody");
+
+logs.forEach(log => {
+  const row = document.createElement("tr");
+
+  row.innerHTML = `
+    <td>${log.name}</td>
+    <td>${log.role}</td>
+    <td>${log.branch}</td>
+    <td>${log.action}</td>
+    <td>${new Date(log.timestamp).toLocaleString()}</td>
+  `;
+
+  tableBody.appendChild(row);
+});

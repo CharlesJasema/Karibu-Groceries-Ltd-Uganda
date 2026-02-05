@@ -1,0 +1,17 @@
+:root {
+  --primary: #0b6623;
+  --secondary: #f4f6f8;
+  --accent: #ff9800;
+  --danger: #d32f2f;
+  --text: #333;
+  --radius: 8px;
+}
+.success {
+  color: var(--primary);
+}
+.warning {
+  color: var(--accent);
+}
+.danger {
+  color: var(--danger);}
+  

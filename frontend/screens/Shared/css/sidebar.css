@@ -1,0 +1,36 @@
+.kgl-sidebar {
+  width: 260px;
+  background: var(--primary);
+  color: #fff;
+  position: fixed;
+  height: 100vh;
+  padding: 20px;
+}
+
+.kgl-sidebar nav a {
+  display: block;
+  color: #fff;
+  text-decoration: none;
+  padding: 10px 0;
+}
+
+.kgl-sidebar nav a:hover {
+  opacity: 0.85;
+}
+
+.logout-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 10px;
+  background: var(--danger);
+  border: none;
+  color: #fff;
+  border-radius: var(--radius);
+}
+.logout-btn:hover {
+  background: #c62828;
+}
+.kgl-content {
+  margin-left: 260px;
+  padding: 20px;}
+  

@@ -1,41 +1,18 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const header = document.getElementById("kglHeader");
+  const header = document.querySelector(".kgl-header");
   if (!header) return;
 
-  const user = JSON.parse(localStorage.getItem("kgl_current_user"));
-
-  const isDashboard = window.location.pathname.includes("dashboard");
+  const session = JSON.parse(localStorage.getItem("kgl_current_user"));
 
   header.innerHTML = `
-    <div class="top-nav">
-      <div class="nav-left">
-        <h3>Manager Panel</h3>
-        <small>${user.branch}</small>
-      </div>
-
-      <div class="nav-actions">
-        ${!isDashboard ? `
-          <button id="backToDashboard" class="nav-btn">
-            ← Dashboard
-          </button>
-        ` : ""}
-
-        <button id="backToWelcome" class="nav-btn outline">
-          Welcome
-        </button>
-      </div>
+    <div class="header-left">
+      <img src="../../shared/images/kgl-logo.png" class="header-logo" />
+      <span>KGL System</span>
+    </div>
+    <div class="header-right">
+      <span class="user-meta">
+        ${session?.username || "Guest"} (${session?.role || "N/A"})
+      </span>
     </div>
   `;
-
-  if (!isDashboard) {
-    document.getElementById("backToDashboard")
-      .addEventListener("click", () => {
-        window.location.href = "../dashboard/dashboard.html";
-      });
-  }
-
-  document.getElementById("backToWelcome")
-    .addEventListener("click", () => {
-      window.location.href = "../../welcome/welcome.html";
-    });
 });

@@ -31,3 +31,9 @@ if (isAuthenticated && isAuthPage) {
   window.location.href = "/dashboard/dashboard.html";
 }
 
+(() => {
+  const session = JSON.parse(localStorage.getItem("kgl_current_user"));
+  if (!session) {
+    window.location.href = "../../auth/login.html";
+  }
+})();

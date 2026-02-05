@@ -1,103 +1,111 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KGL | Record Sale</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KGL | Record Sale</title>
 
-  <!-- Shared Styles -->
-  <link rel="stylesheet" href="../../shared/css/reset.css" />
-  <link rel="stylesheet" href="../../shared/css/variables.css" />
-  <link rel="stylesheet" href="../../shared/css/layout.css" />
-  <link rel="stylesheet" href="../../shared/css/utilities.css" />
+    <!-- Shared Styles -->
+    <link rel="stylesheet" href="../../shared/css/reset.css" />
+    <link rel="stylesheet" href="../../shared/css/variables.css" />
+    <link rel="stylesheet" href="../../shared/css/layout.css" />
+    <link rel="stylesheet" href="../../shared/css/utilities.css" />
 
-  <!-- Staff Sidebar -->
-  <link rel="stylesheet" href="../../Shared/components/sidebar.js" />
+    <!-- Staff Sidebar -->
+    <link rel="stylesheet" href="../../Shared/components/sidebar.js" />
 
-  <!-- Screen CSS -->
-  <link rel="stylesheet" href="sales.css" />
-</head>
-<body>
+    <!-- Screen CSS -->
+    <link rel="stylesheet" href="sales.css" />
+  </head>
+  <body>
     <!-- Sidebar -->
-  <aside class="kgl-sidebar"></aside>
+    <aside class="kgl-sidebar"></aside>
 
-  <div class="kgl-app">
-    <header class="kgl-header"></header>
+    <div class="kgl-app">
+      <header class="kgl-header"></header>
 
-    <main class="kgl-main">
-      <section class="kgl-content">
-
-        <div class="page-header">
-          <h2>Record Sale</h2>
-          <button class="btn-outline" id="backDashboard">
-            ← Back to Dashboard
-          </button>
-        </div>
-
-        <!-- SALES FORM -->
-        <form id="salesForm" class="form-card">
-
-          <div class="form-group">
-            <label>Produce</label>
-            <select id="produce" required>
-              <option value="">Select Produce</option>
-              <option>Beans</option>
-              <option>Maize</option>
-              <option>Rice</option>
-              <option>Soya Beans</option>
-              <option>Millet</option>
-              <option>Sorghum</option>
-              <option>Cassava</option>
-              <option>Irish Potato</option>
-              <option>Tomatoes</option>
-              <option>Onions</option>
-              <option>Cabbage</option>
-              <option>Carrots</option>
-            </select>
-          </div>
- 
-          <div class="form-group">
-            <label>Quantity (Kg)</label>
-            <input type="number" id="quantity" min="1" required />
+      <main class="kgl-main">
+        <section class="kgl-content">
+          <div class="page-header">
+            <h2>Record Sale</h2>
+            <button class="btn-outline" id="backDashboard">
+              ← Back to Dashboard
+            </button>
           </div>
 
-          <div class="form-group">
-            <label>Price per Kg (UGX)</label>
-            <input type="number" id="price" min="0" required />
-          </div>
- 
-          <div class="form-group">
-            <label>Payment Method</label>
-            <select id="paymentMethod" required>
-              <option value="">Select Method</option>
-              <option>Cash</option>
-              <option>Mobile Money</option>
-              <option>Bank</option>
-              <option>Credit</option>
-            </select>
-          </div>
+          <!-- SALES FORM -->
+          <form id="salesForm" class="form-card">
+            <div class="form-group">
+              <label>Produce</label>
+              <select id="produce" required>
+                <option value="">Select Produce</option>
+                <option>Beans</option>
+                <option>Maize</option>
+                <option>Rice</option>
+                <option>Soya Beans</option>
+                <option>Millet</option>
+                <option>Sorghum</option>
+                <option>Cassava</option>
+                <option>Irish Potato</option>
+                <option>Tomatoes</option>
+                <option>Onions</option>
+                <option>Cabbage</option>
+                <option>Carrots</option>
+              </select>
+            </div>
 
-          <div class="form-summary">
-            <strong>Total:</strong>
-            <span id="totalAmount">UGX 0</span>
-          </div>
+            <div class="form-group">
+              <label>Quantity (Kg)</label>
+              <input type="number" id="quantity" min="1" required />
+            </div>
 
-          <button type="submit" class="btn-primary">
-            Confirm Sale
-          </button>
+            <div class="form-group">
+              <label>Price per Kg (UGX)</label>
+              <input type="number" id="price" min="0" required />
+            </div>
 
-        </form>
+            <div class="form-group">
+              <label>Payment Method</label>
+              <select id="paymentMethod" required>
+                <option value="">Select Method</option>
+                <option>Cash</option>
+                <option>Mobile Money</option>
+                <option>Bank</option>
+                <option>Credit</option>
+              </select>
+            </div>
 
-      </section>
-    </main>
-  </div>
+            <div class="form-summary">
+              <strong>Total:</strong>
+              <span id="totalAmount">UGX 0</span>
+            </div>
 
-  <!-- Guards & Components -->
-  <script src="../../shared/js/auth-guard.js"></script>
-  <script src="../../shared/components/header.js"></script>
-  <script src="../../Shared/components/sidebar.js"></script>
+            <button type="submit" class="btn-primary">Confirm Sale</button>
+          </form>
+        </section>
+      </main>
+    </div>
 
-  <!-- Screen Logic -->
-  <script src="sales.js"></script>
-</body>
+    <!-- Guards & Components -->
+    <script src="../../shared/js/auth-guard.js"></script>
+    <script src="../../shared/components/header.js"></script>
+    <script src="../../Shared/components/sidebar.js"></script>
+    <script src="../../shared/js/auth-guard.js"></script>
+    <!-- Activity logging -->
+    <script src="../../shared/js/activity-tracker.js"></script>
+
+    <script>
+      // Back to Dashboard
+      document.getElementById("backDashboard").onclick = () => {
+        window.location.href = "../../dashboard/dashboard.html";
+      };
+    </script>
+
+    <script>
+      showToast("Action successful", "success");
+    </script>
+
+    <!-- Screen Logic -->
+    <script src="sales.js"></script>
+  </body>
 </html>

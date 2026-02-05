@@ -55,3 +55,18 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "../dashboard/staff-dashboard.html";
   });
 });
+
+const session = JSON.parse(localStorage.getItem("kgl_current_user"));
+
+document.getElementById("recordSaleBtn").addEventListener("click", () => {
+  // Save sale logic here...
+
+  logActivity({
+    role: "staff",
+    name: session.username,
+    branch: session.branch,
+    action: "Recorded a new sale (UGX 450,000)"
+  });
+
+  showToast("Sale recorded successfully", "success");
+});

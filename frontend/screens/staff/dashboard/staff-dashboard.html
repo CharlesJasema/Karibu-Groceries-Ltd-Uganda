@@ -1,100 +1,108 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KGL | Staff Dashboard</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KGL | Staff Dashboard</title>
 
-  <!-- Shared Core Styles -->
-  <link rel="stylesheet" href="../../shared/css/reset.css" />
-  <link rel="stylesheet" href="../../shared/css/variables.css" />
-  <link rel="stylesheet" href="../../shared/css/layout.css" />
-  <link rel="stylesheet" href="../../shared/css/utilities.css" />
+    <!-- Shared Core Styles -->
+    <link rel="stylesheet" href="../../shared/css/reset.css" />
+    <link rel="stylesheet" href="../../shared/css/variables.css" />
+    <link rel="stylesheet" href="../../shared/css/layout.css" />
+    <link rel="stylesheet" href="../../shared/css/utilities.css" />
 
-  <!-- Staff Sidebar -->
-  <link rel="stylesheet" href="../../Shared/css/sidebar.css" />
+    <!-- Staff Sidebar -->
+    <link rel="stylesheet" href="../../Shared/css/sidebar.css" />
 
-  <!-- Screen Styles -->
-  <link rel="stylesheet" href="staff-dashboard.css" />
-</head>
-<body>
+    <!-- Screen Styles -->
+    <link rel="stylesheet" href="staff-dashboard.css" />
+  </head>
+  <body>
+    <!-- Sidebar injected dynamically -->
+    <aside class="kgl-sidebar"></aside>
 
-  <!-- Sidebar injected dynamically -->
-  <aside class="kgl-sidebar"></aside>
+    <!-- Main App Wrapper -->
+    <div class="kgl-app">
+      <!-- Header injected dynamically -->
+      <header class="kgl-header"></header>
 
-  <!-- Main App Wrapper -->
-  <div class="kgl-app">
-    
-    <!-- Header injected dynamically -->
-    <header class="kgl-header"></header>
+      <!-- Main Content -->
+      <main class="kgl-main">
+        <section class="kgl-content">
+          <h2 class="page-title">Staff Dashboard</h2>
+          <p class="page-subtitle">Overview of today’s work activity</p>
 
-    <!-- Main Content -->
-    <main class="kgl-main">
-      <section class="kgl-content">
+          <!-- KPI CARDS -->
+          <section class="kpi-grid">
+            <div class="kpi-card">
+              <h4>Today's Sales</h4>
+              <p id="todaySales">UGX 0</p>
+            </div>
 
-        <h2 class="page-title">Staff Dashboard</h2>
-        <p class="page-subtitle">
-          Overview of today’s work activity
-        </p>
+            <div class="kpi-card">
+              <h4>Credits Issued</h4>
+              <p id="todayCredit">UGX 0</p>
+            </div>
 
-        <!-- KPI CARDS -->
-        <section class="kpi-grid">
-          <div class="kpi-card">
-            <h4>Today's Sales</h4>
-            <p id="todaySales">UGX 0</p>
-          </div>
+            <div class="kpi-card">
+              <h4>Transactions</h4>
+              <p id="transactionCount">0</p>
+            </div>
 
-          <div class="kpi-card">
-            <h4>Credits Issued</h4>
-            <p id="todayCredit">UGX 0</p>
-          </div>
+            <div class="kpi-card">
+              <h4>Branch</h4>
+              <p id="staffBranch">—</p>
+            </div>
+          </section>
 
-          <div class="kpi-card">
-            <h4>Transactions</h4>
-            <p id="transactionCount">0</p>
-          </div>
+          <!-- QUICK ACTIONS -->
+          <section class="quick-actions">
+            <h3>Quick Actions</h3>
 
-          <div class="kpi-card">
-            <h4>Branch</h4>
-            <p id="staffBranch">—</p>
-          </div>
+            <div class="action-grid">
+              <button data-link="../sales/sales.html">Record Sale</button>
+              <button data-link="../credit/credit.html">Issue Credit</button>
+              <button data-link="../procurement/procurement.html">
+                Log Procurement
+              </button>
+              <button data-link="../reports/daily-report.html">
+                Daily Report
+              </button>
+              <button data-link="../attendance/attendance.html">
+                Attendance
+              </button>
+              <button data-link="../inquiries/inquiries.html">
+                Send Inquiry
+              </button>
+            </div>
+          </section>
+
+          <!-- RECENT ACTIVITY -->
+          <section class="activity-log">
+            <h3>Recent Activity</h3>
+            <ul id="activityList">
+              <li>No activity recorded today</li>
+            </ul>
+          </section>
         </section>
+      </main>
+    </div>
 
-        <!-- QUICK ACTIONS -->
-        <section class="quick-actions">
-          <h3>Quick Actions</h3>
+    <!-- Core Guards -->
+    <script src="../../shared/js/auth-guard.js"></script>
 
-          <div class="action-grid">
-            <button data-link="../sales/sales.html">Record Sale</button>
-            <button data-link="../credit/credit.html">Issue Credit</button>
-            <button data-link="../procurement/procurement.html">Log Procurement</button>
-            <button data-link="../reports/daily-report.html">Daily Report</button>
-            <button data-link="../attendance/attendance.html">Attendance</button>
-            <button data-link="../inquiries/inquiries.html">Send Inquiry</button>
-          </div>
-        </section>
+    <!-- Shared Components -->
+    <script src="../../shared/components/header.js"></script>
+    <script src="../../Shared/components/sidebar.js"></script>
+    <script src="../../shared/js/auth-guard.js"></script>
+    <!-- Activity logging -->
+    <script src="../../shared/js/activity-tracker.js"></script>
 
-        <!-- RECENT ACTIVITY -->
-        <section class="activity-log">
-          <h3>Recent Activity</h3>
-          <ul id="activityList">
-            <li>No activity recorded today</li>
-          </ul>
-        </section>
+    <!-- Screen Logic -->
+    <script src="staff-dashboard.js"></script>
 
-      </section>
-    </main>
-  </div>
-
-  <!-- Core Guards -->
-  <script src="../../shared/js/auth-guard.js"></script>
-
-  <!-- Shared Components -->
-  <script src="../../shared/components/header.js"></script>
-  <script src="../../Shared/components/sidebar.js"></script>
-
-  <!-- Screen Logic -->
-  <script src="staff-dashboard.js"></script>
-
-</body>
+    <script>
+      showToast("Action successful", "success");
+    </script>
+  </body>
 </html>
