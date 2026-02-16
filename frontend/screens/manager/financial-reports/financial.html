@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+  <head>
+    <title>KGL Financial Reports</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Shared -->
+    <link rel="stylesheet" href="../../shared/css/reset.css" />
+    <link rel="stylesheet" href="../../shared/css/layout.css" />
+    <link rel="stylesheet" href="../../shared/css/utilities.css" />
+
+    <!-- Screen -->
+    <link rel="stylesheet" href="./financial.css" />
+
+    <!-- Shared JS -->
+    <script defer src="../../shared/js/session.js"></script>
+    <script defer src="../../shared/js/activity-tracker.js"></script>
+    <script defer src="../../shared/js/toast.js"></script>
+
+    <!-- Screen JS -->
+    <script defer src="./financial.js"></script>
+  </head>
+
+  <body>
+    <div id="sidebar-container"></div>
+
+    <div class="main-content">
+      <header class="page-header">
+        <h2>Payment & Financial Reports</h2>
+      </header>
+
+      <!-- SUMMARY CARDS -->
+      <section class="financial-summary">
+        <div class="card">
+          <h4>Total Revenue (Cash)</h4>
+          <p id="totalRevenue">UGX 0</p>
+        </div>
+
+        <div class="card">
+          <h4>Total Credit Issued</h4>
+          <p id="totalCredit">UGX 0</p>
+        </div>
+
+        <div class="card">
+          <h4>Total Transactions</h4>
+          <p id="totalTransactions">0</p>
+        </div>
+
+        <div class="card">
+          <h4>Outstanding Client Credit</h4>
+          <p id="outstandingCredit">UGX 0</p>
+        </div>
+      </section>
+
+      <!-- FILTERS -->
+      <section class="filters">
+        <input type="date" id="filterDate" />
+        <select id="filterBranch">
+          <option value="">All Branches</option>
+        </select>
+        <select id="filterPayment">
+          <option value="">All Payment Types</option>
+          <option value="Cash">Cash</option>
+          <option value="Credit">Credit</option>
+        </select>
+
+        <button onclick="applyFilters()">Apply Filters</button>
+      </section>
+
+      <!-- TRANSACTIONS TABLE -->
+      <section class="transactions-table">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Date</th>
+              <th>Client</th>
+              <th>Branch</th>
+              <th>Payment</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="financialTable"></tbody>
+        </table>
+      </section>
+    </div>
+  </body>
+</html>

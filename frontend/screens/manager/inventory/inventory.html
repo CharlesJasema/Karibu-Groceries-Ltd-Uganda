@@ -1,0 +1,117 @@
+<!--
+KGL - UNIFIED INVENTORY MANAGEMENT SCREEN
+Manager Only Access
+This screen controls inventory for BOTH branches
+-->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>KGL Inventory Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Shared Global CSS -->
+    <link rel="stylesheet" href="../../shared/css/reset.css" />
+    <link rel="stylesheet" href="../../shared/css/variables.css" />
+    <link rel="stylesheet" href="../../shared/css/layout.css" />
+    <link rel="stylesheet" href="../../shared/css/utilities.css" />
+
+    <!-- Screen Specific CSS -->
+    <link rel="stylesheet" href="./inventory.css" />
+  </head>
+  <body>
+    <!-- Sidebar Injected From Shared Component -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header -->
+      <header class="page-header">
+        <h1>Inventory Management</h1>
+        <div class="header-actions">
+          <select id="branchFilter">
+            <option value="all">All Branches</option>
+            <option value="Branch A">Branch A</option>
+            <option value="Branch B">Branch B</option>
+          </select>
+          <input type="text" id="searchInput" placeholder="Search produce..." />
+          <button id="addStockBtn" class="primary-btn">+ Update Stock</button>
+        </div>
+      </header>
+
+      <!-- Inventory Table Section -->
+      <section class="inventory-section">
+        <table id="inventoryTable">
+          <thead>
+            <tr>
+              <th>Produce</th>
+              <th>Branch</th>
+              <th>Buying (UGX)</th>
+              <th>Selling (UGX)</th>
+              <th>Quantity</th>
+              <th>Status</th>
+              <th>Last Updated</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- JS will populate inventory here -->
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <!-- Update Stock Modal -->
+    <div id="stockModal" class="modal hidden">
+      <div class="modal-content">
+        <h2>Update Inventory</h2>
+
+        <form id="stockForm">
+          <select id="produceSelect" required></select>
+
+          <select id="branchSelect" required>
+            <option value="Branch A">Branch A</option>
+            <option value="Branch B">Branch B</option>
+          </select>
+
+          <input
+            type="number"
+            id="buyingPrice"
+            placeholder="Buying Price (UGX)"
+            required
+          />
+          <input
+            type="number"
+            id="sellingPrice"
+            placeholder="Selling Price (UGX)"
+            required
+          />
+          <input type="number" id="quantity" placeholder="Quantity" required />
+          <input
+            type="number"
+            id="threshold"
+            placeholder="Minimum Threshold"
+            required
+          />
+
+          <div class="modal-actions">
+            <button type="submit" class="primary-btn">Save</button>
+            <button type="button" id="closeModal" class="secondary-btn">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Shared JS -->
+    <script src="../../shared/js/session.js"></script>
+    <script src="../../shared/js/activity-tracker.js"></script>
+    <script src="../../shared/js/toast.js"></script>
+    <script src="../../shared/components/sidebar.js"></script>
+
+    <!-- Screen JS -->
+    <script src="./inventory.js"></script>
+  </body>
+</html>

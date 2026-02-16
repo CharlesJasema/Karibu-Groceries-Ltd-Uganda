@@ -1,0 +1,46 @@
+/* 
+PROCUREMENT MODULE STYLING
+ */
+
+.main-content {
+  margin-left: 240px;
+  padding: 20px;
+}
+
+.procurement-form-section form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.procurement-form-section input,
+.procurement-form-section select {
+  padding: 8px;
+  flex: 1 1 200px;
+}
+
+.primary-btn {
+  background: var(--primary-color);
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+}
+
+.procurement-history table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.procurement-history th,
+.procurement-history td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+  }
+}

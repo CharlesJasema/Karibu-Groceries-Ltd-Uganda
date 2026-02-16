@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>KGL Receipts</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="../../shared/css/reset.css" />
+    <link rel="stylesheet" href="../../shared/css/layout.css" />
+    <link rel="stylesheet" href="../../shared/css/utilities.css" />
+
+    <!-- Screen CSS -->
+    <link rel="stylesheet" href="./receipts.css" />
+
+    <!-- Shared JS -->
+    <script defer src="../../shared/js/session.js"></script>
+    <script defer src="../../shared/js/activity-tracker.js"></script>
+    <script defer src="../../shared/js/toast.js"></script>
+
+    <!-- Screen JS -->
+    <script defer src="./receipts.js"></script>
+  </head>
+  <body>
+    <div id="sidebar-container"></div>
+
+    <div class="main-content">
+      <header class="page-header">
+        <h2>My Receipts</h2>
+        <button onclick="goDashboard()">⬅ Dashboard</button>
+      </header>
+
+      <!-- Receipt List -->
+      <section class="receipt-list">
+        <table>
+          <thead>
+            <tr>
+              <th>Transaction ID</th>
+              <th>Date</th>
+              <th>Total</th>
+              <th>Payment</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="receiptTable"></tbody>
+        </table>
+      </section>
+
+      <!-- Receipt Modal -->
+      <div id="receiptModal" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeReceipt()">&times;</span>
+
+          <div id="receiptPrintArea">
+            <h3>KGL HARDWARE</h3>
+            <p id="receiptBranch"></p>
+            <p id="receiptDate"></p>
+            <p><strong>Transaction:</strong> <span id="receiptId"></span></p>
+            <hr />
+
+            <table class="items-table">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Qty</th>
+                  <th>Price</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody id="receiptItems"></tbody>
+            </table>
+
+            <hr />
+            <h4>Total: UGX <span id="receiptTotal"></span></h4>
+            <p><strong>Payment:</strong> <span id="receiptPayment"></span></p>
+
+            <p class="thanks">Thank you for shopping with us!</p>
+          </div>
+
+          <button onclick="printReceipt()">Print Receipt</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

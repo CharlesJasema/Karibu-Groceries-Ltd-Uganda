@@ -1,0 +1,108 @@
+<!-- 
+KGL PROCUREMENT MODULE
+Manager Only
+Logs produce purchases from dealers
+ -->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>KGL Procurement</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="../../shared/css/reset.css" />
+    <link rel="stylesheet" href="../../shared/css/variables.css" />
+    <link rel="stylesheet" href="../../shared/css/layout.css" />
+    <link rel="stylesheet" href="../../shared/css/utilities.css" />
+
+    <!-- Screen CSS -->
+    <link rel="stylesheet" href="./procurement.css" />
+  </head>
+  <body>
+    <div id="sidebar-container"></div>
+
+    <div class="main-content">
+      <header class="page-header">
+        <h1>Procurement Module</h1>
+      </header>
+
+      <!-- Procurement Form -->
+      <section class="procurement-form-section">
+        <form id="procurementForm">
+          <select id="branch" required>
+            <option value="">Select Branch</option>
+            <option value="Branch A">Branch A</option>
+            <option value="Branch B">Branch B</option>
+          </select>
+
+          <select id="produce" required></select>
+
+          <input
+            type="text"
+            id="dealerName"
+            placeholder="Dealer Name"
+            required
+          />
+          <input
+            type="text"
+            id="dealerContact"
+            placeholder="Dealer Contact"
+            required
+          />
+
+          <input
+            type="number"
+            id="quantity"
+            placeholder="Quantity Purchased"
+            required
+          />
+          <input
+            type="number"
+            id="costPerUnit"
+            placeholder="Cost Per Unit (UGX)"
+            required
+          />
+
+          <input
+            type="text"
+            id="totalCost"
+            placeholder="Total Cost (UGX)"
+            readonly
+          />
+
+          <button type="submit" class="primary-btn">Log Procurement</button>
+        </form>
+      </section>
+
+      <!-- Procurement History Table -->
+      <section class="procurement-history">
+        <h2>Procurement History</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Produce</th>
+              <th>Branch</th>
+              <th>Dealer</th>
+              <th>Qty</th>
+              <th>Total Cost (UGX)</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="historyTable"></tbody>
+        </table>
+      </section>
+    </div>
+
+    <!-- Shared JS -->
+    <script src="../../shared/js/session.js"></script>
+    <script src="../../shared/js/activity-tracker.js"></script>
+    <script src="../../shared/js/toast.js"></script>
+    <script src="../../shared/components/sidebar.js"></script>
+
+    <!-- Screen JS -->
+    <script src="./procurement.js"></script>
+  </body>
+</html>

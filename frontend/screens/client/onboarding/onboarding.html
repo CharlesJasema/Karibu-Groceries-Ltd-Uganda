@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KGL Client Registration</title>
+    <link rel="stylesheet" href="../../shared/css/layout.css">
+    <link rel="stylesheet" href="./onboarding.css">
+    <script defer src="../../shared/js/toast.js"></script>
+    <script defer src="../../shared/js/activity-tracker.js"></script>
+    <script defer src="./onboarding.js"></script>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Register as KGL Client</h2>
+
+    <input type="text" id="fullName" placeholder="Full Name">
+    <input type="text" id="phone" placeholder="Phone Number">
+    <input type="password" id="password" placeholder="Create Password">
+
+    <select id="branch">
+        <option value="">Select Branch</option>
+        <option value="Branch A">Branch A</option>
+        <option value="Branch B">Branch B</option>
+    </select>
+
+    <button onclick="registerClient()">Register</button>
+
+    <p>Already registered? <a href="../../auth/login/login.html">Login</a></p>
+</div>
+
+</body>
+</html>

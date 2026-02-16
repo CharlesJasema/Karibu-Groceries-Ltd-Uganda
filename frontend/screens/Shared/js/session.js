@@ -1,5 +1,14 @@
-export const getSession = () =>
-  JSON.parse(localStorage.getItem("kgl_current_user"));
+function protectRoute(requiredRole) {
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
 
-export const setSession = (data) =>
-  localStorage.setItem("kgl_current_user", JSON.stringify(data));
+  if (!token) {
+    window.location.href = "../../auth/login/login.html";
+    return;
+  }
+
+  if (requiredRole && role !== requiredRole) {
+    alert("Unauthorized access");
+    window.location.href = "../../auth/login/login.html";
+  }
+}

@@ -6,6 +6,8 @@
   - Navigation
 */
 
+protectRoute("SalesAgent");
+
 document.addEventListener("DOMContentLoaded", () => {
 
   const session = JSON.parse(localStorage.getItem("kgl_current_user"));

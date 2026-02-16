@@ -6,6 +6,8 @@
    - Navigation logic
  */
 
+protectRoute("Manager");
+
 // Simple role validation (placeholder)
 const role = localStorage.getItem("userRole");
 
