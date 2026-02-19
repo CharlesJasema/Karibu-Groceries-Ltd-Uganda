@@ -8,11 +8,10 @@ const router = express.Router();
 /* 
    CREATE PROCUREMENT (Manager Only)
  */
-router.post("/", protect, authorize("manager"), async (req, res) => {
+router.post("/", protect, authorize("Manager"), async (req, res) => {
   try {
     const {
       produceName,
-      produceType,
       date,
       time,
       tonnage,
@@ -27,7 +26,6 @@ router.post("/", protect, authorize("manager"), async (req, res) => {
 
     if (
       !produceName ||
-      !produceType ||
       !date ||
       !time ||
       !tonnage ||
@@ -37,46 +35,28 @@ router.post("/", protect, authorize("manager"), async (req, res) => {
       !contact ||
       !sellingPrice
     ) {
-      return res.status(400).json({ message: "All fields are required" });
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
     }
 
-    // Produce Type: alphabetic only, min 2 chars
-    if (!/^[A-Za-z]{2,}$/.test(produceType)) {
-      return res.status(400).json({ message: "Invalid produce type" });
-    }
-
-    // Tonnage: numeric, minimum 3 digits
-    if (!/^\d{3,}$/.test(String(tonnage))) {
-      return res
-        .status(400)
-        .json({ message: "Tonnage must be at least 3 digits" });
-    }
-
-    // Cost: numeric, minimum 5 digits
-    if (!/^\d{5,}$/.test(String(cost))) {
-      return res
-        .status(400)
-        .json({ message: "Cost must be at least 5 digits" });
-    }
-
-    // Dealer name: alphanumeric, min 2 chars
-    if (!/^[A-Za-z0-9 ]{2,}$/.test(dealerName)) {
-      return res.status(400).json({ message: "Invalid dealer name" });
-    }
-
-    // Branch validation
     if (!["Maganjo", "Matugga"].includes(branch)) {
-      return res.status(400).json({ message: "Invalid branch" });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid branch",
+      });
     }
 
-    // Phone validation (Ugandan format simple check)
     if (!/^\+?\d{10,13}$/.test(contact)) {
-      return res.status(400).json({ message: "Invalid phone number" });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid phone number",
+      });
     }
 
     const procurement = await Procurement.create({
       produceName,
-      produceType,
       date,
       time,
       tonnage,
@@ -85,24 +65,44 @@ router.post("/", protect, authorize("manager"), async (req, res) => {
       branch,
       contact,
       sellingPrice,
-      recordedBy: req.user.id,
+      recordedBy: req.user.id, // Automatically from token
     });
 
-    res.status(201).json(procurement);
+    res.status(201).json({
+      success: true,
+      message: "Procurement recorded successfully",
+      data: procurement,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    console.error("Create Procurement Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 });
 
 /* 
    GET ALL PROCUREMENT
+   Manager → see all
  */
-router.get("/", protect, async (req, res) => {
+router.get("/", protect, authorize("Manager"), async (req, res) => {
   try {
-    const data = await Procurement.find();
-    res.status(200).json(data);
+    const data = await Procurement.find()
+      .populate("recordedBy", "name email role")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: data.length,
+      data,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    console.error("Get Procurement Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 });
 

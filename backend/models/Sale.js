@@ -8,7 +8,20 @@ const saleSchema = new mongoose.Schema(
       required: true,
     },
 
-    /* Common Fields */
+    buyerName: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 2,
+    },
+
+    salesAgentName: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 2,
+    },
+
     produceName: {
       type: String,
       required: true,
@@ -26,62 +39,16 @@ const saleSchema = new mongoose.Schema(
       min: 1,
     },
 
-    buyerName: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: 2,
-    },
+    // Credit fields
+    amountDue: Number,
+    dueDate: String,
+    dispatchDate: String,
 
-    salesAgentName: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: 2,
-    },
+    // Cash fields
+    amountPaid: Number,
+    date: String,
+    time: String,
 
-    /* Cash Sale Fields */
-    amountPaid: {
-      type: Number,
-      min: 10000,
-    },
-
-    date: {
-      type: String,
-    },
-
-    time: {
-      type: String,
-    },
-
-    /* Credit Sale Fields */
-    amountDue: {
-      type: Number,
-      min: 10000,
-    },
-
-    nin: {
-      type: String,
-    },
-
-    location: {
-      type: String,
-      minlength: 2,
-    },
-
-    contacts: {
-      type: String,
-    },
-
-    dueDate: {
-      type: String,
-    },
-
-    dispatchDate: {
-      type: String,
-    },
-
-    /* Who Recorded It */
     recordedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -90,8 +57,5 @@ const saleSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
-
-/* Index for faster filtering */
-saleSchema.index({ type: 1, buyerName: 1 });
 
 module.exports = mongoose.model("Sale", saleSchema);

@@ -16,20 +16,28 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      match: [/^\S+@\S+\.\S+$/, "Please provide a valid email"],
     },
 
     password: {
       type: String,
       required: true,
       minlength: 6,
-      select: false, // DO NOT return password in queries
+      select: false, // never return password by default
     },
 
     role: {
       type: String,
-      enum: ["manager", "agent", "client"],
+      enum: ["Manager", "SalesAgent", "Client"], // match login redirect
       required: true,
     },
+
+    // OTP fields
+    resetOtp: String,
+    resetOtpExpiry: Date,
+
+    // Optional (future improvement)
+    refreshToken: String,
   },
   { timestamps: true },
 );
@@ -40,8 +48,7 @@ const userSchema = new mongoose.Schema(
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
+  this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 

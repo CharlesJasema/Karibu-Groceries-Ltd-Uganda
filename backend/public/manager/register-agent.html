@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register Sales Agent | KGL</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #0f5132, #198754);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .auth-container {
+        background: #ffffff;
+        padding: 40px 30px;
+        width: 100%;
+        max-width: 420px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        animation: fadeIn 0.4s ease-in-out;
+      }
+
+      .auth-container h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #0f5132;
+      }
+
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: 0.2s;
+      }
+
+      .form-group input:focus {
+        border-color: #198754;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(25, 135, 84, 0.2);
+      }
+
+      button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 6px;
+        background-color: #198754;
+        color: white;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s ease-in-out;
+      }
+
+      button:hover {
+        background-color: #146c43;
+      }
+
+      button:disabled {
+        background-color: #94d3ac;
+        cursor: not-allowed;
+      }
+
+      .back-link {
+        text-align: center;
+        margin-top: 18px;
+        font-size: 14px;
+      }
+
+      .back-link a {
+        text-decoration: none;
+        color: #198754;
+        font-weight: 600;
+      }
+
+      .back-link a:hover {
+        text-decoration: underline;
+      }
+
+      /* Toast styles */
+      #toastContainer {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 999;
+      }
+
+      .toast {
+        background: #333;
+        color: #fff;
+        padding: 10px 16px;
+        border-radius: 6px;
+        margin-bottom: 10px;
+        font-size: 14px;
+        animation: slideIn 0.3s ease;
+      }
+
+      .toast-success {
+        background: #198754;
+      }
+
+      .toast-error {
+        background: #dc3545;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateX(50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 480px) {
+        .auth-container {
+          margin: 20px;
+          padding: 30px 20px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="auth-container">
+      <h2>Register Sales Agent</h2>
+
+      <form id="agentRegisterForm">
+        <div class="form-group">
+          <label for="agentName">Full Name</label>
+          <input
+            type="text"
+            id="agentName"
+            placeholder="Enter full name"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="agentEmail">Email Address</label>
+          <input
+            type="email"
+            id="agentEmail"
+            placeholder="Enter email address"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="agentPassword">Password</label>
+          <input
+            type="password"
+            id="agentPassword"
+            placeholder="Create password"
+            required
+          />
+        </div>
+
+        <button type="submit">Create Agent</button>
+      </form>
+
+      <div class="back-link">
+        <a href="../manager/manager-dashboard.html">← Back to Dashboard</a>
+      </div>
+    </div>
+
+    <div id="toastContainer"></div>
+
+    <script src="register-agent.js"></script>
+  </body>
+</html>

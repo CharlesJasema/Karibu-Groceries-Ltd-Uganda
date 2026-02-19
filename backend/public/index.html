@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Karibu Groceries | Welcome</title>
+    <link rel="stylesheet" href="../public/css/styles.css" />
+  </head>
+
+  <body>
+    <!-- NAVBAR -->
+    <header class="navbar">
+      <div class="container nav-container">
+        <div class="logo-wrapper">
+          <img
+            src="../public/assets/logo/kgl-logo.png"
+            alt="KGL Logo"
+            class="logo"
+          />
+          <h2>Karibu Groceries Ltd</h2>
+        </div>
+
+        <div class="nav-buttons">
+          <button class="btn-outline" id="loginBtn">Login</button>
+          <button class="btn-primary" id="registerBtn">Create Account</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="container hero-container">
+        <div class="hero-text">
+          <h1>Modernizing Produce Trade in Uganda</h1>
+          <p>
+            A secure digital platform connecting farmers, dealers, managers,
+            staff, and customers in real time.
+          </p>
+
+          <div class="hero-actions">
+            <button class="btn-primary" id="chooseBranchBtn">
+              Choose Your Branch
+            </button>
+          </div>
+        </div>
+
+        <div class="hero-image">
+          <img
+            src="../public/assets/images/kgl-hero-image.png"
+            alt="KGL Warehouse"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- BRANCH SECTION -->
+    <section class="branches hidden" id="branchSection">
+      <div class="container">
+        <h2 class="section-title">Select Your Branch</h2>
+
+        <div class="branch-grid">
+          <div class="branch-card" data-branch="Maganjo">
+            <img
+              src="../public/assets/images/Maganjo.png"
+              alt="Maganjo Branch"
+            />
+            <h3>Maganjo Branch</h3>
+            <p>Main wholesale distribution hub</p>
+            <button class="btn-primary selectBranchBtn">Select Branch</button>
+          </div>
+
+          <div class="branch-card" data-branch="Matugga">
+            <img
+              src="../public/assets/images/Matugga.png"
+              alt="Matugga Branch"
+            />
+            <h3>Matugga Branch</h3>
+            <p>Regional produce supply center</p>
+            <button class="btn-primary selectBranchBtn">Select Branch</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER  -->
+    <footer class="footer">
+      <div class="container">
+        <p>© 2026 Karibu Groceries Limited. All Rights Reserved.</p>
+      </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="../public/js/session.js"></script>
+    <script src="../public/js/welcome.js"></script>
+  </body>
+</html>

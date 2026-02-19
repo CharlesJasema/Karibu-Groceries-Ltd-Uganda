@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>KGL Cart & Checkout</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Screen CSS -->
+    <link rel="stylesheet" href="../css/styles.css" />
+  </head>
+  <body>
+    <div id="sidebar-container"></div>
+
+    <div class="main-content">
+      <header class="page-header">
+        <h1>Cart & Secure Checkout</h1>
+        <button onclick="goShop()">← Back to Shop</button>
+        <button onclick="gotoDashboard()">← Back to dashboard</button>
+      </header>
+
+      <!-- CART TABLE -->
+      <section>
+        <table class="cart-table">
+          <thead>
+            <tr>
+              <th>Produce</th>
+              <th>Qty</th>
+              <th>Price (UGX)</th>
+              <th>Total</th>
+              <th>Remove</th>
+            </tr>
+          </thead>
+          <tbody id="cartBody"></tbody>
+        </table>
+      </section>
+
+      <!-- SUMMARY -->
+      <section class="checkout-summary">
+        <h3>Order Summary</h3>
+        <p>Subtotal: UGX <span id="subtotal">0</span></p>
+        <p>Discount: UGX <span id="discount">0</span></p>
+        <h2>Total: UGX <span id="grandTotal">0</span></h2>
+
+        <h4>Select Payment Method</h4>
+        <select id="paymentMethod">
+          <option value="">-- Choose Method --</option>
+          <option value="momo">Mobile Money (MTN/Airtel)</option>
+          <option value="bank">Bank Transfer</option>
+          <option value="cash">Cash</option>
+          <option value="credit">Credit</option>
+        </select>
+
+        <button class="checkout-btn" onclick="completeCheckout()">
+          Complete Payment
+        </button>
+      </section>
+    </div>
+
+    <!-- Screen JS -->
+    <script src="./cart.js"></script>
+  </body>
+</html>

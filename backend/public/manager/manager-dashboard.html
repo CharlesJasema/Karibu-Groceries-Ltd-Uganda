@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KGL | Manager Dashboard</title>
+
+  <link rel="stylesheet" href="../css/styles.css" />
+
+  <style>
+    .dashboard-container {
+      padding: 20px;
+    }
+
+    .kpi-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin: 30px 0;
+    }
+
+    .kpi-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+
+    .kpi-value {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    .branch-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 15px;
+    }
+
+    .branch-box {
+      background: #fff;
+      padding: 18px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .inventory-section table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .inventory-section th,
+    .inventory-section td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+
+    .good { color: green; font-weight: 600; }
+    .low { color: orange; font-weight: 600; }
+    .out { color: red; font-weight: 600; }
+
+    @media (max-width: 768px) {
+      .top-nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav-right {
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 
+       TOP NAV
+   -->
+  <header class="top-nav">
+    <div class="nav-left">
+      <img
+        src="../assets/logo/kgl-logo.png"
+        alt="KGL Logo"
+        class="app-logo"
+      />
+      <h2>Manager Dashboard</h2>
+    </div>
+
+    <div class="nav-right">
+      <span class="manager-name" id="managerName">Welcome</span>
+      <button class="btn-logout">Logout</button>
+    </div>
+  </header>
+
+  <!-- 
+       MAIN CONTENT
+   -->
+  <main class="dashboard-container">
+
+    <!-- QUICK ACTIONS -->
+    <section class="quick-actions">
+      <div class="action-card" data-link="../credit-tracker/credit-tracker.html">
+        <h4>Credit Tracker</h4>
+        <p>Monitor client credit & approvals</p>
+      </div>
+
+      <div class="action-card" data-link="../stock-replenishment/stock-replenishment.html">
+        <h4>Stock Replenishment</h4>
+        <p>Manage procurement and restocking</p>
+      </div>
+
+      <div class="action-card" data-link="../audit-log/audit-log.html">
+        <h4>Audit Logs</h4>
+        <p>Track all system activity</p>
+      </div>
+
+      <div class="action-card" data-link="../system-health/system-health.html">
+        <h4>System Health</h4>
+        <p>Monitor uptime & performance</p>
+      </div>
+
+      <div class="action-card" data-link="../register-agent/register-agent.html">
+        <h4>Register Sales Agent</h4>
+        <p>Create and manage sales agent accounts</p>
+      </div>
+    </section>
+
+    <!-- KPI SUMMARY -->
+    <section class="kpi-section">
+      <div class="kpi-card">
+        <h4>Total Sales</h4>
+        <p class="kpi-value" id="totalSales">Loading...</p>
+      </div>
+
+      <div class="kpi-card">
+        <h4>Inventory Status</h4>
+        <p class="kpi-value" id="inventoryStatus">Loading...</p>
+      </div>
+
+      <div class="kpi-card">
+        <h4>Outstanding Credit</h4>
+        <p class="kpi-value" id="outstandingCredit">Loading...</p>
+      </div>
+
+      <div class="kpi-card">
+        <h4>Active Staff</h4>
+        <p class="kpi-value" id="activeStaff">Loading...</p>
+      </div>
+    </section>
+
+    <!-- BRANCH OVERVIEW -->
+    <section class="branch-overview">
+      <h3>Branch Performance Overview</h3>
+      <div class="branch-cards" id="branchOverview">
+        <!-- Dynamically loaded -->
+      </div>
+    </section>
+
+    <!-- INVENTORY SNAPSHOT -->
+    <section class="inventory-section">
+      <h3>Inventory Snapshot</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Produce</th>
+            <th>Price (UGX)</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="inventorySnapshot">
+          <!-- Dynamically loaded -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- STAFF ACTIVITY -->
+    <section class="activity-section">
+      <h3>Recent Staff Activity</h3>
+      <ul id="activityList">
+        <!-- Dynamically loaded -->
+      </ul>
+    </section>
+
+  </main>
+
+  <!-- 
+       FOOTER
+  -->
+  <footer class="footer">
+    <p>© 2026 Karibu Groceries Limited</p>
+    <p>System Version 1.0 | Uganda</p>
+  </footer>
+
+  <!-- 
+       SCRIPTS
+ -->
+  <script src="../js/authFetch.js"></script>
+  <script src="manager-dashboard.js"></script>
+
+</body>
+</html>

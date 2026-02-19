@@ -8,13 +8,6 @@ const procurementSchema = new mongoose.Schema(
       trim: true,
     },
 
-    produceType: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: 2,
-    },
-
     date: {
       type: String,
       required: true,
@@ -28,13 +21,13 @@ const procurementSchema = new mongoose.Schema(
     tonnage: {
       type: Number,
       required: true,
-      min: 100, // minimum 3 digits
+      min: 100,
     },
 
     cost: {
       type: Number,
       required: true,
-      min: 10000, // minimum 5 digits (UGX)
+      min: 10000,
     },
 
     dealerName: {
@@ -69,8 +62,5 @@ const procurementSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
-
-/* Index for faster searching */
-procurementSchema.index({ produceName: 1, branch: 1 });
 
 module.exports = mongoose.model("Procurement", procurementSchema);

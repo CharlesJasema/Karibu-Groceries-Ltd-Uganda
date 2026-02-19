@@ -6,42 +6,39 @@ const { authorize } = require("../middleware/roleMiddleware");
 const router = express.Router();
 
 /* 
-   CASH SALES (Agents Only)
+   CREATE CASH SALE (SalesAgent Only)
  */
-router.post("/cash", protect, authorize("agent"), async (req, res) => {
+router.post("/cash", protect, authorize("SalesAgent"), async (req, res) => {
   try {
-    const {
-      produceName,
-      tonnage,
-      amountPaid,
-      buyerName,
-      salesAgentName,
-      date,
-      time,
-    } = req.body;
+    const { produceName, tonnage, amountPaid, buyerName, date, time } =
+      req.body;
 
     if (
       !produceName ||
       !tonnage ||
       !amountPaid ||
       !buyerName ||
-      !salesAgentName ||
       !date ||
       !time
     ) {
-      return res.status(400).json({ message: "All fields are required" });
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
     }
 
-    // Buyer name validation
     if (!/^[A-Za-z0-9 ]{2,}$/.test(buyerName)) {
-      return res.status(400).json({ message: "Invalid buyer name" });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid buyer name",
+      });
     }
 
-    // Amount Paid min 5 digits
     if (!/^\d{5,}$/.test(String(amountPaid))) {
-      return res
-        .status(400)
-        .json({ message: "Amount must be at least 5 digits" });
+      return res.status(400).json({
+        success: false,
+        message: "Amount must be at least 5 digits",
+      });
     }
 
     const sale = await Sale.create({
@@ -49,108 +46,129 @@ router.post("/cash", protect, authorize("agent"), async (req, res) => {
       tonnage,
       amountPaid,
       buyerName,
-      salesAgentName,
+      salesAgentName: req.user.role === "SalesAgent" ? req.user.id : null,
       date,
       time,
       type: "cash",
       recordedBy: req.user.id,
     });
 
-    res.status(201).json(sale);
+    res.status(201).json({
+      success: true,
+      message: "Cash sale recorded successfully",
+      data: sale,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    console.error("Cash Sale Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 });
 
 /* 
-   CREDIT SALES (Agents Only)
+   CREATE CREDIT SALE (SalesAgent Only)
  */
-router.post("/credit", protect, authorize("agent"), async (req, res) => {
+router.post("/credit", protect, authorize("SalesAgent"), async (req, res) => {
   try {
     const {
       buyerName,
-      nin,
-      location,
-      contacts,
       amountDue,
-      salesAgentName,
       dueDate,
       produceName,
-      produceType,
       tonnage,
       dispatchDate,
     } = req.body;
 
     if (
       !buyerName ||
-      !nin ||
-      !location ||
-      !contacts ||
       !amountDue ||
-      !salesAgentName ||
       !dueDate ||
       !produceName ||
-      !produceType ||
       !tonnage ||
       !dispatchDate
     ) {
-      return res.status(400).json({ message: "All fields are required" });
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
     }
 
-    // Buyer name validation
     if (!/^[A-Za-z0-9 ]{2,}$/.test(buyerName)) {
-      return res.status(400).json({ message: "Invalid buyer name" });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid buyer name",
+      });
     }
 
-    // Simple NIN validation (Uganda NIN format example)
-    if (!/^[A-Z0-9]{10,14}$/.test(nin)) {
-      return res.status(400).json({ message: "Invalid NIN format" });
-    }
-
-    // Phone validation
-    if (!/^\+?\d{10,13}$/.test(contacts)) {
-      return res.status(400).json({ message: "Invalid phone number" });
-    }
-
-    // Amount Due min 5 digits
     if (!/^\d{5,}$/.test(String(amountDue))) {
-      return res
-        .status(400)
-        .json({ message: "Amount must be at least 5 digits" });
+      return res.status(400).json({
+        success: false,
+        message: "Amount must be at least 5 digits",
+      });
     }
 
     const sale = await Sale.create({
       buyerName,
-      nin,
-      location,
-      contacts,
       amountDue,
-      salesAgentName,
       dueDate,
       produceName,
-      produceType,
       tonnage,
       dispatchDate,
       type: "credit",
       recordedBy: req.user.id,
     });
 
-    res.status(201).json(sale);
+    res.status(201).json({
+      success: true,
+      message: "Credit sale recorded successfully",
+      data: sale,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    console.error("Credit Sale Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 });
 
 /* 
    GET ALL SALES
+   Manager → See All
+   SalesAgent → See Only Their Sales
  */
-router.get("/", protect, async (req, res) => {
-  try {
-    const sales = await Sale.find();
-    res.status(200).json(sales);
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
+router.get(
+  "/",
+  protect,
+  authorize("Manager", "SalesAgent"),
+  async (req, res) => {
+    try {
+      let query = {};
+
+      // If SalesAgent → only show their own sales
+      if (req.user.role === "SalesAgent") {
+        query.recordedBy = req.user.id;
+      }
+
+      const sales = await Sale.find(query)
+        .populate("recordedBy", "name email role")
+        .sort({ createdAt: -1 });
+
+      res.status(200).json({
+        success: true,
+        count: sales.length,
+        data: sales,
+      });
+    } catch (error) {
+      console.error("Get Sales Error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Server error",
+      });
+    }
+  },
+);
 
 module.exports = router;
