@@ -1,19 +1,101 @@
 # Dependencies
 node_modules/
-backend/node_modules
-frontend/node_modules
+package-lock.json
 
-# Environment variables
-.env 
+# Environment variables - NEVER COMMIT THESE!
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
 
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# OS files
-.DS_Store
-Thumbs.db
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
 
-# VS Code settings and workspace files 
+# Coverage directory
+coverage/
+*.lcov
+.nyc_output/
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# IDE
 .vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+Thumbs.db
+.DS_Store
+
+# PM2
+.pm2/
+ecosystem.config.js.backup
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Database
+*.sqlite
+*.db
+
+# Uploads (if any)
+uploads/
+
+# Sensitive files - DO NOT COMMIT
+config/secrets.js
+*.pem
+*.key
+*.cert
+
+# Documentation and project notes (optional - uncomment to exclude)
+# Keep only essential docs like README.md in git
+API_IMPROVEMENTS.md
+COMPLETE_PROJECT_SUMMARY.md
+DEPLOYMENT.md
+FINAL_FIXES_SUMMARY.md
+FRONTEND_QUICK_REFERENCE.md
+FRONTEND_UPGRADE.md
+MONGODB_POSTMAN_SETUP_GUIDE.md
+POSTMAN_GUIDE.md
+PRESENTATION_BACKEND.md
+PRESENTATION_DEPLOYMENT_QA.md
+PRESENTATION_FRONTEND.md
+PRESENTATION_QUICK_REFERENCE.md
+PRODUCTION_CHECKLIST.md
+PROJECT_PRESENTATION.md
+QUICK_START.md
+SECURITY_SETUP.md
+UPGRADE_SUMMARY.md
+
+# Docker (if you want to exclude Docker files)
+# docker-compose.yml
+# Dockerfile
+# .dockerignore
+
+# PM2 ecosystem config (contains environment-specific settings)
+ecosystem.config.js
+
+# Utility scripts (if they contain sensitive data or are environment-specific)
+createManager.js
+seedDemoData.js
