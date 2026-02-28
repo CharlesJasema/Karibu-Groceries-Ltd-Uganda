@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KGL Groceries – Sign In</title>
+    <link rel="stylesheet" href="../css/styles.css" />
+  </head>
+  <body>
+    <div class="login-wrap">
+      <div class="login-card">
+        <div class="login-logo">
+          <!-- Logo -->
+          <header class="center-logo-header">
+            <a href="./login.html" class="logo">
+              <img src="../assets/logo/kgl-logo.png" alt="kgl Logo" />
+            </a>
+            <style>
+              .center-logo-header {
+                justify-content: center !important;
+              }
+
+              .center-logo-header .logo {
+                font-size: 1.8rem;
+              }
+
+              .center-logo-header .logo img {
+                height: 75px;
+              }
+            </style>
+          </header>
+          <div class="login-title">KGL | Karibu Groceries LTD</div>
+          <div class="login-sub">Wholesale Produce Management System</div>
+        </div>
+
+        <div id="alert-box"></div>
+
+        <div class="form-group">
+          <label for="role">Role</label>
+          <select id="role">
+            <option value="">Select your role</option>
+            <option value="manager">Manager</option>
+            <option value="agent">Sales Agent</option>
+            <option value="director">Director</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="branch-group">
+          <label for="branch">Branch</label>
+          <select id="branch">
+            <option value="">Select branch</option>
+            <option value="Maganjo">Maganjo</option>
+            <option value="Matugga">Matugga</option>
+          </select>
+        </div>
+
+        <div class="demo-panel">
+          <p>Demo Accounts</p>
+          <div class="demo-grid">
+            <button class="demo-btn" onclick="fill('manager', 'Manager@2026')">
+              <strong>Manager</strong><span>manager · Maganjo</span>
+            </button>
+            <button class="demo-btn" onclick="fill('agent', 'Agent@2026')">
+              <strong>Sales Agent</strong><span>agent · Maganjo</span>
+            </button>
+            <button class="demo-btn" onclick="fill('manager2', 'Manager@2026')">
+              <strong>Manager 2</strong><span>manager2 · Matugga</span>
+            </button>
+            <button
+              class="demo-btn"
+              onclick="fill('director', 'Director@2026')"
+            >
+              <strong>Director</strong><span>director · KGL Director</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Username</label>
+          <input
+            type="text"
+            id="username"
+            placeholder="Enter your username"
+            autocomplete="username"
+          />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+          />
+        </div>
+        <button class="btn-login" onclick="doLogin()" id="btn-login">
+          <svg
+            width="16"
+            height="16"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+            />
+          </svg>
+          Sign In
+        </button>
+      </div>
+      <div class="kgl-tagline">
+        © 2026 Karibu Groceries LTD · Maganjo &amp; Matugga
+      </div>
+    </div>
+
+    <script>
+      const API = "/users";
+
+      function fill(u, p) {
+        document.getElementById("username").value = u;
+        document.getElementById("password").value = p;
+        // apply sensible defaults for demo
+        if (u.includes("manager2")) {
+          document.getElementById("role").value = "manager";
+          document.getElementById("branch").value = "Matugga";
+        } else if (u.includes("manager")) {
+          document.getElementById("role").value = "manager";
+          document.getElementById("branch").value = "Maganjo";
+        } else if (u.includes("agent")) {
+          document.getElementById("role").value = "agent";
+          document.getElementById("branch").value = "Maganjo";
+        } else if (u.includes("director")) {
+          document.getElementById("role").value = "director";
+          document.getElementById("branch").value = "";
+        }
+      }
+
+      async function doLogin() {
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value;
+        const role = document.getElementById("role").value;
+        const branch = document.getElementById("branch").value;
+        const btn = document.getElementById("btn-login");
+        const alertBox = document.getElementById("alert-box");
+
+        if (!username || !password) {
+          alertBox.innerHTML =
+            '<div class="alert alert-error">Please enter username and password.</div>';
+          return;
+        }
+
+        if ((role === "manager" || role === "agent") && !branch) {
+          alertBox.innerHTML =
+            '<div class="alert alert-error">Please select your branch.</div>';
+          return;
+        }
+
+        btn.textContent = "Signing in…";
+        btn.disabled = true;
+
+        try {
+          const res = await fetch(`${API}/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              username,
+              password,
+              role: role || undefined,
+              branch: role === "director" ? undefined : branch || undefined,
+            }),
+          });
+          const data = await res.json();
+
+          if (res.status === 200 && data.success) {
+            // Store session
+            localStorage.setItem("kgl_token", data.token);
+            localStorage.setItem("kgl_user", JSON.stringify(data.user));
+
+            // Route by role
+            const userRole = data.user.role;
+            if (userRole === "manager")
+              window.location.href = "/manager/manager-dashboard.html";
+            else if (userRole === "agent")
+              window.location.href = "/salesAgent/agent-dashboard.html";
+            else if (userRole === "director")
+              window.location.href = "/director/director-dashboard.html";
+            else window.location.href = "/";
+          } else if (res.status === 401) {
+            alertBox.innerHTML =
+              '<div class="alert alert-error">⚠ ' +
+              (data.message ||
+                "User does not exist or password is incorrect.") +
+              "</div>";
+          } else {
+            alertBox.innerHTML =
+              '<div class="alert alert-error">⚠ ' +
+              (data.message || "Login failed. Please try again.") +
+              "</div>";
+          }
+        } catch {
+          alertBox.innerHTML =
+            '<div class="alert alert-error">⚠ Unable to connect to server. Please try again.</div>';
+        } finally {
+          btn.textContent = "Sign In";
+          btn.disabled = false;
+        }
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") doLogin();
+      });
+
+      // Redirect if already logged in
+      if (localStorage.getItem("kgl_token")) {
+        const user = JSON.parse(localStorage.getItem("kgl_user") || "{}");
+        if (user.role === "manager")
+          window.location.href = "/manager/manager-dashboard.html";
+        else if (user.role === "agent")
+          window.location.href = "/salesAgent/agent-dashboard.html";
+        else if (user.role === "director")
+          window.location.href = "/director/director-dashboard.html";
+      }
+
+      // Toggle branch selector based on role
+      const roleSelect = document.getElementById("role");
+      const branchGroup = document.getElementById("branch-group");
+      roleSelect.addEventListener("change", () => {
+        if (roleSelect.value === "director") {
+          branchGroup.style.display = "none";
+        } else {
+          branchGroup.style.display = "block";
+        }
+      });
+
+      // Apply preferred branch/role from landing page, if present
+      try {
+        const prefBranch = localStorage.getItem("kgl_preferred_branch");
+        const prefRole = localStorage.getItem("kgl_preferred_role");
+        if (prefRole) {
+          roleSelect.value = prefRole;
+        }
+        if (prefRole === "director") {
+          branchGroup.style.display = "none";
+        } else {
+          branchGroup.style.display = "block";
+        }
+        if (prefBranch) {
+          const branchSelect = document.getElementById("branch");
+          branchSelect.value = prefBranch;
+        }
+      } catch (e) {
+        // ignore
+      }
+    </script>
+  </body>
+</html>

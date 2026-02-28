@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KGL | Sales Agent Dashboard</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .mini-stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+        .mini-stat {
+            background: var(--white);
+            border-radius: 14px;
+            padding: 1.2rem 1.3rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary-green);
+        }
+        .mini-stat h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-light);
+            margin-bottom: 0.3rem;
+        }
+        .mini-stat .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+        }
+        .action-card {
+            text-decoration: none;
+            background: var(--white);
+            border-radius: 14px;
+            padding: 1.4rem 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(148,163,184,0.18);
+            color: var(--text-dark);
+            transition: var(--transition);
+            display: block;
+        }
+        .action-card strong {
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        .action-card span {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+        .action-card:hover {
+            background: linear-gradient(135deg, var(--primary-green), var(--primary-gold));
+            color: #fff;
+            transform: translateY(-3px);
+        }
+        .action-card:hover span {
+            color: rgba(255,255,255,0.85);
+        }
+    </style>
+</head>
+<body>
+    <header>
+         <!-- Logo -->
+    <a href="agent-dashboard.html" class="logo">
+      <img src="../assets/logo/kgl-logo.png" alt="KGL Logo">
+    </a>
+        <nav class="nav-links">
+            <span id="agent-branch"></span>
+            <span id="agent-name">Agent</span>
+            <a href="#" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h2 style="margin-bottom: 0.5rem;">Sales Console</h2>
+        <p style="color: var(--text-light); margin-bottom: 1.6rem;">
+            Record cash sales, capture credit transactions, and monitor your branch stock.
+        </p>
+
+        <div class="mini-stat-grid">
+            <div class="mini-stat">
+                <h3>Branch Sales (UGX)</h3>
+                <div class="value"><span id="today-sales">0</span></div>
+            </div>
+            <div class="mini-stat">
+                <h3>Total Tonnage Sold</h3>
+                <div class="value"><span id="today-qty">0</span> kg</div>
+            </div>
+            <div class="mini-stat">
+                <h3>Open Credit Accounts</h3>
+                <div class="value"><span id="open-credit">0</span></div>
+            </div>
+        </div>
+
+        <div class="action-grid">
+            <a href="cash-sales.html" class="action-card">
+                <strong>Record Cash Sale</strong>
+                <span>Walk-in client pays immediately. Inventory is decremented.</span>
+            </a>
+            <a href="credit-sales.html" class="action-card">
+                <strong>Record Credit Sale</strong>
+                <span>Trusted buyer with deferred payment terms.</span>
+            </a>
+            <a href="inquiry.html" class="action-card">
+                <strong>Check Stock & Prices</strong>
+                <span>View current stock levels for Maganjo and Matugga.</span>
+            </a>
+            <a href="profile.html" class="action-card">
+                <strong>My Profile</strong>
+                <span>Review your details and activity.</span>
+            </a>
+        </div>
+    </main>
+
+    <script>
+        async function init() {
+            const token = localStorage.getItem('kgl_token');
+            const userRaw = localStorage.getItem('kgl_user');
+
+            if (!token || !userRaw) {
+                window.location.href = '../auth/login.html';
+                return;
+            }
+
+            let user;
+            try {
+                user = JSON.parse(userRaw);
+            } catch {
+                localStorage.clear();
+                window.location.href = '../auth/login.html';
+                return;
+            }
+
+            if (user.role !== 'agent') {
+                window.location.href = '../auth/login.html';
+                return;
+            }
+
+            document.getElementById('agent-name').innerText = user.name || 'Agent';
+            document.getElementById('agent-branch').innerText = user.branch || '';
+
+            // Simple branch-level snapshot
+            try {
+                const res = await fetch(`/reports/branch/${encodeURIComponent(user.branch)}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('today-sales').innerText =
+                        new Intl.NumberFormat('en-UG', { maximumFractionDigits: 0 }).format(data.totalRevenue || 0);
+                    document.getElementById('today-qty').innerText =
+                        (data.totalQtySold || 0).toFixed(1);
+
+                    const openCredit = (data.creditSales || []).filter(c => !c.paid).length;
+                    document.getElementById('open-credit').innerText = openCredit;
+                }
+            } catch {
+                // ignore for now
+            }
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '../auth/login.html';
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
+

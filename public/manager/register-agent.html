@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KGL | Manage Staff</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <a href="manager-dashboard.html" class="logo">
+            <img src="../assets/logo/kgl-logo.png" alt="KGL Logo">
+        </a>
+        <nav class="nav-links">
+            <span id="manager-branch"></span>
+            <a href="managerProfile.html">Profile</a>
+            <a href="../auth/login.html" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="d-flex justify-between align-center mb-3">
+            <div>
+                <h2>Manage Staff</h2>
+                <p style="color: var(--text-light);">Create and manage user accounts for managers and sales agents.</p>
+            </div>
+            <button class="btn btn-outline" onclick="window.location.href='manager-dashboard.html'">
+                ← Back to Dashboard
+            </button>
+        </div>
+
+        <div class="grid" style="grid-template-columns: 1fr 1.5fr; gap: 2rem;">
+            <!-- Create User Form -->
+            <div class="card">
+                <h3 class="mb-2">Create New User</h3>
+                <div id="alert-box"></div>
+                
+                <form id="createUserForm" onsubmit="createUser(event)">
+                    <div class="form-group">
+                        <label for="name">Full Name *</label>
+                        <input type="text" id="name" required minlength="3" placeholder="Enter full name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="username">Username *</label>
+                        <input type="text" id="username" required minlength="3" placeholder="Enter username">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email (Optional)</label>
+                        <input type="email" id="email" placeholder="user@example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password *</label>
+                        <input type="password" id="password" required minlength="6" placeholder="Min 6 characters">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="role">Role *</label>
+                        <select id="role" required>
+                            <option value="">Select role</option>
+                            <option value="manager">Manager</option>
+                            <option value="agent">Sales Agent</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="branch">Branch *</label>
+                        <select id="branch" required>
+                            <option value="">Select branch</option>
+                            <option value="Maganjo">Maganjo</option>
+                            <option value="Matugga">Matugga</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contact">Contact Number *</label>
+                        <input type="tel" id="contact" required placeholder="+256...">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        Create User
+                    </button>
+                </form>
+            </div>
+
+            <!-- Users List -->
+            <div class="card">
+                <h3 class="mb-2">Existing Users</h3>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>Branch</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTable">
+                            <tr>
+                                <td colspan="6" style="text-align: center; color: var(--text-light);">
+                                    Loading users...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/utils.js"></script>
+    <script>
+        async function init() {
+            if (!checkAuth('manager')) return;
+            
+            const user = getUser();
+            document.getElementById('manager-branch').textContent = user.branch || '';
+            document.getElementById('branch').value = user.branch || '';
+            
+            await loadUsers();
+        }
+
+        async function loadUsers() {
+            try {
+                const data = await apiRequest('/users');
+                const tbody = document.getElementById('usersTable');
+                
+                if (!data.users || data.users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-light);">No users found</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.users.map(user => `
+                    <tr>
+                        <td>${user.name}</td>
+                        <td>${user.username}</td>
+                        <td><span class="badge badge-info">${user.role}</span></td>
+                        <td>${user.branch}</td>
+                        <td><span class="badge ${user.active ? 'badge-success' : 'badge-danger'}">${user.active ? 'Active' : 'Inactive'}</span></td>
+                        <td>
+                            ${user.active ? 
+                                `<button class="btn btn-outline" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="deactivateUser('${user._id}')">Deactivate</button>` :
+                                '<span style="color: var(--text-light); font-size: 0.8rem;">Inactive</span>'
+                            }
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                showToast(error.message || 'Failed to load users', 'error');
+            }
+        }
+
+        async function createUser(event) {
+            event.preventDefault();
+            
+            const alertBox = document.getElementById('alert-box');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            const userData = {
+                name: document.getElementById('name').value.trim(),
+                username: document.getElementById('username').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                password: document.getElementById('password').value,
+                role: document.getElementById('role').value,
+                branch: document.getElementById('branch').value,
+                contact: document.getElementById('contact').value.trim()
+            };
+
+            setLoading(submitBtn, true);
+            alertBox.innerHTML = '';
+
+            try {
+                await apiRequest('/users', {
+                    method: 'POST',
+                    body: JSON.stringify(userData)
+                });
+
+                showToast('User created successfully!', 'success');
+                clearForm('createUserForm');
+                await loadUsers();
+            } catch (error) {
+                alertBox.innerHTML = `<div class="alert alert-error">${error.message || 'Failed to create user'}</div>`;
+            } finally {
+                setLoading(submitBtn, false);
+            }
+        }
+
+        async function deactivateUser(userId) {
+            if (!confirm('Are you sure you want to deactivate this user?')) return;
+
+            try {
+                await apiRequest(`/users/${userId}/deactivate`, {
+                    method: 'PATCH'
+                });
+
+                showToast('User deactivated successfully', 'success');
+                await loadUsers();
+            } catch (error) {
+                showToast(error.message || 'Failed to deactivate user', 'error');
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

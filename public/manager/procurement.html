@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KGL | Procurement Management</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <a href="manager-dashboard.html" class="logo">
+            <img src="../assets/logo/kgl-logo.png" alt="KGL Logo">
+        </a>
+        <nav class="nav-links">
+            <span id="manager-branch"></span>
+            <a href="managerProfile.html">Profile</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="d-flex justify-between align-center mb-3">
+            <div>
+                <h2>Procurement Management</h2>
+                <p style="color: var(--text-light);">Record produce purchases from dealers and suppliers.</p>
+            </div>
+            <button class="btn btn-outline" onclick="window.location.href='manager-dashboard.html'">
+                ← Back to Dashboard
+            </button>
+        </div>
+
+        <div class="grid" style="grid-template-columns: 1fr 1.5fr; gap: 2rem;">
+            <!-- Procurement Form -->
+            <div class="card">
+                <h3 class="mb-2">Record New Procurement</h3>
+                <div id="alert-box"></div>
+                
+                <form id="procurementForm" onsubmit="submitProcurement(event)">
+                    <div class="form-group">
+                        <label for="produceName">Produce Name *</label>
+                        <input type="text" id="produceName" required placeholder="e.g., Maize">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="produceType">Produce Type *</label>
+                        <input type="text" id="produceType" required placeholder="e.g., Yellow Maize">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date">Date *</label>
+                        <input type="date" id="date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="time">Time *</label>
+                        <input type="time" id="time" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tonnage">Tonnage (kg) *</label>
+                        <input type="number" id="tonnage" required min="100" step="0.1" placeholder="Min 100 kg">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cost">Total Cost (UGX) *</label>
+                        <input type="number" id="cost" required min="10000" placeholder="Min 10,000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dealerName">Dealer Name *</label>
+                        <input type="text" id="dealerName" required placeholder="Dealer/Supplier name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contact">Contact Number *</label>
+                        <input type="tel" id="contact" required placeholder="+256...">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="branch">Branch *</label>
+                        <select id="branch" required>
+                            <option value="">Select branch</option>
+                            <option value="Maganjo">Maganjo</option>
+                            <option value="Matugga">Matugga</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sellingPrice">Selling Price per kg (UGX) *</label>
+                        <input type="number" id="sellingPrice" required min="0" placeholder="Retail price">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        Record Procurement
+                    </button>
+                </form>
+            </div>
+
+            <!-- Procurement History -->
+            <div class="card">
+                <h3 class="mb-2">Recent Procurements</h3>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Produce</th>
+                                <th>Type</th>
+                                <th>Tonnage (kg)</th>
+                                <th>Cost (UGX)</th>
+                                <th>Dealer</th>
+                                <th>Branch</th>
+                            </tr>
+                        </thead>
+                        <tbody id="procurementTable">
+                            <tr>
+                                <td colspan="7" style="text-align: center; color: var(--text-light);">
+                                    Loading procurements...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/utils.js"></script>
+    <script>
+        async function init() {
+            if (!checkAuth('manager')) return;
+            
+            const user = getUser();
+            document.getElementById('manager-branch').textContent = user.branch || '';
+            document.getElementById('branch').value = user.branch || '';
+            
+            // Set default date and time
+            const now = new Date();
+            document.getElementById('date').valueAsDate = now;
+            document.getElementById('time').value = now.toTimeString().slice(0, 5);
+            
+            await loadProcurements();
+        }
+
+        async function loadProcurements() {
+            try {
+                const data = await apiRequest('/procurement');
+                const tbody = document.getElementById('procurementTable');
+                
+                if (!data.data || data.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-light);">No procurements found</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.data.slice(0, 10).map(item => `
+                    <tr>
+                        <td>${formatDate(item.date)}</td>
+                        <td><strong>${item.produceName}</strong></td>
+                        <td>${item.produceType}</td>
+                        <td>${item.tonnage.toFixed(1)}</td>
+                        <td>${formatCurrency(item.cost)}</td>
+                        <td>${item.dealerName}</td>
+                        <td><span class="badge badge-default">${item.branch}</span></td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                showToast(error.message || 'Failed to load procurements', 'error');
+            }
+        }
+
+        async function submitProcurement(event) {
+            event.preventDefault();
+            
+            const alertBox = document.getElementById('alert-box');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            const procurementData = {
+                produceName: document.getElementById('produceName').value.trim(),
+                produceType: document.getElementById('produceType').value.trim(),
+                date: document.getElementById('date').value,
+                time: document.getElementById('time').value,
+                tonnage: parseFloat(document.getElementById('tonnage').value),
+                cost: parseFloat(document.getElementById('cost').value),
+                dealerName: document.getElementById('dealerName').value.trim(),
+                contact: document.getElementById('contact').value.trim(),
+                branch: document.getElementById('branch').value,
+                sellingPrice: parseFloat(document.getElementById('sellingPrice').value)
+            };
+
+            setLoading(submitBtn, true);
+            alertBox.innerHTML = '';
+
+            try {
+                await apiRequest('/procurement', {
+                    method: 'POST',
+                    body: JSON.stringify(procurementData)
+                });
+
+                showToast('Procurement recorded successfully!', 'success');
+                clearForm('procurementForm');
+                
+                // Reset date and time
+                const now = new Date();
+                document.getElementById('date').valueAsDate = now;
+                document.getElementById('time').value = now.toTimeString().slice(0, 5);
+                
+                await loadProcurements();
+            } catch (error) {
+                alertBox.innerHTML = `<div class="alert alert-error">${error.message || 'Failed to record procurement'}</div>`;
+            } finally {
+                setLoading(submitBtn, false);
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

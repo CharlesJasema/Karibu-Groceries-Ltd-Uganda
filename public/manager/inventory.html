@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KGL | Inventory Management</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <a href="manager-dashboard.html" class="logo">
+            <img src="../assets/logo/kgl-logo.png" alt="KGL Logo">
+        </a>
+        <nav class="nav-links">
+            <span id="manager-branch"></span>
+            <a href="managerProfile.html">Profile</a>
+            <a href="../auth/login.html" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="d-flex justify-between align-center mb-3">
+            <div>
+                <h2>Inventory Management</h2>
+                <p style="color: var(--text-light);">Monitor stock levels, track inventory, and manage low-stock alerts.</p>
+            </div>
+            <button class="btn btn-outline" onclick="window.location.href='manager-dashboard.html'">
+                ← Back to Dashboard
+            </button>
+        </div>
+
+        <!-- Stock Summary -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Items</h3>
+                <div class="value"><span id="total-items">0</span></div>
+                <div class="sub">Active inventory items</div>
+            </div>
+            <div class="stat-card" style="border-left-color: var(--warning);">
+                <h3>Low Stock Items</h3>
+                <div class="value"><span id="low-stock">0</span></div>
+                <div class="sub">Below 15% remaining</div>
+            </div>
+            <div class="stat-card" style="border-left-color: var(--danger);">
+                <h3>Out of Stock</h3>
+                <div class="value"><span id="out-stock">0</span></div>
+                <div class="sub">Requires restocking</div>
+            </div>
+        </div>
+
+        <!-- Inventory Table -->
+        <div class="card">
+            <h3 class="mb-2">Current Stock Levels</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Produce Name</th>
+                            <th>Type</th>
+                            <th>Branch</th>
+                            <th>Initial Qty (kg)</th>
+                            <th>Remaining (kg)</th>
+                            <th>Stock %</th>
+                            <th>Selling Price (UGX)</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryTable">
+                        <tr>
+                            <td colspan="8" style="text-align: center; color: var(--text-light);">
+                                Loading inventory...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/utils.js"></script>
+    <script>
+        async function init() {
+            if (!checkAuth('manager')) return;
+            
+            const user = getUser();
+            document.getElementById('manager-branch').textContent = user.branch || '';
+            
+            await loadInventory();
+        }
+
+        async function loadInventory() {
+            try {
+                const data = await apiRequest('/sales/inventory');
+                const tbody = document.getElementById('inventoryTable');
+                
+                if (!data.inventory || data.inventory.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-light);">No inventory items found</td></tr>';
+                    return;
+                }
+
+                const inventory = data.inventory;
+                
+                // Calculate stats
+                const totalItems = inventory.length;
+                const lowStock = inventory.filter(item => item.stockPercent < 15 && item.remainingQty > 0).length;
+                const outStock = inventory.filter(item => item.remainingQty <= 0).length;
+                
+                document.getElementById('total-items').textContent = totalItems;
+                document.getElementById('low-stock').textContent = lowStock;
+                document.getElementById('out-stock').textContent = outStock;
+
+                tbody.innerHTML = inventory.map(item => {
+                    const stockPercent = item.stockPercent || 0;
+                    let statusClass = 'badge-success';
+                    let statusText = 'In Stock';
+                    
+                    if (item.remainingQty <= 0) {
+                        statusClass = 'badge-danger';
+                        statusText = 'Out of Stock';
+                    } else if (stockPercent < 15) {
+                        statusClass = 'badge-warning';
+                        statusText = 'Low Stock';
+                    }
+
+                    return `
+                        <tr>
+                            <td><strong>${item.produceName}</strong></td>
+                            <td>${item.produceType}</td>
+                            <td><span class="badge badge-default">${item.branch}</span></td>
+                            <td>${item.initialQty.toFixed(1)}</td>
+                            <td><strong>${item.remainingQty.toFixed(1)}</strong></td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <div style="flex: 1; height: 8px; background: var(--bg-light); border-radius: 4px; overflow: hidden;">
+                                        <div style="height: 100%; width: ${stockPercent}%; background: ${stockPercent < 15 ? 'var(--danger)' : stockPercent < 50 ? 'var(--warning)' : 'var(--success)'}; transition: width 0.3s;"></div>
+                                    </div>
+                                    <span style="font-size: 0.85rem; color: var(--text-light);">${stockPercent}%</span>
+                                </div>
+                            </td>
+                            <td>${formatCurrency(item.sellingPrice)}</td>
+                            <td><span class="badge ${statusClass}">${statusText}</span></td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                showToast(error.message || 'Failed to load inventory', 'error');
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KGL | Audit Logs</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <a href="manager-dashboard.html" class="logo">
+            <img src="../assets/logo/kgl-logo.png" alt="KGL Logo">
+        </a>
+        <nav class="nav-links">
+            <span id="manager-branch"></span>
+            <a href="managerProfile.html">Profile</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="d-flex justify-between align-center mb-3">
+            <div>
+                <h2>System Audit Logs</h2>
+                <p style="color: var(--text-light);">Track all system activities and user actions for compliance.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-secondary" onclick="loadAuditLogs()">
+                    🔄 Refresh
+                </button>
+                <button class="btn btn-outline" onclick="window.location.href='manager-dashboard.html'">
+                    ← Back to Dashboard
+                </button>
+            </div>
+        </div>
+
+        <!-- Audit Logs Table -->
+        <div class="card">
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Entity</th>
+                            <th>IP Address</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="auditTable">
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: var(--text-light);">
+                                Loading audit logs...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/utils.js"></script>
+    <script>
+        async function init() {
+            if (!checkAuth('manager')) return;
+            
+            const user = getUser();
+            document.getElementById('manager-branch').textContent = user.branch || '';
+            
+            await loadAuditLogs();
+        }
+
+        async function loadAuditLogs() {
+            try {
+                // Note: This endpoint may need to be created in the backend
+                // For now, we'll show a placeholder message
+                const tbody = document.getElementById('auditTable');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: var(--text-light); padding: 2rem;">
+                            <p style="margin-bottom: 0.5rem;">Audit logging is active and tracking all system activities.</p>
+                            <p style="font-size: 0.85rem;">Contact system administrator to view detailed audit logs.</p>
+                        </td>
+                    </tr>
+                `;
+                
+                // If you have an audit logs endpoint, uncomment and use this:
+                /*
+                const data = await apiRequest('/audit-logs');
+                
+                if (!data.logs || data.logs.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-light);">No audit logs found</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.logs.map(log => `
+                    <tr>
+                        <td>${formatDateTime(log.createdAt)}</td>
+                        <td>
+                            <strong>${log.user?.name || 'System'}</strong><br>
+                            <span class="badge badge-info" style="font-size: 0.75rem;">${log.user?.role || 'system'}</span>
+                        </td>
+                        <td><code style="font-size: 0.85rem;">${log.action}</code></td>
+                        <td>${log.entity}</td>
+                        <td style="font-family: monospace; font-size: 0.85rem;">${log.ip || 'N/A'}</td>
+                        <td style="font-size: 0.85rem; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                            ${JSON.stringify(log.details || {}).slice(0, 50)}...
+                        </td>
+                    </tr>
+                `).join('');
+                */
+            } catch (error) {
+                showToast(error.message || 'Failed to load audit logs', 'error');
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

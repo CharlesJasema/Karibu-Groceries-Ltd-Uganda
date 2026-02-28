@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KGL | Record Credit Sale</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <a href="agent-dashboard.html" class="logo">
+            <img src="../assets/logo/kgl-logo.png" alt="KGL Logo">
+        </a>
+        <nav class="nav-links">
+            <span id="agent-branch"></span>
+            <a href="profile.html">Profile</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="d-flex justify-between align-center mb-3">
+            <div>
+                <h2>Record Credit Sale</h2>
+                <p style="color: var(--text-light);">Issue credit to trusted buyers with deferred payment terms.</p>
+            </div>
+            <button class="btn btn-outline" onclick="window.location.href='agent-dashboard.html'">
+                ← Back to Dashboard
+            </button>
+        </div>
+
+        <div class="grid" style="grid-template-columns: 1fr 1.5fr; gap: 2rem;">
+            <!-- Credit Sale Form -->
+            <div class="card">
+                <h3 class="mb-2">Credit Sale Details</h3>
+                <div id="alert-box"></div>
+                
+                <form id="creditSaleForm" onsubmit="submitCreditSale(event)">
+                    <div class="form-group">
+                        <label for="buyerName">Buyer Name *</label>
+                        <input type="text" id="buyerName" required minlength="2" placeholder="Full name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nin">National ID (NIN) *</label>
+                        <input type="text" id="nin" required placeholder="National ID number">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Location *</label>
+                        <input type="text" id="location" required minlength="2" placeholder="Address/Location">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contact">Contact Number *</label>
+                        <input type="tel" id="contact" required placeholder="+256...">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="produceName">Produce Name *</label>
+                        <input type="text" id="produceName" required placeholder="e.g., Beans">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="produceType">Produce Type *</label>
+                        <input type="text" id="produceType" required minlength="2" placeholder="e.g., Red Beans">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tonnage">Quantity (kg) *</label>
+                        <input type="number" id="tonnage" required min="0.1" step="0.1" placeholder="Quantity">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="amountDue">Amount Due (UGX) *</label>
+                        <input type="number" id="amountDue" required min="10000" placeholder="Min 10,000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="salesAgent">Sales Agent *</label>
+                        <input type="text" id="salesAgent" required minlength="2" placeholder="Your name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dispatchDate">Dispatch Date *</label>
+                        <input type="date" id="dispatchDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dueDate">Payment Due Date *</label>
+                        <input type="date" id="dueDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="procurementId">Procurement ID (Optional)</label>
+                        <input type="text" id="procurementId" placeholder="Link to procurement">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        Record Credit Sale
+                    </button>
+                </form>
+            </div>
+
+            <!-- Recent Credit Sales -->
+            <div class="card">
+                <h3 class="mb-2">Recent Credit Sales</h3>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Buyer</th>
+                                <th>Produce</th>
+                                <th>Amount (UGX)</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="creditTable">
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: var(--text-light);">
+                                    Loading credit sales...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/utils.js"></script>
+    <script>
+        async function init() {
+            if (!checkAuth('agent')) return;
+            
+            const user = getUser();
+            document.getElementById('agent-branch').textContent = user.branch || '';
+            document.getElementById('salesAgent').value = user.name || '';
+            
+            // Set default dates
+            const now = new Date();
+            document.getElementById('dispatchDate').valueAsDate = now;
+            
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 30); // 30 days from now
+            document.getElementById('dueDate').valueAsDate = dueDate;
+            
+            await loadRecentCredits();
+        }
+
+        async function loadRecentCredits() {
+            try {
+                const data = await apiRequest('/sales/credit');
+                const tbody = document.getElementById('creditTable');
+                
+                if (!data.creditSales || data.creditSales.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-light);">No credit sales found</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.creditSales.slice(0, 10).map(credit => {
+                    const isPaid = credit.paid;
+                    const isOverdue = !isPaid && new Date(credit.dueDate) < new Date();
+                    
+                    return `
+                        <tr>
+                            <td><strong>${credit.buyerName}</strong></td>
+                            <td>${credit.produceName}</td>
+                            <td>${formatCurrency(credit.amountDue)}</td>
+                            <td>${formatDate(credit.dueDate)}</td>
+                            <td>
+                                <span class="badge ${isPaid ? 'badge-success' : isOverdue ? 'badge-danger' : 'badge-warning'}">
+                                    ${isPaid ? 'Paid' : isOverdue ? 'Overdue' : 'Pending'}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Failed to load credit sales:', error);
+            }
+        }
+
+        async function submitCreditSale(event) {
+            event.preventDefault();
+            
+            const alertBox = document.getElementById('alert-box');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            const user = getUser();
+            const creditData = {
+                buyerName: document.getElementById('buyerName').value.trim(),
+                nin: document.getElementById('nin').value.trim(),
+                location: document.getElementById('location').value.trim(),
+                contact: document.getElementById('contact').value.trim(),
+                produceName: document.getElementById('produceName').value.trim(),
+                produceType: document.getElementById('produceType').value.trim(),
+                tonnage: parseFloat(document.getElementById('tonnage').value),
+                amountDue: parseFloat(document.getElementById('amountDue').value),
+                salesAgent: document.getElementById('salesAgent').value.trim(),
+                dispatchDate: document.getElementById('dispatchDate').value,
+                dueDate: document.getElementById('dueDate').value,
+                branch: user.branch
+            };
+
+            const procurementId = document.getElementById('procurementId').value.trim();
+            if (procurementId) {
+                creditData.procurementId = procurementId;
+            }
+
+            setLoading(submitBtn, true);
+            alertBox.innerHTML = '';
+
+            try {
+                await apiRequest('/sales/credit', {
+                    method: 'POST',
+                    body: JSON.stringify(creditData)
+                });
+
+                showToast('Credit sale recorded successfully!', 'success');
+                clearForm('creditSaleForm');
+                
+                // Reset defaults
+                const now = new Date();
+                document.getElementById('dispatchDate').valueAsDate = now;
+                const dueDate = new Date();
+                dueDate.setDate(dueDate.getDate() + 30);
+                document.getElementById('dueDate').valueAsDate = dueDate;
+                document.getElementById('salesAgent').value = user.name || '';
+                
+                await loadRecentCredits();
+            } catch (error) {
+                alertBox.innerHTML = `<div class="alert alert-error">${error.message || 'Failed to record credit sale'}</div>`;
+            } finally {
+                setLoading(submitBtn, false);
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KGL | Director Dashboard</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .summary-card {
+            background: var(--white);
+            border-radius: 18px;
+            padding: 1.6rem 1.7rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary-gold);
+        }
+        .summary-card h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-light);
+            margin-bottom: 0.4rem;
+        }
+        .summary-card .value {
+            font-size: 1.9rem;
+            font-weight: 700;
+        }
+        .summary-card .sub {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+        .split-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+            gap: 1.75rem;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .table th,
+        .table td {
+            padding: 0.55rem 0.5rem;
+            border-bottom: 1px solid rgba(148,163,184,0.35);
+            text-align: left;
+        }
+        .table th {
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.15rem 0.5rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            background: rgba(27,94,32,0.08);
+            color: var(--dark-green);
+        }
+    </style>
+</head>
+<body>
+    <header>
+         <!-- Logo -->
+    <a href="director-dashboard.html" class="logo">
+      <img src="../assets/logo/kgl-logo.png" alt="kgl Logo">
+    </a>
+        <nav class="nav-links">
+            <span id="director-name">Director</span>
+            <a href="#" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h2 style="margin-bottom: 0.5rem;">Enterprise Performance Overview</h2>
+        <p style="color: var(--text-light); margin-bottom: 1.8rem;">
+            Aggregated view of cash sales, outstanding credit, and top-performing produce across all branches.
+        </p>
+
+        <div class="summary-grid">
+            <div class="summary-card">
+                <h3>Total Revenue (UGX)</h3>
+                <div class="value"><span id="sum-revenue">0</span></div>
+                <div class="sub">All-time cash sales across branches</div>
+            </div>
+            <div class="summary-card">
+                <h3>Total Quantity Sold</h3>
+                <div class="value"><span id="sum-qty">0</span> kg</div>
+                <div class="sub">Combined tonnage for all produce</div>
+            </div>
+            <div class="summary-card">
+                <h3>Outstanding Credit</h3>
+                <div class="value"><span id="sum-credit">0</span></div>
+                <div class="sub">Unpaid deferred sales</div>
+            </div>
+        </div>
+
+        <div class="split-grid">
+            <div class="card">
+                <h3 style="margin-bottom: 0.75rem;">Sales by Branch</h3>
+                <table class="table" id="branch-table">
+                    <thead>
+                        <tr>
+                            <th>Branch</th>
+                            <th>Revenue (UGX)</th>
+                            <th>Qty Sold (kg)</th>
+                            <th>Sales</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="card">
+                <h3 style="margin-bottom: 0.75rem;">Top Produce</h3>
+                <table class="table" id="produce-table">
+                    <thead>
+                        <tr>
+                            <th>Produce</th>
+                            <th>Revenue (UGX)</th>
+                            <th>Qty (kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        async function init() {
+            const token = localStorage.getItem('kgl_token');
+            const userRaw = localStorage.getItem('kgl_user');
+
+            if (!token || !userRaw) {
+                window.location.href = '../auth/login.html';
+                return;
+            }
+
+            let user;
+            try {
+                user = JSON.parse(userRaw);
+            } catch {
+                localStorage.clear();
+                window.location.href = '../auth/login.html';
+                return;
+            }
+
+            if (user.role !== 'director') {
+                window.location.href = '../auth/login.html';
+                return;
+            }
+
+            document.getElementById('director-name').innerText = user.name || 'Director';
+
+            try {
+                const res = await fetch('/reports/summary', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (!res.ok) return;
+                const data = await res.json();
+
+                const nf = new Intl.NumberFormat('en-UG', { maximumFractionDigits: 0 });
+
+                document.getElementById('sum-revenue').innerText = nf.format(data.totalRevenue || 0);
+                document.getElementById('sum-qty').innerText = (data.totalQtySold || 0).toFixed(1);
+                document.getElementById('sum-credit').innerText = nf.format(data.pendingCredit || 0);
+
+                const branchBody = document.querySelector('#branch-table tbody');
+                branchBody.innerHTML = '';
+                (data.salesByBranch || []).forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><span class="badge">${row._id || 'N/A'}</span></td>
+                        <td>${nf.format(row.totalRevenue || 0)}</td>
+                        <td>${(row.totalQty || 0).toFixed(1)}</td>
+                        <td>${row.count || 0}</td>
+                    `;
+                    branchBody.appendChild(tr);
+                });
+
+                const prodBody = document.querySelector('#produce-table tbody');
+                prodBody.innerHTML = '';
+                (data.topProduce || []).forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${row._id}</td>
+                        <td>${nf.format(row.revenue || 0)}</td>
+                        <td>${(row.qty || 0).toFixed(1)}</td>
+                    `;
+                    prodBody.appendChild(tr);
+                });
+            } catch {
+                // fail silently
+            }
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '../auth/login.html';
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

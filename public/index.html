@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karibu Groceries LTD | KGL Branch Console</title>
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+    <header>
+         <!-- Logo -->
+    <a href="index.html" class="logo">KGL | Karibu Groceries LTD
+      <img src="./assets/logo/kgl-logo.png" alt="kgl Logo">
+    </a>
+        <nav class="nav-links">
+            <a href="#branches">Branches</a>
+            <a href="#how-it-works">How it works</a>
+            <a href="./auth/login.html" class="btn btn-primary">Director Login</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+ <img src="./assets/images/kgl-hero-image.png" alt="hero Image">
+        <div>
+            <h1>One System. Two Strong Branches.</h1>
+            <p>
+                Welcome to the Karibu Groceries LTD (KGL) branch management console for
+                Maganjo and Matugga. Managers and sales agents coordinate procurement,
+                stock, and sales in one secure, real‑time platform.
+            </p>
+            <a href="#branches" class="btn btn-primary">Choose Branch to Continue</a>
+        </div>
+    </section>
+
+    <main class="container">
+        <section id="branches" style="margin-bottom: 3rem;">
+            <h2 style="text-align: center; margin-bottom: 2rem;">Choose Your Branch</h2>
+            <div class="grid">
+                <div class="card">
+                    <img src="./assets/images/Maganjo.png" alt="Maganjo Branch Image">
+                    <h3>Maganjo Branch</h3>
+                    <p>
+                        Flagship storage and distribution hub for wholesale cereals
+                        serving Kampala and the central region.
+                    </p>
+                    <div style="margin-top: 1rem;">
+                        <small style="display:block; color: var(--text-light); margin-bottom: 0.35rem;">
+                            Login as:
+                        </small>
+                        <button class="btn btn-primary" onclick="goToLogin('Maganjo','manager')">
+                            Maganjo Manager
+                        </button>
+                        <button class="btn" style="margin-left:0.5rem;" onclick="goToLogin('Maganjo','agent')">
+                            Maganjo Sales Agent
+                        </button>
+                    </div>
+                </div>
+                <div class="card">
+                    <img src="./assets/images/Matugga.png" alt="Matugga Branch Image">
+                    <h3>Matugga Branch</h3>
+                    <p>
+                        Procurement‑focused branch close to farmers, optimized for intake,
+                        grading, and dispatch of bulk cereals.
+                    </p>
+                    <div style="margin-top: 1rem;">
+                        <small style="display:block; color: var(--text-light); margin-bottom: 0.35rem;">
+                            Login as:
+                        </small>
+                        <button class="btn btn-primary" onclick="goToLogin('Matugga','manager')">
+                            Matugga Manager
+                        </button>
+                        <button class="btn" style="margin-left:0.5rem;" onclick="goToLogin('Matugga','agent')">
+                            Matugga Sales Agent
+                        </button>
+                    </div>
+                </div>
+                <div class="card">
+                    <img src="./assets/images/kgl-sales-image.png" alt="Director Image">
+                    <h3>Director Console</h3>
+                    <p>
+                        The KGL Director can view read‑only performance dashboards across
+                        both branches — revenue, stock, and credit exposure.
+                    </p>
+                    <div style="margin-top: 1rem;">
+                        <button class="btn btn-primary" onclick="goDirector()">
+                            Director Login
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-it-works" style="margin-bottom: 3rem;">
+            <h2 style="text-align: center; margin-bottom: 1.5rem;">How KGL Branch Access Works</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Step 1 – Open Landing Page</h3>
+                    <p>
+                        Managers and sales agents always start from this landing page,
+                        where they choose their branch (Maganjo or Matugga) and role.
+                    </p>
+                </div>
+                <div class="card">
+                    <h3>Step 2 – Secure Login</h3>
+                    <p>
+                        After selecting a branch and role, the system guides you to the
+                        KGL login page where your username and password are verified using
+                        secure JWT authentication.
+                    </p>
+                </div>
+                <div class="card">
+                    <h3>Step 3 – Role‑Based Dashboards</h3>
+                    <p>
+                        Successful logins are routed straight to the correct dashboard:
+                        Manager, Sales Agent, or Director, with permissions tailored to
+                        your responsibilities.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer style="padding: 1.5rem 5%; background:#0b1f14; color:#e5e7eb; font-size:0.85rem; margin-top:2rem;">
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:0.75rem;">
+            <span>© 2026 Karibu Groceries LTD (KGL). All rights reserved.</span>
+            <span>
+                Built for KGL by <strong>Charles JSE</strong> ·
+                Email: <a href="mailto:brocharles001@gmail.com" style="color:#f9a825;">brocharles001@gmail.com</a> ·
+                Tel: <a href="tel:+256785446877" style="color:#f9a825;">+256785446877</a>,
+                <a href="tel:+256745063600" style="color:#f9a825;">+256745063600</a>
+            </span>
+        </div>
+    </footer>
+
+    <script>
+        function goToLogin(branch, role) {
+            try {
+                localStorage.setItem("kgl_preferred_branch", branch);
+                localStorage.setItem("kgl_preferred_role", role);
+            } catch (e) {}
+            window.location.href = "./auth/login.html";
+        }
+
+        function goDirector() {
+            try {
+                localStorage.setItem("kgl_preferred_branch", "");
+                localStorage.setItem("kgl_preferred_role", "director");
+            } catch (e) {}
+            window.location.href = "./auth/login.html";
+        }
+    </script>
+</body>
+</html>

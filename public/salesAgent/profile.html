@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KGL | Agent Profile</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <a href="agent-dashboard.html" class="logo">
+            <img src="../assets/logo/kgl-logo.png" alt="KGL Logo">
+        </a>
+        <nav class="nav-links">
+            <span id="agent-branch"></span>
+            <a href="agent-dashboard.html">Dashboard</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="d-flex justify-between align-center mb-3">
+            <div>
+                <h2>My Profile</h2>
+                <p style="color: var(--text-light);">Manage your account information.</p>
+            </div>
+            <button class="btn btn-outline" onclick="window.location.href='agent-dashboard.html'">← Back</button>
+        </div>
+
+        <div class="grid" style="grid-template-columns: 1fr 1.5fr; gap: 2rem;">
+            <div class="card text-center">
+                <div style="width: 120px; height: 120px; margin: 0 auto 1.5rem; border-radius: 50%; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem; font-weight: 700;">
+                    <span id="initials">A</span>
+                </div>
+                <h3 id="profile-name">Sales Agent</h3>
+                <p style="color: var(--text-light); margin-bottom: 0.5rem;"><span class="badge badge-info" id="profile-role">Agent</span></p>
+                <p style="color: var(--text-light);"><span class="badge badge-default" id="profile-branch">Branch</span></p>
+                <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--border-light);">
+                <div style="text-align: left;">
+                    <p style="margin-bottom: 0.75rem;"><strong>Username:</strong> <span id="profile-username">-</span></p>
+                    <p style="margin-bottom: 0.75rem;"><strong>Contact:</strong> <span id="profile-contact">-</span></p>
+                    <p style="margin-bottom: 0;"><strong>Status:</strong> <span class="badge badge-success">Active</span></p>
+                </div>
+            </div>
+
+            <div>
+                <div class="card mb-3">
+                    <h3 class="mb-2">Update Profile</h3>
+                    <div id="profile-alert"></div>
+                    <form id="profileForm" onsubmit="updateProfile(event)">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" required minlength="3">
+                        </div>
+                        <div class="form-group">
+                            <label for="contact">Contact Number</label>
+                            <input type="tel" id="contact" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="profileBtn">Update Profile</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3 class="mb-2">Change Password</h3>
+                    <div id="password-alert"></div>
+                    <form id="passwordForm" onsubmit="changePassword(event)">
+                        <div class="form-group">
+                            <label for="currentPassword">Current Password</label>
+                            <input type="password" id="currentPassword" required minlength="6">
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <input type="password" id="newPassword" required minlength="6">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm New Password</label>
+                            <input type="password" id="confirmPassword" required minlength="6">
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="passwordBtn">Change Password</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/utils.js"></script>
+    <script>
+        async function init() {
+            if (!checkAuth('agent')) return;
+            const user = getUser();
+            document.getElementById('agent-branch').textContent = user.branch || '';
+            document.getElementById('profile-name').textContent = user.name || 'Sales Agent';
+            document.getElementById('profile-role').textContent = user.role || 'agent';
+            document.getElementById('profile-branch').textContent = user.branch || '';
+            document.getElementById('profile-username').textContent = user.username || '-';
+            document.getElementById('profile-contact').textContent = user.contact || '-';
+            const initials = (user.name || 'A').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+            document.getElementById('initials').textContent = initials;
+            document.getElementById('name').value = user.name || '';
+            document.getElementById('contact').value = user.contact || '';
+        }
+
+        async function updateProfile(event) {
+            event.preventDefault();
+            const alertBox = document.getElementById('profile-alert');
+            const submitBtn = document.getElementById('profileBtn');
+            const profileData = { name: document.getElementById('name').value.trim(), contact: document.getElementById('contact').value.trim() };
+            setLoading(submitBtn, true);
+            alertBox.innerHTML = '';
+            try {
+                const data = await apiRequest('/users/me', { method: 'PATCH', body: JSON.stringify(profileData) });
+                const user = getUser();
+                const updatedUser = { ...user, ...data.user };
+                localStorage.setItem('kgl_user', JSON.stringify(updatedUser));
+                showToast('Profile updated successfully!', 'success');
+                setTimeout(() => window.location.reload(), 1000);
+            } catch (error) {
+                alertBox.innerHTML = `<div class="alert alert-error">${error.message || 'Failed to update profile'}</div>`;
+            } finally {
+                setLoading(submitBtn, false);
+            }
+        }
+
+        async function changePassword(event) {
+            event.preventDefault();
+            const alertBox = document.getElementById('password-alert');
+            const submitBtn = document.getElementById('passwordBtn');
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            if (newPassword !== confirmPassword) {
+                alertBox.innerHTML = '<div class="alert alert-error">New passwords do not match</div>';
+                return;
+            }
+            setLoading(submitBtn, true);
+            alertBox.innerHTML = '';
+            try {
+                await apiRequest('/users/me/password', { method: 'PATCH', body: JSON.stringify({ currentPassword, newPassword }) });
+                showToast('Password changed successfully!', 'success');
+                clearForm('passwordForm');
+            } catch (error) {
+                alertBox.innerHTML = `<div class="alert alert-error">${error.message || 'Failed to change password'}</div>`;
+            } finally {
+                setLoading(submitBtn, false);
+            }
+        }
+        window.onload = init;
+    </script>
+</body>
+</html>

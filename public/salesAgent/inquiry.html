@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KGL | Stock Inquiry</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <a href="agent-dashboard.html" class="logo">
+            <img src="../assets/logo/kgl-logo.png" alt="KGL Logo">
+        </a>
+        <nav class="nav-links">
+            <span id="agent-branch"></span>
+            <a href="profile.html">Profile</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="d-flex justify-between align-center mb-3">
+            <div>
+                <h2>Stock & Price Inquiry</h2>
+                <p style="color: var(--text-light);">Check current stock levels and selling prices.</p>
+            </div>
+            <button class="btn btn-outline" onclick="window.location.href='agent-dashboard.html'">
+                ← Back to Dashboard
+            </button>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="card mb-3">
+            <div class="form-group" style="margin-bottom: 0;">
+                <input type="search" id="searchInput" placeholder="Search by produce name..." 
+                       style="font-size: 1rem;" oninput="filterInventory()">
+            </div>
+        </div>
+
+        <!-- Inventory Table -->
+        <div class="card">
+            <h3 class="mb-2">Available Stock</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Produce Name</th>
+                            <th>Type</th>
+                            <th>Branch</th>
+                            <th>Available (kg)</th>
+                            <th>Selling Price (UGX/kg)</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryTable">
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: var(--text-light);">
+                                Loading inventory...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/utils.js"></script>
+    <script>
+        let allInventory = [];
+
+        async function init() {
+            if (!checkAuth('agent')) return;
+            
+            const user = getUser();
+            document.getElementById('agent-branch').textContent = user.branch || '';
+            
+            await loadInventory();
+        }
+
+        async function loadInventory() {
+            try {
+                const data = await apiRequest('/sales/inventory');
+                allInventory = data.inventory || [];
+                displayInventory(allInventory);
+            } catch (error) {
+                showToast(error.message || 'Failed to load inventory', 'error');
+            }
+        }
+
+        function displayInventory(inventory) {
+            const tbody = document.getElementById('inventoryTable');
+            
+            if (!inventory || inventory.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-light);">No inventory items found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = inventory.map(item => {
+                const stockPercent = item.stockPercent || 0;
+                let statusClass = 'badge-success';
+                let statusText = 'In Stock';
+                
+                if (item.remainingQty <= 0) {
+                    statusClass = 'badge-danger';
+                    statusText = 'Out of Stock';
+                } else if (stockPercent < 15) {
+                    statusClass = 'badge-warning';
+                    statusText = 'Low Stock';
+                }
+
+                return `
+                    <tr>
+                        <td><strong>${item.produceName}</strong></td>
+                        <td>${item.produceType}</td>
+                        <td><span class="badge badge-default">${item.branch}</span></td>
+                        <td><strong>${item.remainingQty.toFixed(1)}</strong></td>
+                        <td><strong>${formatCurrency(item.sellingPrice)}</strong></td>
+                        <td><span class="badge ${statusClass}">${statusText}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterInventory() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (!query) {
+                displayInventory(allInventory);
+                return;
+            }
+
+            const filtered = allInventory.filter(item => 
+                item.produceName.toLowerCase().includes(query) ||
+                item.produceType.toLowerCase().includes(query) ||
+                item.branch.toLowerCase().includes(query)
+            );
+
+            displayInventory(filtered);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

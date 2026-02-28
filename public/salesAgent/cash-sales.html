@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KGL | Record Cash Sale</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <a href="agent-dashboard.html" class="logo">
+            <img src="../assets/logo/kgl-logo.png" alt="KGL Logo">
+        </a>
+        <nav class="nav-links">
+            <span id="agent-branch"></span>
+            <a href="profile.html">Profile</a>
+            <a href="../auth/login.html" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="d-flex justify-between align-center mb-3">
+            <div>
+                <h2>Record Cash Sale</h2>
+                <p style="color: var(--text-light);">Record immediate payment sales and update inventory.</p>
+            </div>
+            <button class="btn btn-outline" onclick="window.location.href='agent-dashboard.html'">
+                ← Back to Dashboard
+            </button>
+        </div>
+
+        <div class="grid" style="grid-template-columns: 1fr 1.5fr; gap: 2rem;">
+            <!-- Cash Sale Form -->
+            <div class="card">
+                <h3 class="mb-2">Sale Details</h3>
+                <div id="alert-box"></div>
+                
+                <form id="cashSaleForm" onsubmit="submitCashSale(event)">
+                    <div class="form-group">
+                        <label for="produceName">Produce Name *</label>
+                        <input type="text" id="produceName" required placeholder="e.g., Maize">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tonnage">Quantity (kg) *</label>
+                        <input type="number" id="tonnage" required min="0.1" step="0.1" placeholder="Quantity sold">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="amountPaid">Amount Paid (UGX) *</label>
+                        <input type="number" id="amountPaid" required min="10000" placeholder="Min 10,000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="buyerName">Buyer Name *</label>
+                        <input type="text" id="buyerName" required placeholder="Customer name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="salesAgent">Sales Agent Name *</label>
+                        <input type="text" id="salesAgent" required placeholder="Your name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date">Date *</label>
+                        <input type="date" id="date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="time">Time *</label>
+                        <input type="time" id="time" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="procurementId">Procurement ID (Optional)</label>
+                        <input type="text" id="procurementId" placeholder="Link to procurement">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        Record Cash Sale
+                    </button>
+                </form>
+            </div>
+
+            <!-- Recent Sales -->
+            <div class="card">
+                <h3 class="mb-2">Today's Cash Sales</h3>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Produce</th>
+                                <th>Qty (kg)</th>
+                                <th>Amount (UGX)</th>
+                                <th>Buyer</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesTable">
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: var(--text-light);">
+                                    Loading sales...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/utils.js"></script>
+    <script>
+        async function init() {
+            if (!checkAuth('agent')) return;
+            
+            const user = getUser();
+            document.getElementById('agent-branch').textContent = user.branch || '';
+            document.getElementById('salesAgent').value = user.name || '';
+            
+            // Set default date and time
+            const now = new Date();
+            document.getElementById('date').valueAsDate = now;
+            document.getElementById('time').value = now.toTimeString().slice(0, 5);
+            
+            await loadRecentSales();
+        }
+
+        async function loadRecentSales() {
+            try {
+                const data = await apiRequest('/sales/cash');
+                const tbody = document.getElementById('salesTable');
+                
+                if (!data.sales || data.sales.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-light);">No sales recorded today</td></tr>';
+                    return;
+                }
+
+                // Filter today's sales
+                const today = new Date().toISOString().split('T')[0];
+                const todaySales = data.sales.filter(sale => 
+                    sale.date && sale.date.startsWith(today)
+                );
+
+                if (todaySales.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-light);">No sales recorded today</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = todaySales.slice(0, 10).map(sale => `
+                    <tr>
+                        <td>${sale.time}</td>
+                        <td><strong>${sale.produceName}</strong></td>
+                        <td>${sale.tonnage.toFixed(1)}</td>
+                        <td>${formatCurrency(sale.amountPaid)}</td>
+                        <td>${sale.buyerName}</td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Failed to load sales:', error);
+            }
+        }
+
+        async function submitCashSale(event) {
+            event.preventDefault();
+            
+            const alertBox = document.getElementById('alert-box');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            const user = getUser();
+            const saleData = {
+                produceName: document.getElementById('produceName').value.trim(),
+                tonnage: parseFloat(document.getElementById('tonnage').value),
+                amountPaid: parseFloat(document.getElementById('amountPaid').value),
+                buyerName: document.getElementById('buyerName').value.trim(),
+                salesAgent: document.getElementById('salesAgent').value.trim(),
+                date: document.getElementById('date').value,
+                time: document.getElementById('time').value,
+                branch: user.branch
+            };
+
+            const procurementId = document.getElementById('procurementId').value.trim();
+            if (procurementId) {
+                saleData.procurementId = procurementId;
+            }
+
+            setLoading(submitBtn, true);
+            alertBox.innerHTML = '';
+
+            try {
+                await apiRequest('/sales/cash', {
+                    method: 'POST',
+                    body: JSON.stringify(saleData)
+                });
+
+                showToast('Cash sale recorded successfully!', 'success');
+                clearForm('cashSaleForm');
+                
+                // Reset date and time
+                const now = new Date();
+                document.getElementById('date').valueAsDate = now;
+                document.getElementById('time').value = now.toTimeString().slice(0, 5);
+                document.getElementById('salesAgent').value = user.name || '';
+                
+                await loadRecentSales();
+            } catch (error) {
+                alertBox.innerHTML = `<div class="alert alert-error">${error.message || 'Failed to record sale'}</div>`;
+            } finally {
+                setLoading(submitBtn, false);
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

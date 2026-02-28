@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KGL | Credit Tracker</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <a href="manager-dashboard.html" class="logo">
+            <img src="../assets/logo/kgl-logo.png" alt="KGL Logo">
+        </a>
+        <nav class="nav-links">
+            <span id="manager-branch"></span>
+            <a href="managerProfile.html">Profile</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="d-flex justify-between align-center mb-3">
+            <div>
+                <h2>Credit & Due Date Tracker</h2>
+                <p style="color: var(--text-light);">Monitor client credit balances, overdue accounts, and repayments.</p>
+            </div>
+            <button class="btn btn-outline" onclick="window.location.href='manager-dashboard.html'">
+                ← Back to Dashboard
+            </button>
+        </div>
+
+        <!-- Credit Summary -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Credit Issued</h3>
+                <div class="value">UGX <span id="total-credit">0</span></div>
+                <div class="sub">All credit sales</div>
+            </div>
+            <div class="stat-card" style="border-left-color: var(--danger);">
+                <h3>Overdue Accounts</h3>
+                <div class="value"><span id="overdue-count">0</span></div>
+                <div class="sub">Past due date</div>
+            </div>
+            <div class="stat-card" style="border-left-color: var(--success);">
+                <h3>Cleared Credits</h3>
+                <div class="value"><span id="cleared-count">0</span></div>
+                <div class="sub">Paid in full</div>
+            </div>
+        </div>
+
+        <!-- Credit Table -->
+        <div class="card">
+            <h3 class="mb-2">Active Credit Accounts</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Client</th>
+                            <th>NIN</th>
+                            <th>Location</th>
+                            <th>Produce</th>
+                            <th>Quantity (kg)</th>
+                            <th>Amount (UGX)</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="creditTable">
+                        <tr>
+                            <td colspan="9" style="text-align: center; color: var(--text-light);">
+                                Loading credit accounts...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/utils.js"></script>
+    <script>
+        async function init() {
+            if (!checkAuth('manager')) return;
+            
+            const user = getUser();
+            document.getElementById('manager-branch').textContent = user.branch || '';
+            
+            await loadCreditData();
+        }
+
+        async function loadCreditData() {
+            try {
+                const data = await apiRequest('/sales/credit');
+                const tbody = document.getElementById('creditTable');
+                
+                if (!data.creditSales || data.creditSales.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: var(--text-light);">No credit sales found</td></tr>';
+                    return;
+                }
+
+                const credits = data.creditSales;
+                const now = new Date();
+                
+                // Calculate stats
+                const totalCredit = credits.reduce((sum, c) => sum + (c.paid ? 0 : c.amountDue), 0);
+                const overdueCount = credits.filter(c => !c.paid && new Date(c.dueDate) < now).length;
+                const clearedCount = credits.filter(c => c.paid).length;
+                
+                document.getElementById('total-credit').textContent = formatCurrency(totalCredit);
+                document.getElementById('overdue-count').textContent = overdueCount;
+                document.getElementById('cleared-count').textContent = clearedCount;
+
+                tbody.innerHTML = credits.map(credit => {
+                    const isPaid = credit.paid;
+                    const isOverdue = !isPaid && new Date(credit.dueDate) < now;
+                    
+                    return `
+                        <tr>
+                            <td><strong>${credit.buyerName}</strong><br>
+                                <span style="font-size: 0.8rem; color: var(--text-light);">${credit.contact}</span>
+                            </td>
+                            <td style="font-family: monospace; font-size: 0.85rem;">${credit.nin}</td>
+                            <td>${credit.location}</td>
+                            <td><strong>${credit.produceName}</strong><br>
+                                <span style="font-size: 0.8rem; color: var(--text-light);">${credit.produceType}</span>
+                            </td>
+                            <td>${credit.tonnage.toFixed(1)}</td>
+                            <td>${formatCurrency(credit.amountDue)}</td>
+                            <td>${formatDate(credit.dueDate)}</td>
+                            <td>
+                                <span class="badge ${isPaid ? 'badge-success' : isOverdue ? 'badge-danger' : 'badge-warning'}">
+                                    ${isPaid ? 'Paid' : isOverdue ? 'Overdue' : 'Pending'}
+                                </span>
+                            </td>
+                            <td>
+                                ${!isPaid ? 
+                                    `<button class="btn btn-outline" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="markAsPaid('${credit._id}')">Mark Paid</button>` :
+                                    '<span style="color: var(--text-light); font-size: 0.8rem;">Completed</span>'
+                                }
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                showToast(error.message || 'Failed to load credit data', 'error');
+            }
+        }
+
+        async function markAsPaid(creditId) {
+            if (!confirm('Mark this credit sale as paid?')) return;
+
+            try {
+                await apiRequest(`/sales/credit/${creditId}/paid`, {
+                    method: 'PATCH'
+                });
+
+                showToast('Credit marked as paid successfully!', 'success');
+                await loadCreditData();
+            } catch (error) {
+                showToast(error.message || 'Failed to update credit status', 'error');
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KGL | Sales Reports</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <a href="manager-dashboard.html" class="logo">
+            <img src="../assets/logo/kgl-logo.png" alt="KGL Logo">
+        </a>
+        <nav class="nav-links">
+            <span id="manager-branch"></span>
+            <a href="managerProfile.html">Profile</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="d-flex justify-between align-center mb-3">
+            <div>
+                <h2>Sales Reports</h2>
+                <p style="color: var(--text-light);">View branch sales performance and transaction history.</p>
+            </div>
+            <button class="btn btn-outline" onclick="window.location.href='manager-dashboard.html'">
+                ← Back to Dashboard
+            </button>
+        </div>
+
+        <!-- Sales Summary -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Revenue</h3>
+                <div class="value">UGX <span id="total-revenue">0</span></div>
+                <div class="sub">All-time cash sales</div>
+            </div>
+            <div class="stat-card" style="border-left-color: var(--warning);">
+                <h3>Total Quantity Sold</h3>
+                <div class="value"><span id="total-qty">0</span> kg</div>
+                <div class="sub">Total tonnage sold</div>
+            </div>
+            <div class="stat-card" style="border-left-color: var(--info);">
+                <h3>Total Transactions</h3>
+                <div class="value"><span id="total-sales">0</span></div>
+                <div class="sub">Number of sales</div>
+            </div>
+        </div>
+
+        <!-- Cash Sales Table -->
+        <div class="card mb-3">
+            <h3 class="mb-2">Cash Sales History</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Produce</th>
+                            <th>Quantity (kg)</th>
+                            <th>Amount (UGX)</th>
+                            <th>Buyer</th>
+                            <th>Sales Agent</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cashSalesTable">
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: var(--text-light);">
+                                Loading sales...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Credit Sales Table -->
+        <div class="card">
+            <h3 class="mb-2">Credit Sales Overview</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Dispatch Date</th>
+                            <th>Buyer</th>
+                            <th>Produce</th>
+                            <th>Quantity (kg)</th>
+                            <th>Amount Due (UGX)</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="creditSalesTable">
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: var(--text-light);">
+                                Loading credit sales...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/utils.js"></script>
+    <script>
+        async function init() {
+            if (!checkAuth('manager')) return;
+            
+            const user = getUser();
+            document.getElementById('manager-branch').textContent = user.branch || '';
+            
+            await loadSalesData();
+        }
+
+        async function loadSalesData() {
+            try {
+                const user = getUser();
+                const data = await apiRequest(`/reports/branch/${encodeURIComponent(user.branch)}`);
+                
+                // Update summary stats
+                document.getElementById('total-revenue').textContent = formatCurrency(data.totalRevenue || 0);
+                document.getElementById('total-qty').textContent = (data.totalQtySold || 0).toFixed(1);
+                document.getElementById('total-sales').textContent = (data.cashSales?.length || 0) + (data.creditSales?.length || 0);
+
+                // Load cash sales
+                const cashTbody = document.getElementById('cashSalesTable');
+                if (!data.cashSales || data.cashSales.length === 0) {
+                    cashTbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-light);">No cash sales found</td></tr>';
+                } else {
+                    cashTbody.innerHTML = data.cashSales.slice(0, 20).map(sale => `
+                        <tr>
+                            <td>${formatDate(sale.date)}</td>
+                            <td>${sale.time}</td>
+                            <td><strong>${sale.produceName}</strong></td>
+                            <td>${sale.tonnage.toFixed(1)}</td>
+                            <td>${formatCurrency(sale.amountPaid)}</td>
+                            <td>${sale.buyerName}</td>
+                            <td>${sale.salesAgent}</td>
+                        </tr>
+                    `).join('');
+                }
+
+                // Load credit sales
+                const creditTbody = document.getElementById('creditSalesTable');
+                if (!data.creditSales || data.creditSales.length === 0) {
+                    creditTbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-light);">No credit sales found</td></tr>';
+                } else {
+                    creditTbody.innerHTML = data.creditSales.slice(0, 20).map(sale => {
+                        const isPaid = sale.paid;
+                        const isOverdue = !isPaid && new Date(sale.dueDate) < new Date();
+                        
+                        return `
+                            <tr>
+                                <td>${formatDate(sale.dispatchDate)}</td>
+                                <td><strong>${sale.buyerName}</strong></td>
+                                <td>${sale.produceName}</td>
+                                <td>${sale.tonnage.toFixed(1)}</td>
+                                <td>${formatCurrency(sale.amountDue)}</td>
+                                <td>${formatDate(sale.dueDate)}</td>
+                                <td>
+                                    <span class="badge ${isPaid ? 'badge-success' : isOverdue ? 'badge-danger' : 'badge-warning'}">
+                                        ${isPaid ? 'Paid' : isOverdue ? 'Overdue' : 'Pending'}
+                                    </span>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            } catch (error) {
+                showToast(error.message || 'Failed to load sales data', 'error');
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
