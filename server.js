@@ -117,9 +117,9 @@ const server = app.listen(PORT, () => {
     environment: process.env.NODE_ENV,
     port: PORT
   });
-  console.log(`\n🚀  KGL Groceries API running on http://localhost:${PORT}`);
-  console.log(`📚  Swagger docs available at http://localhost:${PORT}/api-docs`);
-  console.log(`🔒  Security features enabled: Helmet, Rate Limiting, Sanitization\n`);
+  console.log(`\n  KGL Groceries API running on http://localhost:${PORT}`);
+  console.log(`  Swagger docs available at http://localhost:${PORT}/api-docs`);
+  console.log(`  Security features enabled: Helmet, Rate Limiting, Sanitization\n`);
 });
 
 // Graceful shutdown
