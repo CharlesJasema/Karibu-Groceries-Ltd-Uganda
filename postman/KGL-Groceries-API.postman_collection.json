@@ -43,7 +43,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"manager\",\n    \"password\": \"Manager@2026\",\n    \"role\": \"manager\",\n    \"branch\": \"Maganjo\"\n}"
+							"raw": "{\n    \"username\": \"manager\",\n    \"password\": \"[YOUR_PASSWORD]\",\n    \"role\": \"manager\",\n    \"branch\": \"Maganjo\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/users/login",
@@ -156,7 +156,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Test Agent\",\n    \"username\": \"testagent\",\n    \"email\": \"testagent@kgl.co.ug\",\n    \"password\": \"TestAgent@2026\",\n    \"role\": \"agent\",\n    \"branch\": \"Maganjo\",\n    \"contact\": \"+256700000000\",\n    \"location\": \"Kampala\"\n}"
+							"raw": "{\n    \"name\": \"Test Agent\",\n    \"username\": \"testagent\",\n    \"email\": \"testagent@kgl.co.ug\",\n    \"password\": \"[SECURE_PASSWORD]\",\n    \"role\": \"agent\",\n    \"branch\": \"Maganjo\",\n    \"contact\": \"+256700000000\",\n    \"location\": \"Kampala\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/users",
@@ -760,7 +760,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"currentPassword\": \"Manager@2026\",\n    \"newPassword\": \"NewPassword@2026\"\n}"
+							"raw": "{\n    \"currentPassword\": \"[CURRENT_PASSWORD]\",\n    \"newPassword\": \"[NEW_SECURE_PASSWORD]\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/profile/password",

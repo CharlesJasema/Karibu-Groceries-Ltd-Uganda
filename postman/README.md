@@ -28,7 +28,7 @@ This directory contains Postman collection and environment files for testing the
    ```json
    {
        "username": "manager",
-       "password": "Manager@2026",
+       "password": "[Use your DEFAULT_USER_PASSWORD from .env]",
        "role": "manager",
        "branch": "Maganjo"
    }

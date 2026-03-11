@@ -161,17 +161,19 @@ npm start
 
 ## 👤 Default User Accounts
 
-After seeding, you can login with these accounts:
+After seeding with `node seedUsers.js`, you can login with these accounts:
 
 | Role | Username | Password | Branch |
 |------|----------|----------|---------|
-| Manager | `manager` | `[See seedUsers.js]` | Maganjo |
-| Manager | `manager2` | `[See seedUsers.js]` | Matugga |
-| Sales Agent | `agent` | `[See seedUsers.js]` | Maganjo |
-| Sales Agent | `agent2` | `[See seedUsers.js]` | Matugga |
-| Director | `director` | `[See seedUsers.js]` | N/A |
+| Manager | `manager` | `[Set via DEFAULT_USER_PASSWORD in .env]` | Maganjo |
+| Manager | `manager2` | `[Set via DEFAULT_USER_PASSWORD in .env]` | Matugga |
+| Sales Agent | `agent` | `[Set via DEFAULT_USER_PASSWORD in .env]` | Maganjo |
+| Director | `director` | `[Set via DEFAULT_USER_PASSWORD in .env]` | N/A |
 
-**⚠️ SECURITY WARNING**: Change all default passwords before deploying to production!
+**⚠️ CRITICAL SECURITY WARNING**: 
+1. Set `DEFAULT_USER_PASSWORD` in your `.env` file before seeding
+2. Change all default passwords immediately after first login
+3. Never use default passwords in production!
 
 ## 🔧 Configuration
 
