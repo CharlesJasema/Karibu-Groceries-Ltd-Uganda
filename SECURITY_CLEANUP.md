@@ -8,14 +8,14 @@ The following files contained sensitive information and were completely removed 
 
 ### 1. `.env` file
 - **JWT Secrets**: Production JWT signing keys
-- **Gmail App Password**: `ooyieayxquwvakix`
-- **SMS API Key**: `atsk_9c21df656cb8d71a00e3cc35b04c622667ba5f1e914bd306ea982f2a129cfa2df8974162`
+- **Gmail App Password**: `[REDACTED - 16 character app password]`
+- **SMS API Key**: `[REDACTED - Africa's Talking API key starting with atsk_]`
 
 ### 2. `seedUsers.js`
 - **Hardcoded Passwords**: 
-  - Manager: `Manager@2026`
-  - Agent: `Agent@2026`
-  - Director: `Director@2026`
+  - Manager: `[REDACTED]`
+  - Agent: `[REDACTED]`
+  - Director: `[REDACTED]`
 
 ### 3. `public/test-login-debug.html`
 - **Test Credentials**: Hardcoded login credentials in HTML/JavaScript
