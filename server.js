@@ -23,9 +23,13 @@ connectDB();
 const userRoutes = require("./routes/userRoutes");
 const procurementRoutes = require("./routes/procurementRoutes");
 const salesRoutes = require("./routes/salesRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
 const reportsRoutes = require("./routes/reportsRoutes");
 const forgotPasswordRoutes = require("./routes/forgotPasswordRoutes");
 const resetPasswordRoutes = require("./routes/resetPasswordRoutes");
+const profileRoutes = require("./routes/profileRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
+const auditRoutes = require("./routes/auditRoutes");
 
 const app = express();
 
@@ -46,9 +50,22 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Body Parser Middleware
+// Body Parser Middleware with error handling
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Handle JSON parsing errors
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    console.error('JSON Parse Error:', err.message);
+    return res.status(400).json({
+      success: false,
+      message: err.message,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+  }
+  next(err);
+});
 
 // Sanitization Middleware
 app.use(sanitizeMiddleware);
@@ -64,7 +81,61 @@ if (process.env.NODE_ENV === 'development') {
   }));
 }
 
-// Serve Static Frontend
+// API Routes – mount BEFORE static files so API takes precedence
+app.use("/users/forgot-password", passwordResetLimiter, forgotPasswordRoutes);
+app.use("/users/reset-password", passwordResetLimiter, resetPasswordRoutes);
+app.use("/users", apiLimiter, userRoutes);
+app.use("/profile", apiLimiter, profileRoutes);
+app.use("/notifications", apiLimiter, notificationRoutes);
+app.use("/audit-logs", apiLimiter, auditRoutes);
+app.use("/procurement", apiLimiter, procurementRoutes);
+app.use("/sales", apiLimiter, salesRoutes);
+app.use("/payments", apiLimiter, paymentRoutes);
+app.use("/reports", apiLimiter, reportsRoutes);
+
+// Health Check with MongoDB status
+app.get("/health", async (req, res) => {
+  const mongoose = require('mongoose');
+  
+  const healthCheck = {
+    success: true,
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV,
+    uptime: process.uptime(),
+    database: {
+      status: "disconnected",
+      name: null,
+      host: null
+    }
+  };
+
+  // Check MongoDB connection
+  try {
+    if (mongoose.connection.readyState === 1) {
+      healthCheck.database.status = "connected";
+      healthCheck.database.name = mongoose.connection.name;
+      healthCheck.database.host = mongoose.connection.host;
+    } else if (mongoose.connection.readyState === 2) {
+      healthCheck.database.status = "connecting";
+      healthCheck.status = "degraded";
+    } else {
+      healthCheck.database.status = "disconnected";
+      healthCheck.status = "degraded";
+      healthCheck.success = false;
+    }
+  } catch (error) {
+    healthCheck.database.status = "error";
+    healthCheck.database.error = error.message;
+    healthCheck.status = "unhealthy";
+    healthCheck.success = false;
+  }
+
+  const statusCode = healthCheck.success ? 200 : 503;
+  res.status(statusCode).json(healthCheck);
+});
+
+// Serve Static Frontend AFTER API routes
 app.use(express.static(path.join(__dirname, "public")));
 
 // API Documentation
@@ -81,25 +152,7 @@ app.use(
   }),
 );
 
-// API Routes – mount more specific paths first so they are matched before /users
-app.use("/users/forgot-password", passwordResetLimiter, forgotPasswordRoutes);
-app.use("/users/reset-password", passwordResetLimiter, resetPasswordRoutes);
-app.use("/users/login", authLimiter); // Apply auth limiter to login route
-app.use("/users", apiLimiter, userRoutes);
-app.use("/procurement", apiLimiter, procurementRoutes);
-app.use("/sales", apiLimiter, salesRoutes);
-app.use("/reports", apiLimiter, reportsRoutes);
-
-// Health Check
-app.get("/health", (req, res) =>
-  res.json({
-    success: true,
-    status: "ok",
-    env: process.env.NODE_ENV,
-    ts: new Date(),
-  }),
-);
-
+// 404 Handler
 // 404 Handler
 app.use((req, res) =>
   res

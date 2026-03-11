@@ -13,7 +13,7 @@ const UserSchema = new mongoose.Schema(
       minlength: 3,
     },
     email: { type: String, trim: true, lowercase: true, default: "" },
-    password: { type: String, required: true, minlength: 6 },
+    password: { type: String, required: true, minlength: 6, select: false },
     role: {
       type: String,
       enum: ["manager", "agent", "director"],
@@ -24,7 +24,9 @@ const UserSchema = new mongoose.Schema(
       enum: ["Maganjo", "Matugga"],
       required: true,
     },
-    contact: { type: String, required: true },
+    contact: { type: String, default: "" },
+    location: { type: String, trim: true, default: "" }, // NEW FIELD
+    photo: { type: String, default: "" }, // NEW FIELD - URL to profile photo
     active: { type: Boolean, default: true },
     resetOtp: { type: String },
     resetOtpExpiry: { type: Date },
@@ -36,6 +38,8 @@ const UserSchema = new mongoose.Schema(
 UserSchema.index({ email: 1 });
 UserSchema.index({ role: 1, branch: 1 });
 UserSchema.index({ active: 1 });
+UserSchema.index({ location: 1 }); // NEW INDEX
+UserSchema.index({ photo: 1 }); // NEW INDEX
 
 // Hash password before save
 UserSchema.pre("save", async function (next) {

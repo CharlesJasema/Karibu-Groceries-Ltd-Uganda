@@ -12,6 +12,7 @@
             <img src="../assets/logo/kgl-logo.png" alt="KGL Logo">
         </a>
         <nav class="nav-links">
+            <a href="../index.html">🏠 Home</a>
             <span id="manager-branch"></span>
             <a href="managerProfile.html">Profile</a>
             <a href="../auth/login.html" onclick="logout()">Logout</a>
@@ -93,16 +94,22 @@
                 const data = await apiRequest('/sales/inventory');
                 const tbody = document.getElementById('inventoryTable');
                 
-                if (!data.inventory || data.inventory.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-light);">No inventory items found</td></tr>';
+                if (!data.data || data.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-light);">No inventory items found. Add procurement records to create inventory.</td></tr>';
+                    document.getElementById('total-items').textContent = '0';
+                    document.getElementById('low-stock').textContent = '0';
+                    document.getElementById('out-stock').textContent = '0';
                     return;
                 }
 
-                const inventory = data.inventory;
+                const inventory = data.data;
                 
                 // Calculate stats
                 const totalItems = inventory.length;
-                const lowStock = inventory.filter(item => item.stockPercent < 15 && item.remainingQty > 0).length;
+                const lowStock = inventory.filter(item => {
+                    const stockPercent = (item.remainingQty / item.initialQty) * 100;
+                    return stockPercent < 15 && item.remainingQty > 0;
+                }).length;
                 const outStock = inventory.filter(item => item.remainingQty <= 0).length;
                 
                 document.getElementById('total-items').textContent = totalItems;
@@ -110,7 +117,7 @@
                 document.getElementById('out-stock').textContent = outStock;
 
                 tbody.innerHTML = inventory.map(item => {
-                    const stockPercent = item.stockPercent || 0;
+                    const stockPercent = ((item.remainingQty / item.initialQty) * 100).toFixed(1);
                     let statusClass = 'badge-success';
                     let statusText = 'In Stock';
                     
@@ -144,6 +151,7 @@
                 }).join('');
             } catch (error) {
                 showToast(error.message || 'Failed to load inventory', 'error');
+                document.getElementById('inventoryTable').innerHTML = '<tr><td colspan="8" style="text-align: center; color: red;">Failed to load inventory. Please try again.</td></tr>';
             }
         }
 

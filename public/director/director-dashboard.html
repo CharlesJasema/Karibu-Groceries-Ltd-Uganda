@@ -76,6 +76,7 @@
       <img src="../assets/logo/kgl-logo.png" alt="kgl Logo">
     </a>
         <nav class="nav-links">
+            <a href="../index.html">🏠 Home</a>
             <span id="director-name">Director</span>
             <a href="#" onclick="logout()">Logout</a>
         </nav>
@@ -121,18 +122,34 @@
                 </table>
             </div>
             <div class="card">
-                <h3 style="margin-bottom: 0.75rem;">Top Produce</h3>
-                <table class="table" id="produce-table">
+                <h3 style="margin-bottom: 0.75rem;">Recent Sales</h3>
+                <table class="table" id="recent-sales-table">
                     <thead>
                         <tr>
+                            <th>Date</th>
                             <th>Produce</th>
-                            <th>Revenue (UGX)</th>
-                            <th>Qty (kg)</th>
+                            <th>Amount (UGX)</th>
+                            <th>Recorded By</th>
+                            <th>Branch</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
             </div>
+        </div>
+
+        <div class="card mt-3">
+            <h3 style="margin-bottom: 0.75rem;">Top Produce Performance</h3>
+            <table class="table" id="produce-table">
+                <thead>
+                    <tr>
+                        <th>Produce</th>
+                        <th>Revenue (UGX)</th>
+                        <th>Qty (kg)</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
     </main>
 
@@ -166,8 +183,13 @@
                 const res = await fetch('/reports/summary', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                if (!res.ok) return;
+                if (!res.ok) {
+                    console.error('Failed to fetch summary:', res.status, res.statusText);
+                    return;
+                }
                 const data = await res.json();
+                
+                console.log('Director Dashboard Data:', data); // Debug log
 
                 const nf = new Intl.NumberFormat('en-UG', { maximumFractionDigits: 0 });
 
@@ -177,30 +199,64 @@
 
                 const branchBody = document.querySelector('#branch-table tbody');
                 branchBody.innerHTML = '';
-                (data.salesByBranch || []).forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><span class="badge">${row._id || 'N/A'}</span></td>
-                        <td>${nf.format(row.totalRevenue || 0)}</td>
-                        <td>${(row.totalQty || 0).toFixed(1)}</td>
-                        <td>${row.count || 0}</td>
-                    `;
-                    branchBody.appendChild(tr);
-                });
+                
+                if (!data.salesByBranch || data.salesByBranch.length === 0) {
+                    branchBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-light);">No sales data available</td></tr>';
+                } else {
+                    (data.salesByBranch || []).forEach(row => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td><span class="badge">${row._id || 'N/A'}</span></td>
+                            <td>${nf.format(row.totalRevenue || 0)}</td>
+                            <td>${(row.totalQty || 0).toFixed(1)}</td>
+                            <td>${row.count || 0}</td>
+                        `;
+                        branchBody.appendChild(tr);
+                    });
+                }
+
+                // Load recent sales
+                const recentBody = document.querySelector('#recent-sales-table tbody');
+                recentBody.innerHTML = '';
+                
+                if (!data.recentSales || data.recentSales.length === 0) {
+                    recentBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-light);">No recent sales available</td></tr>';
+                } else {
+                    (data.recentSales || []).forEach(sale => {
+                        const tr = document.createElement('tr');
+                        const saleDate = new Date(sale.date || sale.createdAt);
+                        tr.innerHTML = `
+                            <td>${saleDate.toLocaleDateString()}</td>
+                            <td><strong>${sale.produceName}</strong></td>
+                            <td>${nf.format(sale.amountPaid || 0)}</td>
+                            <td><span class="badge badge-info">${sale.recordedBy?.name || 'N/A'}</span></td>
+                            <td><span class="badge badge-default">${sale.branch || 'N/A'}</span></td>
+                        `;
+                        recentBody.appendChild(tr);
+                    });
+                }
 
                 const prodBody = document.querySelector('#produce-table tbody');
                 prodBody.innerHTML = '';
-                (data.topProduce || []).forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${row._id}</td>
-                        <td>${nf.format(row.revenue || 0)}</td>
-                        <td>${(row.qty || 0).toFixed(1)}</td>
-                    `;
-                    prodBody.appendChild(tr);
-                });
-            } catch {
-                // fail silently
+                
+                if (!data.topProduce || data.topProduce.length === 0) {
+                    prodBody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--text-light);">No produce data available</td></tr>';
+                } else {
+                    (data.topProduce || []).forEach(row => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${row._id}</td>
+                            <td>${nf.format(row.revenue || 0)}</td>
+                            <td>${(row.qty || 0).toFixed(1)}</td>
+                        `;
+                        prodBody.appendChild(tr);
+                    });
+                }
+            } catch (err) {
+                console.error('Error loading director dashboard:', err);
+                // Show error message to user
+                document.querySelector('#branch-table tbody').innerHTML = 
+                    '<tr><td colspan="4" style="text-align: center; color: red;">Failed to load data</td></tr>';
             }
         }
 

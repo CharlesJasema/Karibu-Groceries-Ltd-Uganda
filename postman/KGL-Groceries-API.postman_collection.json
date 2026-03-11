@@ -1,0 +1,941 @@
+{
+	"info": {
+		"_postman_id": "kgl-groceries-api-collection",
+		"name": "KGL Groceries Management System API",
+		"description": "Complete API collection for testing the KGL Groceries Management System.\n\n**Setup Instructions:**\n1. Import this collection into Postman\n2. Set up environment variables (see Environment section)\n3. Run the Authentication > Login request first to get a token\n4. The token will be automatically set for other requests\n\n**Environment Variables Required:**\n- `base_url`: http://localhost:3000 (or your server URL)\n- `token`: (will be set automatically after login)\n- `user_id`: (will be set automatically after login)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.success && response.token) {",
+									"        pm.environment.set('token', response.token);",
+									"        pm.environment.set('user_id', response.user._id);",
+									"        pm.environment.set('user_role', response.user.role);",
+									"        pm.environment.set('user_branch', response.user.branch);",
+									"        console.log('✅ Login successful - Token saved');",
+									"    }",
+									"} else {",
+									"    console.log('❌ Login failed');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"manager\",\n    \"password\": \"Manager@2026\",\n    \"role\": \"manager\",\n    \"branch\": \"Maganjo\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						},
+						"description": "Login with username and password. Updates environment variables with token and user info."
+					}
+				},
+				{
+					"name": "Forgot Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"identifier\": \"manager@kgl.co.ug\",\n    \"method\": \"email\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/forgot-password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"forgot-password"
+							]
+						},
+						"description": "Request password reset OTP via email or SMS"
+					}
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"identifier\": \"manager@kgl.co.ug\",\n    \"otp\": \"123456\",\n    \"newPassword\": \"NewPassword@2026\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/reset-password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"reset-password"
+							]
+						},
+						"description": "Reset password using OTP"
+					}
+				}
+			],
+			"description": "Authentication endpoints for login, password reset, etc."
+		},
+		{
+			"name": "User Management",
+			"item": [
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						},
+						"description": "Get all users (Manager/Director only)"
+					}
+				},
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Agent\",\n    \"username\": \"testagent\",\n    \"email\": \"testagent@kgl.co.ug\",\n    \"password\": \"TestAgent@2026\",\n    \"role\": \"agent\",\n    \"branch\": \"Maganjo\",\n    \"contact\": \"+256700000000\",\n    \"location\": \"Kampala\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						},
+						"description": "Create new user (Manager only)"
+					}
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Name\",\n    \"email\": \"updated@kgl.co.ug\",\n    \"contact\": \"+256700000001\",\n    \"location\": \"Updated Location\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}"
+							]
+						},
+						"description": "Update user information"
+					}
+				},
+				{
+					"name": "Activate User",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}/activate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}",
+								"activate"
+							]
+						},
+						"description": "Activate a user account"
+					}
+				},
+				{
+					"name": "Deactivate User",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}/deactivate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}",
+								"deactivate"
+							]
+						},
+						"description": "Deactivate a user account"
+					}
+				}
+			],
+			"description": "User management endpoints"
+		},
+		{
+			"name": "Sales Management",
+			"item": [
+				{
+					"name": "Record Cash Sale",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"produceName\": \"Maize\",\n    \"tonnage\": 100.5,\n    \"amountPaid\": 250000,\n    \"paymentMethod\": \"cash\",\n    \"buyerName\": \"John Doe\",\n    \"salesAgent\": \"Test Agent\",\n    \"date\": \"2026-03-10\",\n    \"time\": \"14:30\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/sales/cash",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sales",
+								"cash"
+							]
+						},
+						"description": "Record a cash sale (Agent only)"
+					}
+				},
+				{
+					"name": "Get Cash Sales",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/sales/cash?page=1&limit=20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sales",
+								"cash"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Get all cash sales with pagination"
+					}
+				},
+				{
+					"name": "Record Credit Sale",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"buyerName\": \"Jane Smith\",\n    \"nin\": \"CM12345678901234\",\n    \"location\": \"Kampala\",\n    \"contact\": \"+256700000000\",\n    \"amountDue\": 500000,\n    \"salesAgent\": \"Test Agent\",\n    \"dueDate\": \"2026-04-10\",\n    \"produceName\": \"Rice\",\n    \"produceType\": \"Long Grain\",\n    \"tonnage\": 200.0,\n    \"dispatchDate\": \"2026-03-10\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/sales/credit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sales",
+								"credit"
+							]
+						},
+						"description": "Record a credit sale (Agent only)"
+					}
+				},
+				{
+					"name": "Get Credit Sales",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/sales/credit?paid=false",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sales",
+								"credit"
+							],
+							"query": [
+								{
+									"key": "paid",
+									"value": "false"
+								}
+							]
+						},
+						"description": "Get credit sales (filter by paid status)"
+					}
+				},
+				{
+					"name": "Mark Credit as Paid",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/sales/credit/{{credit_sale_id}}/paid",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sales",
+								"credit",
+								"{{credit_sale_id}}",
+								"paid"
+							]
+						},
+						"description": "Mark a credit sale as paid"
+					}
+				},
+				{
+					"name": "Get Inventory",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/sales/inventory",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sales",
+								"inventory"
+							]
+						},
+						"description": "Get current inventory levels"
+					}
+				}
+			],
+			"description": "Sales management endpoints"
+		},
+		{
+			"name": "Payment Management",
+			"item": [
+				{
+					"name": "Record Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"saleId\": \"{{sale_id}}\",\n    \"saleType\": \"cash\",\n    \"paymentMethod\": \"momo\",\n    \"amount\": 250000,\n    \"buyerName\": \"John Doe\",\n    \"momoDetails\": {\n        \"provider\": \"MTN\",\n        \"phoneNumber\": \"+256700000000\",\n        \"transactionId\": \"MTN123456789\"\n    },\n    \"notes\": \"Mobile money payment\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/payments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"payments"
+							]
+						},
+						"description": "Record a payment for a sale"
+					}
+				},
+				{
+					"name": "Get All Payments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/payments?page=1&limit=20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"payments"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Get all payments with pagination"
+					}
+				},
+				{
+					"name": "Get Payment Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/payments/summary/stats",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"payments",
+								"summary",
+								"stats"
+							]
+						},
+						"description": "Get payment statistics by method and branch"
+					}
+				}
+			],
+			"description": "Payment management endpoints"
+		},
+		{
+			"name": "Procurement Management",
+			"item": [
+				{
+					"name": "Record Procurement",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"dealerName\": \"ABC Farm Supplies\",\n    \"contact\": \"+256700000000\",\n    \"produceName\": \"Maize\",\n    \"produceType\": \"Yellow Corn\",\n    \"tonnage\": 500.0,\n    \"cost\": 1000000,\n    \"date\": \"2026-03-10\",\n    \"location\": \"Maganjo Warehouse\",\n    \"notes\": \"High quality maize from northern region\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/procurement",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"procurement"
+							]
+						},
+						"description": "Record new procurement (Manager only)"
+					}
+				},
+				{
+					"name": "Get All Procurements",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/procurement?page=1&limit=20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"procurement"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Get all procurements with pagination"
+					}
+				},
+				{
+					"name": "Get Procurement Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/procurement/stats",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"procurement",
+								"stats"
+							]
+						},
+						"description": "Get procurement statistics (Manager/Director only)"
+					}
+				}
+			],
+			"description": "Procurement management endpoints"
+		},
+		{
+			"name": "Reports & Analytics",
+			"item": [
+				{
+					"name": "Get Summary Report (Director)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/reports/summary",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reports",
+								"summary"
+							]
+						},
+						"description": "Get aggregated summary across all branches (Director only)"
+					}
+				},
+				{
+					"name": "Get Branch Report",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/reports/branch/{{user_branch}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reports",
+								"branch",
+								"{{user_branch}}"
+							]
+						},
+						"description": "Get sales report for specific branch"
+					}
+				},
+				{
+					"name": "Get Stock Report",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/reports/stock",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reports",
+								"stock"
+							]
+						},
+						"description": "Get inventory/stock levels report"
+					}
+				}
+			],
+			"description": "Reports and analytics endpoints"
+		},
+		{
+			"name": "Profile Management",
+			"item": [
+				{
+					"name": "Get My Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profile"
+							]
+						},
+						"description": "Get current user's profile"
+					}
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Name\",\n    \"email\": \"updated@kgl.co.ug\",\n    \"contact\": \"+256700000001\",\n    \"location\": \"Updated Location\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profile"
+							]
+						},
+						"description": "Update current user's profile"
+					}
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"currentPassword\": \"Manager@2026\",\n    \"newPassword\": \"NewPassword@2026\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/profile/password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profile",
+								"password"
+							]
+						},
+						"description": "Change current user's password"
+					}
+				}
+			],
+			"description": "User profile management endpoints"
+		},
+		{
+			"name": "Audit & Notifications",
+			"item": [
+				{
+					"name": "Get Audit Logs",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/audit-logs?page=1&limit=20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"audit-logs"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Get audit logs (Manager/Director only)"
+					}
+				},
+				{
+					"name": "Get Notifications",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/notifications",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Get user notifications"
+					}
+				},
+				{
+					"name": "Mark Notification as Read",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/notifications/{{notification_id}}/read",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications",
+								"{{notification_id}}",
+								"read"
+							]
+						},
+						"description": "Mark a notification as read"
+					}
+				}
+			],
+			"description": "Audit logs and notifications"
+		},
+		{
+			"name": "System Health",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"health"
+							]
+						},
+						"description": "Check system health and database connectivity"
+					}
+				},
+				{
+					"name": "API Documentation",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api-docs",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api-docs"
+							]
+						},
+						"description": "Access Swagger API documentation"
+					}
+				}
+			],
+			"description": "System health and documentation endpoints"
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Auto-set authorization header if token exists",
+					"const token = pm.environment.get('token');",
+					"if (token && !pm.request.headers.has('Authorization')) {",
+					"    pm.request.headers.add({",
+					"        key: 'Authorization',",
+					"        value: 'Bearer ' + token",
+					"    });",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		}
+	]
+}

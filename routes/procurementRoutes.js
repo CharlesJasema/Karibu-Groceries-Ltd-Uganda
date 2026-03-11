@@ -196,8 +196,8 @@ router.post(
     } catch (err) {
       res.status(500).json({ success: false, message: err.message });
     }
-  },
-);
+  }
+      );
 
 // GET /procurement   – List procurement records
 
@@ -240,8 +240,14 @@ router.post(
  */
 router.get("/", protect, requireRole("manager", "agent"), async (req, res) => {
   try {
-    const { branch, produceName, page = 1, limit = 20 } = req.query;
+    const { branch, produceName, page = 1, limit = 20, showDeleted } = req.query;
+    
+    // Build filter - by default exclude deleted records
     const filter = {};
+    if (showDeleted !== "true") {
+      filter.deleted = { $ne: true };
+    }
+    
     if (branch) filter.branch = branch;
     if (produceName) filter.produceName = new RegExp(produceName, "i");
 
@@ -260,6 +266,65 @@ router.get("/", protect, requireRole("manager", "agent"), async (req, res) => {
       pages: Math.ceil(total / parseInt(limit)),
       count: data.length,
       data,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// GET /procurement/stats  – Procurement statistics
+
+/**
+ * @swagger
+ * /procurement/stats:
+ *   get:
+ *     summary: Get procurement statistics
+ *     description: Returns procurement statistics including totals by branch, produce type, etc.
+ *     tags: [Procurement]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Procurement statistics
+ *       401:
+ *         description: Not authenticated
+ *       403:
+ *         description: Access denied
+ */
+router.get("/stats", protect, requireRole("manager", "director"), async (req, res) => {
+  try {
+    const [totalRecords, byBranch, byProduce, totalValue, recentProcurements] = await Promise.all([
+      Procurement.countDocuments({ deleted: { $ne: true } }),
+      Procurement.aggregate([
+        { $match: { deleted: { $ne: true } } },
+        { $group: { _id: "$branch", count: { $sum: 1 }, totalCost: { $sum: "$cost" }, totalTonnage: { $sum: "$tonnage" } } },
+        { $sort: { totalCost: -1 } }
+      ]),
+      Procurement.aggregate([
+        { $match: { deleted: { $ne: true } } },
+        { $group: { _id: "$produceName", count: { $sum: 1 }, totalCost: { $sum: "$cost" }, totalTonnage: { $sum: "$tonnage" } } },
+        { $sort: { totalCost: -1 } },
+        { $limit: 10 }
+      ]),
+      Procurement.aggregate([
+        { $match: { deleted: { $ne: true } } },
+        { $group: { _id: null, totalCost: { $sum: "$cost" }, totalTonnage: { $sum: "$tonnage" } } }
+      ]),
+      Procurement.find({ deleted: { $ne: true } })
+        .populate("recordedBy", "name role")
+        .sort({ createdAt: -1 })
+        .limit(5)
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalRecords,
+        totalValue: totalValue[0] || { totalCost: 0, totalTonnage: 0 },
+        byBranch,
+        topProduce: byProduce,
+        recentProcurements
+      }
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -296,7 +361,7 @@ router.get(
     try {
       const doc = await Procurement.findById(req.params.id).populate(
         "recordedBy",
-        "name role",
+        "name role"
       );
       if (!doc)
         return res
@@ -306,8 +371,8 @@ router.get(
     } catch (err) {
       res.status(500).json({ success: false, message: err.message });
     }
-  },
-);
+  }
+      );
 
 // PATCH /procurement/:id/price  – Update selling price (Manager only)
 
@@ -359,7 +424,7 @@ router.patch(
       const proc = await Procurement.findByIdAndUpdate(
         req.params.id,
         { sellingPrice: req.body.sellingPrice },
-        { new: true },
+        { new: true }
       );
       if (!proc)
         return res
@@ -369,7 +434,7 @@ router.patch(
       // Sync inventory price
       await Inventory.updateMany(
         { procurement: proc._id },
-        { sellingPrice: req.body.sellingPrice },
+        { sellingPrice: req.body.sellingPrice }
       );
 
       await AuditLog.create({
@@ -385,8 +450,8 @@ router.patch(
     } catch (err) {
       res.status(500).json({ success: false, message: err.message });
     }
-  },
-);
+  }
+      );
 
 // GET /procurement/stock/alerts  – Low/out-of-stock alerts
 
@@ -410,7 +475,7 @@ router.get(
     try {
       const items = await Inventory.find({ active: true });
       const alerts = items.filter(
-        (i) => i.remainingQty <= 0 || i.remainingQty / i.initialQty < 0.15,
+        (i) => i.remainingQty <= 0 || i.remainingQty / i.initialQty < 0.15
       );
       res
         .status(200)
@@ -418,7 +483,400 @@ router.get(
     } catch (err) {
       res.status(500).json({ success: false, message: err.message });
     }
-  },
-);
+  }
+      );
 
 module.exports = router;
+
+// ============================================================================
+// CRUD OPERATIONS - UPDATE, DELETE, RESTORE
+// ============================================================================
+
+const mongoose = require("mongoose");
+const notificationService = require("../services/notificationService");
+
+// PUT /procurement/:id  – Update a procurement record
+
+/**
+ * @swagger
+ * /procurement/{id}:
+ *   put:
+ *     summary: Update a procurement record
+ *     description: >
+ *       Updates an existing procurement record. Adjusts inventory if tonnage changes.
+ *       Creates audit log and sends notifications to managers.
+ *       **Managers only.**
+ *     tags: [Procurement]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ProcurementBody'
+ *     responses:
+ *       200:
+ *         description: Procurement updated successfully
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Procurement not found
+ */
+router.put(
+  "/:id",
+  protect,
+  requireRole("manager"),
+  [
+    body("produceName")
+      .optional()
+      .isAlphanumeric("en-US", { ignore: " " })
+      .isLength({ min: 2 })
+      .trim(),
+    body("produceType")
+      .optional()
+      .matches(/^[A-Za-z ]+$/)
+      .isLength({ min: 2 })
+      .trim(),
+    body("date").optional().isISO8601(),
+    body("time").optional().matches(/^([01]\d|2[0-3]):[0-5]\d$/),
+    body("tonnage").optional().isFloat({ min: 100 }),
+    body("cost").optional().isFloat({ min: 10000 }),
+    body("dealerName")
+      .optional()
+      .isAlphanumeric("en-US", { ignore: " ." })
+      .isLength({ min: 2 })
+      .trim(),
+    body("branch").optional().isIn(["Maganjo", "Matugga"]),
+    body("contact").optional().matches(/^\+?\d[\d\s\-]{7,14}$/),
+    body("sellingPrice").optional().isFloat({ min: 0 }),
+  ],
+  async (req, res) => {
+    if (validate(req, res)) return;
+
+    
+    try {
+      const procurement = await Procurement.findOne({
+        _id: req.params.id,
+        deleted: { $ne: true }, // Allow records without deleted field or deleted: false
+      });
+
+      if (!procurement) {
+        return res.status(404).json({
+          success: false,
+          message: "Procurement not found or has been deleted",
+        });
+      }
+
+      // Store previous version for undo
+      const previousVersion = procurement.toObject();
+      delete previousVersion._id;
+      delete previousVersion.__v;
+
+      // Check if tonnage changed - adjust inventory
+      if (req.body.tonnage && req.body.tonnage !== procurement.tonnage) {
+        const inventory = await Inventory.findOne({
+          procurement: procurement._id,
+          active: true,
+        });
+
+        if (!inventory) {
+          return res.status(400).json({
+            success: false,
+            message: "Inventory not found",
+          });
+        }
+
+        const tonnageDiff = req.body.tonnage - procurement.tonnage;
+        const soldQty = inventory.initialQty - inventory.remainingQty;
+
+        // If decreasing tonnage, check if it would go below sold quantity
+        if (tonnageDiff < 0 && req.body.tonnage < soldQty) {
+          return res.status(400).json({
+            success: false,
+            message: `Cannot reduce tonnage below ${soldQty} kg (already sold quantity)`,
+          });
+        }
+
+        // Update inventory
+        inventory.initialQty = req.body.tonnage;
+        inventory.remainingQty += tonnageDiff;
+        await inventory.save();
+      }
+
+      // Update procurement fields
+      Object.keys(req.body).forEach((key) => {
+        if (req.body[key] !== undefined) {
+          procurement[key] = req.body[key];
+        }
+      });
+
+      procurement.previousVersion = previousVersion;
+      await procurement.save();
+
+      // Update inventory if other fields changed
+      if (req.body.produceName || req.body.produceType || req.body.sellingPrice) {
+        await Inventory.updateOne(
+          { procurement: procurement._id },
+          {
+            $set: {
+              produceName: procurement.produceName,
+              produceType: procurement.produceType,
+              sellingPrice: procurement.sellingPrice,
+            },
+          }
+      );
+      }
+
+      // Create audit log
+      await AuditLog.create({
+            user: req.user._id,
+            action: "UPDATE_PROCUREMENT",
+            entity: "Procurement",
+            entityId: procurement._id,
+            details: req.body,
+            previousState: previousVersion,
+            newState: procurement.toObject(),
+            ip: req.ip
+      });
+
+      // Send notifications to managers (non-blocking)
+      notificationService.notifyManagers({
+        actor: req.user._id,
+        type: notificationService.NotificationType.RECORD_UPDATED,
+        entity: "Procurement",
+        entityId: procurement._id,
+        action: "UPDATED",
+        message: `${req.user.name} updated procurement for ${procurement.produceName}`,
+        metadata: {
+          produceName: procurement.produceName,
+          tonnage: procurement.tonnage,
+        },
+        branch: procurement.branch,
+      });
+
+      res.status(200).json({ success: true, data: procurement });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  }
+);
+
+// DELETE /procurement/:id  – Soft delete a procurement record
+
+/**
+ * @swagger
+ * /procurement/{id}:
+ *   delete:
+ *     summary: Delete a procurement record (soft delete)
+ *     description: >
+ *       Marks a procurement as deleted. Prevents deletion if inventory has been sold.
+ *       Creates audit log and sends notifications to managers.
+ *       **Managers only.**
+ *     tags: [Procurement]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Procurement deleted successfully
+ *       400:
+ *         description: Cannot delete - inventory has been sold
+ *       404:
+ *         description: Procurement not found
+ */
+router.delete(
+  "/:id",
+  protect,
+  requireRole("manager"),
+  async (req, res) => {
+    
+    try {
+      const procurement = await Procurement.findOne({
+        _id: req.params.id,
+        deleted: { $ne: true }, // Allow records without deleted field or deleted: false
+      });
+
+      if (!procurement) {
+        return res.status(404).json({
+          success: false,
+          message: "Procurement not found or already deleted",
+        });
+      }
+
+      // Check if any inventory has been sold
+      const inventory = await Inventory.findOne({
+        procurement: procurement._id,
+        active: true,
+      });
+
+      if (inventory) {
+        const soldQty = inventory.initialQty - inventory.remainingQty;
+        if (soldQty > 0) {
+          return res.status(400).json({
+            success: false,
+            message: `Cannot delete procurement. ${soldQty} kg has already been sold.`,
+          });
+        }
+
+        // Deactivate inventory
+        inventory.active = false;
+        await inventory.save();
+      }
+
+      // Soft delete
+      procurement.deleted = true;
+      procurement.deletedAt = new Date();
+      procurement.deletedBy = req.user._id;
+      await procurement.save();
+
+      // Create audit log
+      await AuditLog.create({
+            user: req.user._id,
+            action: "DELETE_PROCUREMENT",
+            entity: "Procurement",
+            entityId: procurement._id,
+            details: {
+              produceName: procurement.produceName,
+              tonnage: procurement.tonnage,
+            },
+            previousState: procurement.toObject(),
+            ip: req.ip,
+      });
+
+      // Send notifications to managers (non-blocking)
+      notificationService.notifyManagers({
+        actor: req.user._id,
+        type: notificationService.NotificationType.RECORD_DELETED,
+        entity: "Procurement",
+        entityId: procurement._id,
+        action: "DELETED",
+        message: `${req.user.name} deleted procurement for ${procurement.produceName}`,
+        metadata: {
+          produceName: procurement.produceName,
+          tonnage: procurement.tonnage,
+        },
+        branch: procurement.branch,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: "Procurement deleted successfully",
+      });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  }
+);
+
+// POST /procurement/:id/restore  – Restore a deleted procurement
+
+/**
+ * @swagger
+ * /procurement/{id}/restore:
+ *   post:
+ *     summary: Restore a deleted procurement record
+ *     description: >
+ *       Restores a soft-deleted procurement and reactivates inventory.
+ *       Creates audit log and sends notifications to managers.
+ *       **Managers only.**
+ *     tags: [Procurement]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Procurement restored successfully
+ *       404:
+ *         description: Procurement not found
+ */
+router.post(
+  "/:id/restore",
+  protect,
+  requireRole("manager"),
+  async (req, res) => {
+    
+    try {
+      const procurement = await Procurement.findOne({
+        _id: req.params.id,
+        deleted: true,
+      });
+
+      if (!procurement) {
+        return res.status(404).json({
+          success: false,
+          message: "Deleted procurement not found",
+        });
+      }
+
+      // Reactivate inventory
+      const inventory = await Inventory.findOne({
+        procurement: procurement._id,
+      });
+
+      if (inventory) {
+        inventory.active = true;
+        await inventory.save();
+      }
+
+      // Restore procurement
+      procurement.deleted = false;
+      procurement.deletedAt = undefined;
+      procurement.deletedBy = undefined;
+      await procurement.save();
+
+      // Create audit log
+      await AuditLog.create({
+            user: req.user._id,
+            action: "RESTORE_PROCUREMENT",
+            entity: "Procurement",
+            entityId: procurement._id,
+            details: {
+              produceName: procurement.produceName,
+              tonnage: procurement.tonnage,
+            },
+            newState: procurement.toObject(),
+            ip: req.ip,
+      });
+
+      // Send notifications to managers (non-blocking)
+      notificationService.notifyManagers({
+        actor: req.user._id,
+        type: notificationService.NotificationType.RECORD_RESTORED,
+        entity: "Procurement",
+        entityId: procurement._id,
+        action: "RESTORED",
+        message: `${req.user.name} restored procurement for ${procurement.produceName}`,
+        metadata: {
+          produceName: procurement.produceName,
+          tonnage: procurement.tonnage,
+        },
+        branch: procurement.branch,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: "Procurement restored successfully",
+        data: procurement,
+      });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  }
+);

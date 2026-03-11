@@ -10,106 +10,144 @@
     <header>
          <!-- Logo -->
     <a href="index.html" class="logo">KGL | Karibu Groceries LTD
-      <img src="./assets/logo/kgl-logo.png" alt="kgl Logo">
+      <img src="./assets/logo/kgl-logo.png" alt="KGL Logo">
     </a>
         <nav class="nav-links">
             <a href="#branches">Branches</a>
             <a href="#how-it-works">How it works</a>
-            <a href="./auth/login.html" class="btn btn-primary">Director Login</a>
+            <a href="./auth/login.html" class="btn btn-primary">Login</a>
         </nav>
     </header>
 
     <section class="hero">
- <img src="./assets/images/kgl-hero-image.png" alt="hero Image">
-        <div>
-            <h1>One System. Two Strong Branches.</h1>
-            <p>
-                Welcome to the Karibu Groceries LTD (KGL) branch management console for
-                Maganjo and Matugga. Managers and sales agents coordinate procurement,
-                stock, and sales in one secure, real‑time platform.
-            </p>
-            <a href="#branches" class="btn btn-primary">Choose Branch to Continue</a>
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>One System. Two Strong Branches.</h1>
+                <p>
+                    Welcome to the Karibu Groceries LTD (KGL) branch management console for
+                    Maganjo and Matugga. Managers and sales agents coordinate procurement,
+                    stock, and sales in one secure, real‑time platform.
+                </p>
+                <p class="hero-note">
+                    🏠 This is your home page. You can always return here by clicking "Home" in any dashboard.
+                </p>
+                <a href="#branches" class="btn btn-primary hero-cta">Choose Branch to Continue</a>
+            </div>
+            <div class="hero-image">
+                <img src="./assets/images/kgl-hero-image.png" alt="KGL Management System">
+            </div>
         </div>
     </section>
 
     <main class="container">
-        <section id="branches" style="margin-bottom: 3rem;">
-            <h2 style="text-align: center; margin-bottom: 2rem;">Choose Your Branch</h2>
-            <div class="grid">
-                <div class="card">
-                    <img src="./assets/images/Maganjo.png" alt="Maganjo Branch Image">
-                    <h3>Maganjo Branch</h3>
-                    <p>
-                        Flagship storage and distribution hub for wholesale cereals
-                        serving Kampala and the central region.
-                    </p>
-                    <div style="margin-top: 1rem;">
-                        <small style="display:block; color: var(--text-light); margin-bottom: 0.35rem;">
-                            Login as:
-                        </small>
-                        <button class="btn btn-primary" onclick="goToLogin('Maganjo','manager')">
-                            Maganjo Manager
-                        </button>
-                        <button class="btn" style="margin-left:0.5rem;" onclick="goToLogin('Maganjo','agent')">
-                            Maganjo Sales Agent
-                        </button>
+        <section id="branches" class="branches-section">
+            <h2 class="section-title">Choose Your Branch</h2>
+            
+            <!-- Maganjo Branch -->
+            <div class="branch-card">
+                <div class="branch-content">
+                    <div class="branch-text">
+                        <h3>Maganjo Branch</h3>
+                        <p>
+                            Flagship storage and distribution hub for wholesale cereals
+                            serving Kampala and the central region. Our main facility
+                            handles large-scale operations and regional distribution.
+                        </p>
+                        <div class="branch-actions">
+                            <small class="login-label">Login as:</small>
+                            <div class="button-group">
+                                <button class="btn btn-primary" onclick="goToLogin('Maganjo','manager')">
+                                    Maganjo Manager
+                                </button>
+                                <button class="btn btn-secondary" onclick="goToLogin('Maganjo','agent')">
+                                    Sales Agent
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="branch-image">
+                        <img src="./assets/images/Maganjo.png" alt="Maganjo Branch">
                     </div>
                 </div>
-                <div class="card">
-                    <img src="./assets/images/Matugga.png" alt="Matugga Branch Image">
-                    <h3>Matugga Branch</h3>
-                    <p>
-                        Procurement‑focused branch close to farmers, optimized for intake,
-                        grading, and dispatch of bulk cereals.
-                    </p>
-                    <div style="margin-top: 1rem;">
-                        <small style="display:block; color: var(--text-light); margin-bottom: 0.35rem;">
-                            Login as:
-                        </small>
-                        <button class="btn btn-primary" onclick="goToLogin('Matugga','manager')">
-                            Matugga Manager
-                        </button>
-                        <button class="btn" style="margin-left:0.5rem;" onclick="goToLogin('Matugga','agent')">
-                            Matugga Sales Agent
-                        </button>
+            </div>
+
+            <!-- Matugga Branch -->
+            <div class="branch-card">
+                <div class="branch-content reverse">
+                    <div class="branch-image">
+                        <img src="./assets/images/Matugga.png" alt="Matugga Branch">
+                    </div>
+                    <div class="branch-text">
+                        <h3>Matugga Branch</h3>
+                        <p>
+                            Procurement‑focused branch close to farmers, optimized for intake,
+                            grading, and dispatch of bulk cereals. Specialized in farmer
+                            relations and quality control processes.
+                        </p>
+                        <div class="branch-actions">
+                            <small class="login-label">Login as:</small>
+                            <div class="button-group">
+                                <button class="btn btn-primary" onclick="goToLogin('Matugga','manager')">
+                                    Matugga Manager
+                                </button>
+                                <button class="btn btn-secondary" onclick="goToLogin('Matugga','agent')">
+                                    Sales Agent
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="card">
-                    <img src="./assets/images/kgl-sales-image.png" alt="Director Image">
-                    <h3>Director Console</h3>
-                    <p>
-                        The KGL Director can view read‑only performance dashboards across
-                        both branches — revenue, stock, and credit exposure.
-                    </p>
-                    <div style="margin-top: 1rem;">
-                        <button class="btn btn-primary" onclick="goDirector()">
-                            Director Login
-                        </button>
+            </div>
+
+            <!-- Director Console -->
+            <div class="branch-card director-card">
+                <div class="branch-content">
+                    <div class="branch-text">
+                        <h3>Director Console</h3>
+                        <p>
+                            Executive dashboard providing comprehensive oversight across
+                            both branches. Access real‑time performance metrics, revenue
+                            analytics, stock levels, and credit exposure reports.
+                        </p>
+                        <div class="branch-actions">
+                            <small class="login-label">Executive Access:</small>
+                            <div class="button-group">
+                                <button class="btn btn-primary director-btn" onclick="goDirector()">
+                                    Director Login
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="branch-image">
+                        <img src="./assets/images/kgl-sales-image.png" alt="Director Console">
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="how-it-works" style="margin-bottom: 3rem;">
-            <h2 style="text-align: center; margin-bottom: 1.5rem;">How KGL Branch Access Works</h2>
-            <div class="grid">
-                <div class="card">
-                    <h3>Step 1 – Open Landing Page</h3>
+        <section id="how-it-works" class="how-it-works-section">
+            <h2 class="section-title">How KGL Branch Access Works</h2>
+            <div class="steps-container">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Open Landing Page</h3>
                     <p>
                         Managers and sales agents always start from this landing page,
                         where they choose their branch (Maganjo or Matugga) and role.
                     </p>
                 </div>
-                <div class="card">
-                    <h3>Step 2 – Secure Login</h3>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>Secure Login</h3>
                     <p>
                         After selecting a branch and role, the system guides you to the
                         KGL login page where your username and password are verified using
                         secure JWT authentication.
                     </p>
                 </div>
-                <div class="card">
-                    <h3>Step 3 – Role‑Based Dashboards</h3>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>Role‑Based Dashboards</h3>
                     <p>
                         Successful logins are routed straight to the correct dashboard:
                         Manager, Sales Agent, or Director, with permissions tailored to

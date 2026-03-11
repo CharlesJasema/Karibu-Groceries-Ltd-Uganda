@@ -1,6 +1,5 @@
 # Dependencies
 node_modules/
-package-lock.json
 
 # Environment variables - NEVER COMMIT THESE!
 .env
@@ -34,21 +33,21 @@ build/
 .next/
 out/
 
-# IDE
+# IDE and Development Tools
 .vscode/
 .idea/
+.kiro/
 *.swp
 *.swo
 *~
-.DS_Store
 
 # OS
-Thumbs.db
 .DS_Store
+Thumbs.db
 
 # PM2
 .pm2/
-ecosystem.config.js.backup
+ecosystem.config.js
 
 # Temporary files
 tmp/
@@ -59,8 +58,10 @@ temp/
 *.sqlite
 *.db
 
-# Uploads (if any)
+# Uploads
 uploads/
+public/uploads/profiles/*
+!public/uploads/profiles/.gitkeep
 
 # Sensitive files - DO NOT COMMIT
 config/secrets.js
@@ -68,34 +69,40 @@ config/secrets.js
 *.key
 *.cert
 
-# Documentation and project notes (optional - uncomment to exclude)
-# Keep only essential docs like README.md in git
-API_IMPROVEMENTS.md
-COMPLETE_PROJECT_SUMMARY.md
-DEPLOYMENT.md
-FINAL_FIXES_SUMMARY.md
-FRONTEND_QUICK_REFERENCE.md
-FRONTEND_UPGRADE.md
-MONGODB_POSTMAN_SETUP_GUIDE.md
-POSTMAN_GUIDE.md
-PRESENTATION_BACKEND.md
-PRESENTATION_DEPLOYMENT_QA.md
-PRESENTATION_FRONTEND.md
-PRESENTATION_QUICK_REFERENCE.md
-PRODUCTION_CHECKLIST.md
-PROJECT_PRESENTATION.md
-QUICK_START.md
-SECURITY_SETUP.md
-UPGRADE_SUMMARY.md
-
-# Docker (if you want to exclude Docker files)
-# docker-compose.yml
-# Dockerfile
-# .dockerignore
-
-# PM2 ecosystem config (contains environment-specific settings)
-ecosystem.config.js
-
-# Utility scripts (if they contain sensitive data or are environment-specific)
+# Development and testing files
+test-*.js
+*-test.js
+*.test.js
+test-*.html
+*-debug.html
+debug-*.js
 createManager.js
 seedDemoData.js
+seedUsers.js
+
+# Documentation (development)
+*_GUIDE.md
+*_SUMMARY.md
+*_FIXES.md
+*_DEBUG.md
+*_TEST.md
+*_VERIFICATION.md
+AUTHENTICATION_*.md
+BUG_*.md
+FIXES_*.md
+SYSTEM_*.md
+QUICK_*.md
+FRONTEND_*.md
+PRESENTATION_*.md
+DEPLOYMENT_*.md
+API_*.md
+SECURITY_VERIFICATION.md
+
+# Windows batch files
+*.bat
+
+# Postman collections (safe to commit - no secrets)
+# postman/ - Allow postman collections to be committed
+# Backup files
+*.backup
+*.bak

@@ -12,9 +12,10 @@
             <img src="../assets/logo/kgl-logo.png" alt="KGL Logo">
         </a>
         <nav class="nav-links">
+            <a href="../index.html">🏠 Home</a>
             <span id="manager-branch"></span>
             <a href="managerProfile.html">Profile</a>
-            <a href="#" onclick="logout()">Logout</a>
+            <a href="../auth/login.html" onclick="logout()">Logout</a>
         </nav>
     </header>
 
@@ -60,13 +61,16 @@
                             <th>Produce</th>
                             <th>Quantity (kg)</th>
                             <th>Amount (UGX)</th>
+                            <th>Payment</th>
                             <th>Buyer</th>
                             <th>Sales Agent</th>
+                            <th>Recorded By</th>
+                            <th>Branch</th>
                         </tr>
                     </thead>
                     <tbody id="cashSalesTable">
                         <tr>
-                            <td colspan="7" style="text-align: center; color: var(--text-light);">
+                            <td colspan="10" style="text-align: center; color: var(--text-light);">
                                 Loading sales...
                             </td>
                         </tr>
@@ -89,11 +93,13 @@
                             <th>Amount Due (UGX)</th>
                             <th>Due Date</th>
                             <th>Status</th>
+                            <th>Recorded By</th>
+                            <th>Branch</th>
                         </tr>
                     </thead>
                     <tbody id="creditSalesTable">
                         <tr>
-                            <td colspan="7" style="text-align: center; color: var(--text-light);">
+                            <td colspan="8" style="text-align: center; color: var(--text-light);">
                                 Loading credit sales...
                             </td>
                         </tr>
@@ -127,25 +133,32 @@
                 // Load cash sales
                 const cashTbody = document.getElementById('cashSalesTable');
                 if (!data.cashSales || data.cashSales.length === 0) {
-                    cashTbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-light);">No cash sales found</td></tr>';
+                    cashTbody.innerHTML = '<tr><td colspan="10" style="text-align: center; color: var(--text-light);">No cash sales found</td></tr>';
                 } else {
-                    cashTbody.innerHTML = data.cashSales.slice(0, 20).map(sale => `
+                    cashTbody.innerHTML = data.cashSales.slice(0, 20).map(sale => {
+                        const paymentBadge = sale.paymentMethod === 'cash' ? 'success' : 
+                                           sale.paymentMethod === 'momo' ? 'info' : 'warning';
+                        return `
                         <tr>
                             <td>${formatDate(sale.date)}</td>
                             <td>${sale.time}</td>
                             <td><strong>${sale.produceName}</strong></td>
                             <td>${sale.tonnage.toFixed(1)}</td>
                             <td>${formatCurrency(sale.amountPaid)}</td>
+                            <td><span class="badge badge-${paymentBadge}">${(sale.paymentMethod || 'cash').toUpperCase()}</span></td>
                             <td>${sale.buyerName}</td>
                             <td>${sale.salesAgent}</td>
+                            <td><span class="badge badge-info">${sale.recordedBy?.name || 'N/A'}</span></td>
+                            <td><span class="badge badge-default">${sale.branch || 'N/A'}</span></td>
                         </tr>
-                    `).join('');
+                    `;
+                    }).join('');
                 }
 
                 // Load credit sales
                 const creditTbody = document.getElementById('creditSalesTable');
                 if (!data.creditSales || data.creditSales.length === 0) {
-                    creditTbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-light);">No credit sales found</td></tr>';
+                    creditTbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: var(--text-light);">No credit sales found</td></tr>';
                 } else {
                     creditTbody.innerHTML = data.creditSales.slice(0, 20).map(sale => {
                         const isPaid = sale.paid;
@@ -164,6 +177,8 @@
                                         ${isPaid ? 'Paid' : isOverdue ? 'Overdue' : 'Pending'}
                                     </span>
                                 </td>
+                                <td><span class="badge badge-info">${sale.recordedBy?.name || 'N/A'}</span></td>
+                                <td><span class="badge badge-default">${sale.branch || 'N/A'}</span></td>
                             </tr>
                         `;
                     }).join('');

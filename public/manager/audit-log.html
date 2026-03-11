@@ -12,6 +12,7 @@
             <img src="../assets/logo/kgl-logo.png" alt="KGL Logo">
         </a>
         <nav class="nav-links">
+            <a href="../index.html">🏠 Home</a>
             <span id="manager-branch"></span>
             <a href="managerProfile.html">Profile</a>
             <a href="#" onclick="logout()">Logout</a>
@@ -73,45 +74,35 @@
 
         async function loadAuditLogs() {
             try {
-                // Note: This endpoint may need to be created in the backend
-                // For now, we'll show a placeholder message
+                const data = await apiRequest('/audit-logs?limit=100');
                 const tbody = document.getElementById('auditTable');
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" style="text-align: center; color: var(--text-light); padding: 2rem;">
-                            <p style="margin-bottom: 0.5rem;">Audit logging is active and tracking all system activities.</p>
-                            <p style="font-size: 0.85rem;">Contact system administrator to view detailed audit logs.</p>
-                        </td>
-                    </tr>
-                `;
                 
-                // If you have an audit logs endpoint, uncomment and use this:
-                /*
-                const data = await apiRequest('/audit-logs');
-                
-                if (!data.logs || data.logs.length === 0) {
+                if (!data.data || data.data.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-light);">No audit logs found</td></tr>';
                     return;
                 }
 
-                tbody.innerHTML = data.logs.map(log => `
+                tbody.innerHTML = data.data.map(log => `
                     <tr>
                         <td>${formatDateTime(log.createdAt)}</td>
                         <td>
                             <strong>${log.user?.name || 'System'}</strong><br>
                             <span class="badge badge-info" style="font-size: 0.75rem;">${log.user?.role || 'system'}</span>
                         </td>
-                        <td><code style="font-size: 0.85rem;">${log.action}</code></td>
+                        <td><code style="font-size: 0.85rem; background: var(--bg-light); padding: 0.2rem 0.4rem; border-radius: 4px;">${log.action}</code></td>
                         <td>${log.entity}</td>
                         <td style="font-family: monospace; font-size: 0.85rem;">${log.ip || 'N/A'}</td>
-                        <td style="font-size: 0.85rem; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
-                            ${JSON.stringify(log.details || {}).slice(0, 50)}...
+                        <td style="font-size: 0.85rem; max-width: 200px;">
+                            <details>
+                                <summary style="cursor: pointer; color: var(--primary-green);">View Details</summary>
+                                <pre style="font-size: 0.75rem; margin-top: 0.5rem; background: var(--bg-light); padding: 0.5rem; border-radius: 4px; overflow-x: auto;">${JSON.stringify(log.details || {}, null, 2)}</pre>
+                            </details>
                         </td>
                     </tr>
                 `).join('');
-                */
             } catch (error) {
                 showToast(error.message || 'Failed to load audit logs', 'error');
+                document.getElementById('auditTable').innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Failed to load audit logs</td></tr>';
             }
         }
 

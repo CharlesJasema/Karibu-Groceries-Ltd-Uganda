@@ -18,6 +18,10 @@ const CreditSaleSchema = new mongoose.Schema(
     paid: { type: Boolean, default: false },
     paidAt: { type: Date },
     recordedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    deleted: { type: Boolean, default: false }, // NEW FIELD
+    deletedAt: { type: Date }, // NEW FIELD
+    deletedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // NEW FIELD
+    previousVersion: { type: mongoose.Schema.Types.Mixed }, // NEW FIELD
   },
   { timestamps: true },
 );
@@ -28,5 +32,6 @@ CreditSaleSchema.index({ dueDate: 1, paid: 1 });
 CreditSaleSchema.index({ nin: 1 });
 CreditSaleSchema.index({ recordedBy: 1 });
 CreditSaleSchema.index({ createdAt: -1 });
+CreditSaleSchema.index({ deleted: 1 }); // NEW INDEX
 
 module.exports = mongoose.model("CreditSale", CreditSaleSchema);

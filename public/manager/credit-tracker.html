@@ -12,6 +12,7 @@
             <img src="../assets/logo/kgl-logo.png" alt="KGL Logo">
         </a>
         <nav class="nav-links">
+            <a href="../index.html">🏠 Home</a>
             <span id="manager-branch"></span>
             <a href="managerProfile.html">Profile</a>
             <a href="#" onclick="logout()">Logout</a>
@@ -63,12 +64,13 @@
                             <th>Amount (UGX)</th>
                             <th>Due Date</th>
                             <th>Status</th>
+                            <th>Recorded By</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="creditTable">
                         <tr>
-                            <td colspan="9" style="text-align: center; color: var(--text-light);">
+                            <td colspan="10" style="text-align: center; color: var(--text-light);">
                                 Loading credit accounts...
                             </td>
                         </tr>
@@ -94,12 +96,13 @@
                 const data = await apiRequest('/sales/credit');
                 const tbody = document.getElementById('creditTable');
                 
-                if (!data.creditSales || data.creditSales.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: var(--text-light);">No credit sales found</td></tr>';
+                // API returns data.data, not data.creditSales
+                const credits = data.data || [];
+                
+                if (credits.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; color: var(--text-light);">No credit sales found</td></tr>';
                     return;
                 }
-
-                const credits = data.creditSales;
                 const now = new Date();
                 
                 // Calculate stats
@@ -133,6 +136,7 @@
                                     ${isPaid ? 'Paid' : isOverdue ? 'Overdue' : 'Pending'}
                                 </span>
                             </td>
+                            <td><span class="badge badge-info">${credit.recordedBy?.name || 'N/A'}</span></td>
                             <td>
                                 ${!isPaid ? 
                                     `<button class="btn btn-outline" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="markAsPaid('${credit._id}')">Mark Paid</button>` :
@@ -148,14 +152,33 @@
         }
 
         async function markAsPaid(creditId) {
-            if (!confirm('Mark this credit sale as paid?')) return;
+            if (!confirm('Mark this credit sale as paid? This will create a payment record.')) return;
 
             try {
-                await apiRequest(`/sales/credit/${creditId}/paid`, {
-                    method: 'PATCH'
+                // Get the credit sale details first
+                const creditData = await apiRequest(`/sales/credit?limit=100`);
+                const credits = creditData.data || [];
+                const credit = credits.find(c => c._id === creditId);
+                
+                if (!credit) {
+                    showToast('Credit sale not found', 'error');
+                    return;
+                }
+
+                // Create payment record
+                await apiRequest('/payments', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        saleId: creditId,
+                        saleType: 'credit',
+                        paymentMethod: 'cash', // Default to cash, manager can edit in payment management
+                        amount: credit.amountDue,
+                        buyerName: credit.buyerName,
+                        notes: 'Marked as paid from Credit Tracker'
+                    })
                 });
 
-                showToast('Credit marked as paid successfully!', 'success');
+                showToast('Credit marked as paid and payment recorded successfully!', 'success');
                 await loadCreditData();
             } catch (error) {
                 showToast(error.message || 'Failed to update credit status', 'error');

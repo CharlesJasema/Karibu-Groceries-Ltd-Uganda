@@ -118,9 +118,66 @@
                     document.getElementById('total-qty').innerText = (data.totalQtySold || 0).toFixed(1) + ' kg';
                     document.getElementById('pending-credit').innerText =
                         new Intl.NumberFormat('en-UG', { maximumFractionDigits: 0 }).format(data.pendingCredit || 0);
+                    
+                    // Load recent activity
+                    loadRecentActivity(data);
                 }
             } catch {
                 // fail silently for now
+            }
+        }
+
+        function loadRecentActivity(data) {
+            const tbody = document.querySelector('#recent-activity-table tbody');
+            const nf = new Intl.NumberFormat('en-UG', { maximumFractionDigits: 0 });
+            
+            // Combine cash and credit sales for recent activity
+            const recentSales = [];
+            
+            if (data.cashSales) {
+                data.cashSales.slice(0, 5).forEach(sale => {
+                    recentSales.push({
+                        date: sale.date || sale.createdAt,
+                        type: 'Cash Sale',
+                        produce: sale.produceName,
+                        amount: sale.amountPaid,
+                        recordedBy: sale.recordedBy?.name || 'N/A'
+                    });
+                });
+            }
+            
+            if (data.creditSales) {
+                data.creditSales.slice(0, 3).forEach(sale => {
+                    recentSales.push({
+                        date: sale.dispatchDate || sale.createdAt,
+                        type: 'Credit Sale',
+                        produce: sale.produceName,
+                        amount: sale.amountDue,
+                        recordedBy: sale.recordedBy?.name || 'N/A'
+                    });
+                });
+            }
+            
+            // Sort by date and take top 8
+            recentSales.sort((a, b) => new Date(b.date) - new Date(a.date));
+            const topRecent = recentSales.slice(0, 8);
+            
+            if (topRecent.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-light);">No recent activity found</td></tr>';
+            } else {
+                tbody.innerHTML = topRecent.map(activity => {
+                    const actDate = new Date(activity.date);
+                    const typeClass = activity.type === 'Cash Sale' ? 'badge-success' : 'badge-warning';
+                    return `
+                        <tr>
+                            <td>${actDate.toLocaleDateString()}</td>
+                            <td><span class="badge ${typeClass}">${activity.type}</span></td>
+                            <td><strong>${activity.produce}</strong></td>
+                            <td>${nf.format(activity.amount)}</td>
+                            <td><span class="badge badge-info">${activity.recordedBy}</span></td>
+                        </tr>
+                    `;
+                }).join('');
             }
         }
 
@@ -137,6 +194,7 @@
       <img src="../assets/logo/kgl-logo.png" alt="kgl Logo">
     </a>
         <nav class="nav-links">
+            <a href="../index.html">🏠 Home</a>
             <span id="manager-branch"></span>
             <a href="managerProfile.html">Profile</a>
             <a href="../auth/login.html" onclick="logout()">Logout</a>
@@ -178,6 +236,10 @@
                 Inventory
                 <span>Monitor stock levels and low-stock alerts.</span>
             </a>
+            <a href="payments.html" class="action-card">
+                Payments
+                <span>Track cash, MoMo, and bank transfer payments.</span>
+            </a>
             <a href="credit-tracker.html" class="action-card">
                 Credit Tracker
                 <span>Follow up on deferred/credit sales.</span>
@@ -194,6 +256,31 @@
                 Manage Staff
                 <span>Create and manage managers and agents.</span>
             </a>
+        </div>
+
+        <!-- Recent Activity Section -->
+        <div class="card mt-3">
+            <h3 style="margin-bottom: 0.75rem;">Recent Sales Activity</h3>
+            <div style="overflow-x: auto;">
+                <table class="table" id="recent-activity-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Produce</th>
+                            <th>Amount (UGX)</th>
+                            <th>Recorded By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--text-light);">
+                                Loading recent activity...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
     <script>

@@ -46,9 +46,13 @@ router.get(
   requireRole("director"),
   async (req, res) => {
     try {
+      // Filter to exclude deleted records
+      const deletedFilter = { deleted: { $ne: true } };
+      
       const [salesAgg, creditAgg, topProduce, recentSales] = await Promise.all([
         // Revenue + qty by branch
         Sale.aggregate([
+          { $match: deletedFilter },
           {
             $group: {
               _id: "$branch",
@@ -62,6 +66,7 @@ router.get(
 
         // Outstanding credit by paid status
         CreditSale.aggregate([
+          { $match: deletedFilter },
           {
             $group: {
               _id: "$paid",
@@ -73,6 +78,7 @@ router.get(
 
         // Top 5 produce by revenue
         Sale.aggregate([
+          { $match: deletedFilter },
           {
             $group: {
               _id: "$produceName",
@@ -84,7 +90,11 @@ router.get(
           { $limit: 5 },
         ]),
 
-        Sale.find().sort({ createdAt: -1 }).limit(10).lean(),
+        Sale.find(deletedFilter)
+          .populate('recordedBy', 'name role')
+          .sort({ createdAt: -1 })
+          .limit(10)
+          .lean(),
       ]);
 
       // Totals
@@ -136,13 +146,21 @@ router.get(
 router.get(
   "/branch/:branch",
   protect,
-  requireRole("manager"),
+  requireRole("manager", "agent", "director"),
   async (req, res) => {
     try {
       const { branch } = req.params;
+      
+      // By default, exclude deleted records
+      const filter = { branch, deleted: { $ne: true } };
+      
       const [cashSales, creditSales, stock] = await Promise.all([
-        Sale.find({ branch }).sort({ createdAt: -1 }),
-        CreditSale.find({ branch }).sort({ dueDate: 1 }),
+        Sale.find(filter)
+          .populate('recordedBy', 'name role')
+          .sort({ createdAt: -1 }),
+        CreditSale.find(filter)
+          .populate('recordedBy', 'name role')
+          .sort({ dueDate: 1 }),
         Inventory.find({ branch, active: true }),
       ]);
 

@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KGL | Payment Management</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <a href="manager-dashboard.html" class="logo">
+            <img src="../assets/logo/kgl-logo.png" alt="KGL Logo">
+        </a>
+        <nav class="nav-links">
+            <a href="../index.html">🏠 Home</a>
+            <span id="manager-branch"></span>
+            <a href="managerProfile.html">Profile</a>
+            <a href="../auth/login.html" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="d-flex justify-between align-center mb-3">
+            <div>
+                <h2>Payment Management</h2>
+                <p style="color: var(--text-light);">Track and manage all payment transactions.</p>
+            </div>
+            <button class="btn btn-outline" onclick="window.location.href='manager-dashboard.html'">
+                ← Back to Dashboard
+            </button>
+        </div>
+
+        <!-- Payment Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Payments</h3>
+                <div class="value">UGX <span id="total-payments">0</span></div>
+                <div class="sub">All payment methods</div>
+            </div>
+            <div class="stat-card" style="border-left-color: var(--success);">
+                <h3>Cash Payments</h3>
+                <div class="value">UGX <span id="cash-payments">0</span></div>
+                <div class="sub"><span id="cash-count">0</span> transactions</div>
+            </div>
+            <div class="stat-card" style="border-left-color: var(--info);">
+                <h3>MoMo Payments</h3>
+                <div class="value">UGX <span id="momo-payments">0</span></div>
+                <div class="sub"><span id="momo-count">0</span> transactions</div>
+            </div>
+            <div class="stat-card" style="border-left-color: var(--warning);">
+                <h3>Bank Transfers</h3>
+                <div class="value">UGX <span id="bank-payments">0</span></div>
+                <div class="sub"><span id="bank-count">0</span> transactions</div>
+            </div>
+        </div>
+
+        <!-- Record Payment Form -->
+        <div class="card mb-3">
+            <div class="d-flex justify-between align-center mb-2">
+                <h3>Record New Payment</h3>
+                <button class="btn btn-outline" onclick="togglePaymentForm()">
+                    <span id="formToggleText">Show Form</span>
+                </button>
+            </div>
+            
+            <form id="paymentForm" style="display: none;" onsubmit="recordPayment(event)">
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                    <div class="form-group">
+                        <label for="saleType">Sale Type *</label>
+                        <select id="saleType" required onchange="loadSales()">
+                            <option value="">Select Type</option>
+                            <option value="cash">Cash Sale</option>
+                            <option value="credit">Credit Sale</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="saleId">Select Sale *</label>
+                        <select id="saleId" required onchange="populateSaleDetails()">
+                            <option value="">Select a sale first</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="paymentMethod">Payment Method *</label>
+                        <select id="paymentMethod" required onchange="togglePaymentDetails()">
+                            <option value="">Select Method</option>
+                            <option value="cash">Cash</option>
+                            <option value="momo">Mobile Money</option>
+                            <option value="bank">Bank Transfer</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="amount">Amount (UGX) *</label>
+                        <input type="number" id="amount" required min="1000" step="100">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="buyerName">Buyer Name *</label>
+                        <input type="text" id="buyerName" required readonly>
+                    </div>
+                </div>
+                
+                <!-- MoMo Details -->
+                <div id="momoDetails" style="display: none;">
+                    <h4 style="margin-top: 1rem; margin-bottom: 0.5rem;">Mobile Money Details</h4>
+                    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                        <div class="form-group">
+                            <label for="momoProvider">Provider *</label>
+                            <select id="momoProvider">
+                                <option value="">Select Provider</option>
+                                <option value="MTN">MTN Mobile Money</option>
+                                <option value="Airtel">Airtel Money</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="momoPhone">Phone Number *</label>
+                            <input type="tel" id="momoPhone" placeholder="+256700000000">
+                        </div>
+                        <div class="form-group">
+                            <label for="momoTransactionId">Transaction ID *</label>
+                            <input type="text" id="momoTransactionId" placeholder="e.g., MTN123456789">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bank Details -->
+                <div id="bankDetails" style="display: none;">
+                    <h4 style="margin-top: 1rem; margin-bottom: 0.5rem;">Bank Transfer Details</h4>
+                    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                        <div class="form-group">
+                            <label for="bankName">Bank Name *</label>
+                            <input type="text" id="bankName" placeholder="e.g., Stanbic Bank">
+                        </div>
+                        <div class="form-group">
+                            <label for="bankAccount">Account Number *</label>
+                            <input type="text" id="bankAccount" placeholder="Account number">
+                        </div>
+                        <div class="form-group">
+                            <label for="bankRef">Transaction Reference *</label>
+                            <input type="text" id="bankRef" placeholder="Bank reference number">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label for="notes">Notes (Optional)</label>
+                    <textarea id="notes" rows="2" placeholder="Additional payment notes..."></textarea>
+                </div>
+                
+                <div style="margin-top: 1rem;">
+                    <button type="submit" class="btn btn-primary">Record Payment</button>
+                    <button type="button" class="btn btn-outline" onclick="resetPaymentForm()">Clear Form</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Filters -->
+        <div class="card mb-3">
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <div class="form-group">
+                    <label for="filterMethod">Payment Method</label>
+                    <select id="filterMethod" onchange="loadPayments()">
+                        <option value="">All Methods</option>
+                        <option value="cash">Cash</option>
+                        <option value="momo">Mobile Money</option>
+                        <option value="bank">Bank Transfer</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="filterStatus">Status</label>
+                    <select id="filterStatus" onchange="loadPayments()">
+                        <option value="">All Status</option>
+                        <option value="completed">Completed</option>
+                        <option value="pending">Pending</option>
+                        <option value="failed">Failed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-outline" onclick="resetFilters()">Reset Filters</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payments Table -->
+        <div class="card">
+            <h3 class="mb-2">Payment History</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Payment Method</th>
+                            <th>Amount (UGX)</th>
+                            <th>Buyer</th>
+                            <th>Transaction Details</th>
+                            <th>Status</th>
+                            <th>Recorded By</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paymentsTable">
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: var(--text-light);">
+                                Loading payments...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="pagination" class="mt-2" style="text-align: center;"></div>
+        </div>
+    </main>
+
+    <script src="../js/utils.js"></script>
+    <script>
+        let currentPage = 1;
+        const limit = 20;
+        let availableSales = [];
+
+        async function init() {
+            if (!checkAuth('manager')) return;
+            
+            const user = getUser();
+            document.getElementById('manager-branch').textContent = user.branch || '';
+            
+            await loadStatistics();
+            await loadPayments();
+        }
+
+        function togglePaymentForm() {
+            const form = document.getElementById('paymentForm');
+            const toggleText = document.getElementById('formToggleText');
+            
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+                toggleText.textContent = 'Hide Form';
+            } else {
+                form.style.display = 'none';
+                toggleText.textContent = 'Show Form';
+            }
+        }
+
+        async function loadSales() {
+            const saleType = document.getElementById('saleType').value;
+            const saleSelect = document.getElementById('saleId');
+            
+            if (!saleType) {
+                saleSelect.innerHTML = '<option value="">Select a sale type first</option>';
+                availableSales = [];
+                return;
+            }
+
+            try {
+                saleSelect.innerHTML = '<option value="">Loading...</option>';
+                
+                const endpoint = saleType === 'cash' ? '/sales/cash' : '/sales/credit';
+                const data = await apiRequest(`${endpoint}?limit=100`);
+                
+                availableSales = data.data || [];
+                
+                if (availableSales.length === 0) {
+                    saleSelect.innerHTML = '<option value="">No sales found</option>';
+                    return;
+                }
+
+                // For credit sales, show only unpaid ones
+                if (saleType === 'credit') {
+                    availableSales = availableSales.filter(s => !s.paid);
+                }
+
+                saleSelect.innerHTML = '<option value="">Select Sale</option>' + 
+                    availableSales.map(sale => {
+                        const displayText = saleType === 'cash' 
+                            ? `${sale.produceName} - ${sale.buyerName} - ${formatCurrency(sale.amountPaid)} (${formatDate(sale.date)})`
+                            : `${sale.produceName} - ${sale.buyerName} - ${formatCurrency(sale.amountDue)} (Due: ${formatDate(sale.dueDate)})`;
+                        return `<option value="${sale._id}">${displayText}</option>`;
+                    }).join('');
+            } catch (error) {
+                showToast(error.message || 'Failed to load sales', 'error');
+                saleSelect.innerHTML = '<option value="">Error loading sales</option>';
+            }
+        }
+
+        function populateSaleDetails() {
+            const saleId = document.getElementById('saleId').value;
+            const saleType = document.getElementById('saleType').value;
+            
+            if (!saleId) {
+                document.getElementById('buyerName').value = '';
+                document.getElementById('amount').value = '';
+                return;
+            }
+
+            const sale = availableSales.find(s => s._id === saleId);
+            if (sale) {
+                document.getElementById('buyerName').value = sale.buyerName;
+                document.getElementById('amount').value = saleType === 'cash' ? sale.amountPaid : sale.amountDue;
+            }
+        }
+
+        function togglePaymentDetails() {
+            const method = document.getElementById('paymentMethod').value;
+            const momoDiv = document.getElementById('momoDetails');
+            const bankDiv = document.getElementById('bankDetails');
+            
+            momoDiv.style.display = 'none';
+            bankDiv.style.display = 'none';
+            
+            // Reset required attributes
+            document.querySelectorAll('#momoDetails input, #momoDetails select').forEach(el => {
+                el.removeAttribute('required');
+            });
+            document.querySelectorAll('#bankDetails input').forEach(el => {
+                el.removeAttribute('required');
+            });
+            
+            if (method === 'momo') {
+                momoDiv.style.display = 'block';
+                document.getElementById('momoProvider').setAttribute('required', 'required');
+                document.getElementById('momoPhone').setAttribute('required', 'required');
+                document.getElementById('momoTransactionId').setAttribute('required', 'required');
+            } else if (method === 'bank') {
+                bankDiv.style.display = 'block';
+                document.getElementById('bankName').setAttribute('required', 'required');
+                document.getElementById('bankAccount').setAttribute('required', 'required');
+                document.getElementById('bankRef').setAttribute('required', 'required');
+            }
+        }
+
+        async function recordPayment(event) {
+            event.preventDefault();
+            
+            const saleId = document.getElementById('saleId').value;
+            const saleType = document.getElementById('saleType').value;
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const buyerName = document.getElementById('buyerName').value;
+            const notes = document.getElementById('notes').value;
+            
+            const payload = {
+                saleId,
+                saleType,
+                paymentMethod,
+                amount,
+                buyerName,
+                notes
+            };
+            
+            // Add method-specific details
+            if (paymentMethod === 'momo') {
+                payload.momoDetails = {
+                    provider: document.getElementById('momoProvider').value,
+                    phoneNumber: document.getElementById('momoPhone').value,
+                    transactionId: document.getElementById('momoTransactionId').value
+                };
+            } else if (paymentMethod === 'bank') {
+                payload.bankDetails = {
+                    bankName: document.getElementById('bankName').value,
+                    accountNumber: document.getElementById('bankAccount').value,
+                    transactionRef: document.getElementById('bankRef').value
+                };
+            }
+            
+            try {
+                await apiRequest('/payments', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                
+                showToast('Payment recorded successfully!', 'success');
+                resetPaymentForm();
+                await loadStatistics();
+                await loadPayments();
+                
+                // Hide form after successful submission
+                togglePaymentForm();
+            } catch (error) {
+                showToast(error.message || 'Failed to record payment', 'error');
+            }
+        }
+
+        function resetPaymentForm() {
+            document.getElementById('paymentForm').reset();
+            document.getElementById('saleId').innerHTML = '<option value="">Select a sale first</option>';
+            document.getElementById('momoDetails').style.display = 'none';
+            document.getElementById('bankDetails').style.display = 'none';
+            availableSales = [];
+        }
+
+        async function loadStatistics() {
+            try {
+                const data = await apiRequest('/payments/summary/stats');
+                
+                let totalAmount = 0;
+                let cashAmount = 0, cashCount = 0;
+                let momoAmount = 0, momoCount = 0;
+                let bankAmount = 0, bankCount = 0;
+
+                if (data.byMethod) {
+                    data.byMethod.forEach(method => {
+                        totalAmount += method.totalAmount;
+                        
+                        if (method._id === 'cash') {
+                            cashAmount = method.totalAmount;
+                            cashCount = method.count;
+                        } else if (method._id === 'momo') {
+                            momoAmount = method.totalAmount;
+                            momoCount = method.count;
+                        } else if (method._id === 'bank') {
+                            bankAmount = method.totalAmount;
+                            bankCount = method.count;
+                        }
+                    });
+                }
+
+                document.getElementById('total-payments').textContent = formatCurrency(totalAmount);
+                document.getElementById('cash-payments').textContent = formatCurrency(cashAmount);
+                document.getElementById('cash-count').textContent = cashCount;
+                document.getElementById('momo-payments').textContent = formatCurrency(momoAmount);
+                document.getElementById('momo-count').textContent = momoCount;
+                document.getElementById('bank-payments').textContent = formatCurrency(bankAmount);
+                document.getElementById('bank-count').textContent = bankCount;
+            } catch (error) {
+                console.error('Failed to load statistics:', error);
+            }
+        }
+
+        async function loadPayments() {
+            try {
+                const method = document.getElementById('filterMethod').value;
+                const status = document.getElementById('filterStatus').value;
+                
+                let url = `/payments?page=${currentPage}&limit=${limit}`;
+                if (method) url += `&paymentMethod=${method}`;
+                if (status) url += `&status=${status}`;
+
+                const data = await apiRequest(url);
+                const tbody = document.getElementById('paymentsTable');
+                
+                if (!data.data || data.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-light);">No payments found</td></tr>';
+                    document.getElementById('pagination').innerHTML = '';
+                    return;
+                }
+
+                tbody.innerHTML = data.data.map(payment => {
+                    let transactionDetails = '-';
+                    
+                    if (payment.paymentMethod === 'momo' && payment.momoDetails) {
+                        transactionDetails = `${payment.momoDetails.provider || ''} - ${payment.momoDetails.transactionId || 'N/A'}`;
+                    } else if (payment.paymentMethod === 'bank' && payment.bankDetails) {
+                        transactionDetails = `${payment.bankDetails.bankName || ''} - ${payment.bankDetails.transactionRef || 'N/A'}`;
+                    }
+
+                    const methodBadge = payment.paymentMethod === 'cash' ? 'success' : 
+                                       payment.paymentMethod === 'momo' ? 'info' : 'warning';
+                    
+                    const statusBadge = payment.status === 'completed' ? 'success' : 
+                                       payment.status === 'pending' ? 'warning' : 'danger';
+
+                    return `
+                        <tr>
+                            <td>${formatDate(payment.paymentDate)}</td>
+                            <td><span class="badge badge-${methodBadge}">${payment.paymentMethod.toUpperCase()}</span></td>
+                            <td><strong>${formatCurrency(payment.amount)}</strong></td>
+                            <td>${payment.buyerName}</td>
+                            <td style="font-size: 0.85rem;">${transactionDetails}</td>
+                            <td><span class="badge badge-${statusBadge}">${payment.status}</span></td>
+                            <td>${payment.recordedBy?.name || 'N/A'}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+                // Pagination
+                if (data.pages > 1) {
+                    let paginationHTML = '';
+                    for (let i = 1; i <= data.pages; i++) {
+                        paginationHTML += `<button class="btn ${i === currentPage ? 'btn-primary' : 'btn-outline'}" 
+                            onclick="changePage(${i})" style="margin: 0 0.25rem;">${i}</button>`;
+                    }
+                    document.getElementById('pagination').innerHTML = paginationHTML;
+                } else {
+                    document.getElementById('pagination').innerHTML = '';
+                }
+            } catch (error) {
+                showToast(error.message || 'Failed to load payments', 'error');
+            }
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            loadPayments();
+        }
+
+        function resetFilters() {
+            document.getElementById('filterMethod').value = '';
+            document.getElementById('filterStatus').value = '';
+            currentPage = 1;
+            loadPayments();
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

@@ -71,6 +71,7 @@
       <img src="../assets/logo/kgl-logo.png" alt="KGL Logo">
     </a>
         <nav class="nav-links">
+            <a href="../index.html">🏠 Home</a>
             <span id="agent-branch"></span>
             <span id="agent-name">Agent</span>
             <a href="#" onclick="logout()">Logout</a>
@@ -116,6 +117,32 @@
                 <span>Review your details and activity.</span>
             </a>
         </div>
+
+        <!-- My Recent Sales -->
+        <div class="card mt-3">
+            <h3 style="margin-bottom: 0.75rem;">My Recent Sales</h3>
+            <div style="overflow-x: auto;">
+                <table class="table" id="my-sales-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Produce</th>
+                            <th>Buyer</th>
+                            <th>Amount (UGX)</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: var(--text-light);">
+                                Loading my sales...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </main>
 
     <script>
@@ -159,9 +186,72 @@
 
                     const openCredit = (data.creditSales || []).filter(c => !c.paid).length;
                     document.getElementById('open-credit').innerText = openCredit;
+                    
+                    // Load my recent sales
+                    loadMySales(data, user);
                 }
             } catch {
                 // ignore for now
+            }
+        }
+
+        function loadMySales(data, user) {
+            const tbody = document.querySelector('#my-sales-table tbody');
+            const nf = new Intl.NumberFormat('en-UG', { maximumFractionDigits: 0 });
+            
+            // Filter sales recorded by this agent
+            const mySales = [];
+            
+            if (data.cashSales) {
+                data.cashSales.filter(sale => sale.recordedBy?._id === user._id || sale.salesAgent === user.name)
+                    .slice(0, 5).forEach(sale => {
+                    mySales.push({
+                        date: sale.date || sale.createdAt,
+                        type: 'Cash Sale',
+                        produce: sale.produceName,
+                        buyer: sale.buyerName,
+                        amount: sale.amountPaid,
+                        status: 'Completed'
+                    });
+                });
+            }
+            
+            if (data.creditSales) {
+                data.creditSales.filter(sale => sale.recordedBy?._id === user._id || sale.salesAgent === user.name)
+                    .slice(0, 5).forEach(sale => {
+                    mySales.push({
+                        date: sale.dispatchDate || sale.createdAt,
+                        type: 'Credit Sale',
+                        produce: sale.produceName,
+                        buyer: sale.buyerName,
+                        amount: sale.amountDue,
+                        status: sale.paid ? 'Paid' : 'Pending'
+                    });
+                });
+            }
+            
+            // Sort by date and take top 10
+            mySales.sort((a, b) => new Date(b.date) - new Date(a.date));
+            const topMySales = mySales.slice(0, 10);
+            
+            if (topMySales.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-light);">No sales recorded by you yet</td></tr>';
+            } else {
+                tbody.innerHTML = topMySales.map(sale => {
+                    const saleDate = new Date(sale.date);
+                    const typeClass = sale.type === 'Cash Sale' ? 'badge-success' : 'badge-warning';
+                    const statusClass = sale.status === 'Completed' || sale.status === 'Paid' ? 'badge-success' : 'badge-warning';
+                    return `
+                        <tr>
+                            <td>${saleDate.toLocaleDateString()}</td>
+                            <td><span class="badge ${typeClass}">${sale.type}</span></td>
+                            <td><strong>${sale.produce}</strong></td>
+                            <td>${sale.buyer}</td>
+                            <td>${nf.format(sale.amount)}</td>
+                            <td><span class="badge ${statusClass}">${sale.status}</span></td>
+                        </tr>
+                    `;
+                }).join('');
             }
         }
 

@@ -7,6 +7,8 @@ const AuditLogSchema = new mongoose.Schema(
     entity: { type: String, required: true }, // e.g. "Procurement"
     entityId: { type: mongoose.Schema.Types.ObjectId },
     details: { type: mongoose.Schema.Types.Mixed }, // any extra info
+    previousState: { type: mongoose.Schema.Types.Mixed }, // NEW FIELD - for undo functionality
+    newState: { type: mongoose.Schema.Types.Mixed }, // NEW FIELD
     ip: { type: String },
   },
   { timestamps: true },

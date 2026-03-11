@@ -25,7 +25,7 @@ services:
       - "3000:3000"
     environment:
       NODE_ENV: production
-      DATABASE_URI: mongodb://admin:secure_password_here@mongodb:27017/karibu_groceries_db?authSource=admin
+      DATABASE_URI: mongodb://admin:${MONGODB_PASSWORD}@mongodb:27017/karibu_groceries_db?authSource=admin
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: 8h
       PORT: 3000

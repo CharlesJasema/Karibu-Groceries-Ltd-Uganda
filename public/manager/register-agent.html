@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KGL | Manage Staff</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .btn-sm {
+            padding: 0.35rem 0.75rem;
+            font-size: 0.8rem;
+            margin-right: 0.25rem;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -12,6 +19,7 @@
             <img src="../assets/logo/kgl-logo.png" alt="KGL Logo">
         </a>
         <nav class="nav-links">
+            <a href="../index.html">🏠 Home</a>
             <span id="manager-branch"></span>
             <a href="managerProfile.html">Profile</a>
             <a href="../auth/login.html" onclick="logout()">Logout</a>
@@ -127,15 +135,15 @@
 
         async function loadUsers() {
             try {
-                const data = await apiRequest('/users');
+                const data = await apiRequest('/users?limit=100');
                 const tbody = document.getElementById('usersTable');
                 
-                if (!data.users || data.users.length === 0) {
+                if (!data.data || data.data.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-light);">No users found</td></tr>';
                     return;
                 }
 
-                tbody.innerHTML = data.users.map(user => `
+                tbody.innerHTML = data.data.map(user => `
                     <tr>
                         <td>${user.name}</td>
                         <td>${user.username}</td>
@@ -144,14 +152,16 @@
                         <td><span class="badge ${user.active ? 'badge-success' : 'badge-danger'}">${user.active ? 'Active' : 'Inactive'}</span></td>
                         <td>
                             ${user.active ? 
-                                `<button class="btn btn-outline" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="deactivateUser('${user._id}')">Deactivate</button>` :
-                                '<span style="color: var(--text-light); font-size: 0.8rem;">Inactive</span>'
+                                `<button class="btn btn-sm btn-warning" onclick="deactivateUser('${user._id}')">Deactivate</button>` :
+                                `<button class="btn btn-sm btn-success" onclick="activateUser('${user._id}')">Activate</button>`
                             }
+                            <button class="btn btn-sm btn-danger" onclick="deleteUser('${user._id}')">Delete</button>
                         </td>
                     </tr>
                 `).join('');
             } catch (error) {
                 showToast(error.message || 'Failed to load users', 'error');
+                document.getElementById('usersTable').innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Failed to load users</td></tr>';
             }
         }
 
@@ -202,6 +212,36 @@
                 await loadUsers();
             } catch (error) {
                 showToast(error.message || 'Failed to deactivate user', 'error');
+            }
+        }
+
+        async function activateUser(userId) {
+            if (!confirm('Are you sure you want to reactivate this user?')) return;
+
+            try {
+                await apiRequest(`/users/${userId}/activate`, {
+                    method: 'PATCH'
+                });
+
+                showToast('User activated successfully', 'success');
+                await loadUsers();
+            } catch (error) {
+                showToast(error.message || 'Failed to activate user', 'error');
+            }
+        }
+
+        async function deleteUser(userId) {
+            if (!confirm('⚠️ WARNING: This will permanently delete the user. This action cannot be undone. Are you sure?')) return;
+
+            try {
+                await apiRequest(`/users/${userId}`, {
+                    method: 'DELETE'
+                });
+
+                showToast('User deleted permanently', 'success');
+                await loadUsers();
+            } catch (error) {
+                showToast(error.message || 'Failed to delete user', 'error');
             }
         }
 

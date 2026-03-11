@@ -12,6 +12,7 @@
             <img src="../assets/logo/kgl-logo.png" alt="KGL Logo">
         </a>
         <nav class="nav-links">
+            <a href="../index.html">🏠 Home</a>
             <span id="agent-branch"></span>
             <a href="profile.html">Profile</a>
             <a href="../auth/login.html" onclick="logout()">Logout</a>
@@ -52,6 +53,50 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="paymentMethod">Payment Method *</label>
+                        <select id="paymentMethod" required onchange="togglePaymentDetails()">
+                            <option value="cash">Cash</option>
+                            <option value="momo">Mobile Money (MoMo)</option>
+                            <option value="bank">Bank Transfer</option>
+                        </select>
+                    </div>
+
+                    <!-- MoMo Details (hidden by default) -->
+                    <div id="momoDetails" style="display: none;">
+                        <div class="form-group">
+                            <label for="momoProvider">MoMo Provider</label>
+                            <select id="momoProvider">
+                                <option value="MTN">MTN Mobile Money</option>
+                                <option value="Airtel">Airtel Money</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="momoPhone">Phone Number</label>
+                            <input type="tel" id="momoPhone" placeholder="+256701234567">
+                        </div>
+                        <div class="form-group">
+                            <label for="momoTransactionId">Transaction ID</label>
+                            <input type="text" id="momoTransactionId" placeholder="MTN/Airtel Transaction ID">
+                        </div>
+                    </div>
+
+                    <!-- Bank Details (hidden by default) -->
+                    <div id="bankDetails" style="display: none;">
+                        <div class="form-group">
+                            <label for="bankName">Bank Name</label>
+                            <input type="text" id="bankName" placeholder="e.g., Stanbic Bank">
+                        </div>
+                        <div class="form-group">
+                            <label for="bankAccount">Account Number</label>
+                            <input type="text" id="bankAccount" placeholder="Account number">
+                        </div>
+                        <div class="form-group">
+                            <label for="bankRef">Transaction Reference</label>
+                            <input type="text" id="bankRef" placeholder="Bank transaction reference">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label for="buyerName">Buyer Name *</label>
                         <input type="text" id="buyerName" required placeholder="Customer name">
                     </div>
@@ -84,7 +129,13 @@
 
             <!-- Recent Sales -->
             <div class="card">
-                <h3 class="mb-2">Today's Cash Sales</h3>
+                <div class="d-flex justify-between align-center mb-2">
+                    <h3>Cash Sales</h3>
+                    <label style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="checkbox" id="showDeleted" onchange="loadRecentSales()">
+                        <span>Show Deleted</span>
+                    </label>
+                </div>
                 <div style="overflow-x: auto;">
                     <table>
                         <thead>
@@ -93,12 +144,14 @@
                                 <th>Produce</th>
                                 <th>Qty (kg)</th>
                                 <th>Amount (UGX)</th>
+                                <th>Payment</th>
                                 <th>Buyer</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="salesTable">
                             <tr>
-                                <td colspan="5" style="text-align: center; color: var(--text-light);">
+                                <td colspan="7" style="text-align: center; color: var(--text-light);">
                                     Loading sales...
                                 </td>
                             </tr>
@@ -109,8 +162,84 @@
         </div>
     </main>
 
+    <!-- Edit Sale Modal -->
+    <div id="editModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Edit Cash Sale</h3>
+                <button class="btn-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="edit-alert-box"></div>
+                <form id="editSaleForm" onsubmit="updateSale(event)">
+                    <input type="hidden" id="edit-saleId">
+                    <div class="form-group">
+                        <label for="edit-produceName">Produce Name *</label>
+                        <input type="text" id="edit-produceName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-tonnage">Quantity (kg) *</label>
+                        <input type="number" id="edit-tonnage" required min="0.1" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-amountPaid">Amount Paid (UGX) *</label>
+                        <input type="number" id="edit-amountPaid" required min="10000">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-paymentMethod">Payment Method *</label>
+                        <select id="edit-paymentMethod" required>
+                            <option value="cash">Cash</option>
+                            <option value="momo">Mobile Money</option>
+                            <option value="bank">Bank Transfer</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-buyerName">Buyer Name *</label>
+                        <input type="text" id="edit-buyerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-salesAgent">Sales Agent *</label>
+                        <input type="text" id="edit-salesAgent" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-date">Date *</label>
+                        <input type="date" id="edit-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-time">Time *</label>
+                        <input type="time" id="edit-time" required>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline" onclick="closeEditModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="updateBtn">Update Sale</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="../js/utils.js"></script>
     <script>
+        function togglePaymentDetails() {
+            const method = document.getElementById('paymentMethod').value;
+            const momoDetails = document.getElementById('momoDetails');
+            const bankDetails = document.getElementById('bankDetails');
+            
+            momoDetails.style.display = method === 'momo' ? 'block' : 'none';
+            bankDetails.style.display = method === 'bank' ? 'block' : 'none';
+            
+            // Clear fields when switching
+            if (method !== 'momo') {
+                document.getElementById('momoPhone').value = '';
+                document.getElementById('momoTransactionId').value = '';
+            }
+            if (method !== 'bank') {
+                document.getElementById('bankName').value = '';
+                document.getElementById('bankAccount').value = '';
+                document.getElementById('bankRef').value = '';
+            }
+        }
+
         async function init() {
             if (!checkAuth('agent')) return;
             
@@ -128,36 +257,150 @@
 
         async function loadRecentSales() {
             try {
-                const data = await apiRequest('/sales/cash');
+                const showDeletedCheckbox = document.getElementById('showDeleted');
+                const showDeleted = showDeletedCheckbox ? showDeletedCheckbox.checked : false;
+                
+                // Build query string
+                const queryParams = new URLSearchParams({
+                    limit: '50'
+                });
+                
+                if (showDeleted) {
+                    queryParams.append('showDeleted', 'true');
+                }
+                
+                const data = await apiRequest(`/sales/cash?${queryParams.toString()}`);
                 const tbody = document.getElementById('salesTable');
                 
-                if (!data.sales || data.sales.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-light);">No sales recorded today</td></tr>';
+                if (!data.data || data.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-light);">No sales recorded</td></tr>';
                     return;
                 }
 
-                // Filter today's sales
-                const today = new Date().toISOString().split('T')[0];
-                const todaySales = data.sales.filter(sale => 
-                    sale.date && sale.date.startsWith(today)
-                );
-
-                if (todaySales.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-light);">No sales recorded today</td></tr>';
-                    return;
-                }
-
-                tbody.innerHTML = todaySales.slice(0, 10).map(sale => `
-                    <tr>
+                tbody.innerHTML = data.data.map(sale => {
+                    const isDeleted = sale.deleted === true;
+                    return `
+                    <tr style="${isDeleted ? 'opacity: 0.6; background: #f9f9f9;' : ''}">
                         <td>${sale.time}</td>
                         <td><strong>${sale.produceName}</strong></td>
                         <td>${sale.tonnage.toFixed(1)}</td>
                         <td>${formatCurrency(sale.amountPaid)}</td>
+                        <td><span class="badge badge-${sale.paymentMethod === 'cash' ? 'success' : sale.paymentMethod === 'momo' ? 'info' : 'warning'}">${sale.paymentMethod || 'cash'}</span></td>
                         <td>${sale.buyerName}</td>
+                        <td>
+                            ${isDeleted ? `
+                                <button class="btn btn-sm btn-success" onclick="restoreSale('${sale._id}')">Restore</button>
+                            ` : `
+                                <button class="btn btn-sm btn-primary" onclick="openEditModal('${sale._id}')">Edit</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteSale('${sale._id}')">Delete</button>
+                            `}
+                        </td>
                     </tr>
-                `).join('');
+                `;
+                }).join('');
             } catch (error) {
                 console.error('Failed to load sales:', error);
+                document.getElementById('salesTable').innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Failed to load sales</td></tr>';
+            }
+        }
+
+        function openEditModal(saleId) {
+            apiRequest(`/sales/cash?limit=100`).then(data => {
+                const sale = data.data.find(s => s._id === saleId);
+                if (!sale) {
+                    showToast('Sale not found', 'error');
+                    return;
+                }
+
+                document.getElementById('edit-saleId').value = sale._id;
+                document.getElementById('edit-produceName').value = sale.produceName;
+                document.getElementById('edit-tonnage').value = sale.tonnage;
+                document.getElementById('edit-amountPaid').value = sale.amountPaid;
+                document.getElementById('edit-paymentMethod').value = sale.paymentMethod || 'cash';
+                document.getElementById('edit-buyerName').value = sale.buyerName;
+                document.getElementById('edit-salesAgent').value = sale.salesAgent;
+                document.getElementById('edit-date').value = sale.date.split('T')[0];
+                document.getElementById('edit-time').value = sale.time;
+
+                document.getElementById('editModal').style.display = 'flex';
+            }).catch(error => {
+                showToast('Failed to load sale details', 'error');
+            });
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            document.getElementById('edit-alert-box').innerHTML = '';
+        }
+
+        async function updateSale(event) {
+            event.preventDefault();
+            
+            const saleId = document.getElementById('edit-saleId').value;
+            const updateBtn = document.getElementById('updateBtn');
+            const alertBox = document.getElementById('edit-alert-box');
+            
+            const updateData = {
+                produceName: document.getElementById('edit-produceName').value.trim(),
+                tonnage: parseFloat(document.getElementById('edit-tonnage').value),
+                amountPaid: parseFloat(document.getElementById('edit-amountPaid').value),
+                paymentMethod: document.getElementById('edit-paymentMethod').value,
+                buyerName: document.getElementById('edit-buyerName').value.trim(),
+                salesAgent: document.getElementById('edit-salesAgent').value.trim(),
+                date: document.getElementById('edit-date').value,
+                time: document.getElementById('edit-time').value
+            };
+
+            setLoading(updateBtn, true);
+            alertBox.innerHTML = '';
+
+            try {
+                await apiRequest(`/sales/cash/${saleId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(updateData)
+                });
+
+                showToast('Sale updated successfully!', 'success');
+                closeEditModal();
+                await loadRecentSales();
+            } catch (error) {
+                alertBox.innerHTML = `<div class="alert alert-error">${error.message || 'Failed to update sale'}</div>`;
+            } finally {
+                setLoading(updateBtn, false);
+            }
+        }
+
+        async function deleteSale(saleId) {
+            if (!confirm('Are you sure you want to delete this sale? The inventory will be restored.')) {
+                return;
+            }
+
+            try {
+                await apiRequest(`/sales/cash/${saleId}`, {
+                    method: 'DELETE'
+                });
+
+                showToast('Sale deleted successfully!', 'success');
+                await loadRecentSales();
+            } catch (error) {
+                showToast(error.message || 'Failed to delete sale', 'error');
+            }
+        }
+
+        async function restoreSale(saleId) {
+            if (!confirm('Are you sure you want to restore this sale?')) {
+                return;
+            }
+
+            try {
+                await apiRequest(`/sales/cash/${saleId}/restore`, {
+                    method: 'POST'
+                });
+
+                showToast('Sale restored successfully!', 'success');
+                await loadRecentSales();
+            } catch (error) {
+                showToast(error.message || 'Failed to restore sale', 'error');
             }
         }
 
@@ -168,10 +411,13 @@
             const submitBtn = document.getElementById('submitBtn');
             
             const user = getUser();
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            
             const saleData = {
                 produceName: document.getElementById('produceName').value.trim(),
                 tonnage: parseFloat(document.getElementById('tonnage').value),
                 amountPaid: parseFloat(document.getElementById('amountPaid').value),
+                paymentMethod: paymentMethod,
                 buyerName: document.getElementById('buyerName').value.trim(),
                 salesAgent: document.getElementById('salesAgent').value.trim(),
                 date: document.getElementById('date').value,

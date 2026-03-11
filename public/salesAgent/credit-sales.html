@@ -12,6 +12,7 @@
             <img src="../assets/logo/kgl-logo.png" alt="KGL Logo">
         </a>
         <nav class="nav-links">
+            <a href="../index.html">🏠 Home</a>
             <span id="agent-branch"></span>
             <a href="profile.html">Profile</a>
             <a href="#" onclick="logout()">Logout</a>
@@ -104,7 +105,13 @@
 
             <!-- Recent Credit Sales -->
             <div class="card">
-                <h3 class="mb-2">Recent Credit Sales</h3>
+                <div class="d-flex justify-between align-center mb-2">
+                    <h3>Recent Credit Sales</h3>
+                    <label style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="checkbox" id="showDeleted" onchange="loadRecentCredits()">
+                        <span>Show Deleted</span>
+                    </label>
+                </div>
                 <div style="overflow-x: auto;">
                     <table>
                         <thead>
@@ -114,11 +121,12 @@
                                 <th>Amount (UGX)</th>
                                 <th>Due Date</th>
                                 <th>Status</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="creditTable">
                             <tr>
-                                <td colspan="5" style="text-align: center; color: var(--text-light);">
+                                <td colspan="6" style="text-align: center; color: var(--text-light);">
                                     Loading credit sales...
                                 </td>
                             </tr>
@@ -128,6 +136,70 @@
             </div>
         </div>
     </main>
+
+    <!-- Edit Credit Sale Modal -->
+    <div id="editModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>Edit Credit Sale</h3>
+                <button class="btn-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="edit-alert-box"></div>
+                <form id="editCreditForm" onsubmit="updateSale(event)">
+                    <input type="hidden" id="edit-saleId">
+                    <div class="form-group">
+                        <label for="edit-buyerName">Buyer Name *</label>
+                        <input type="text" id="edit-buyerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-nin">National ID (NIN) *</label>
+                        <input type="text" id="edit-nin" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-location">Location *</label>
+                        <input type="text" id="edit-location" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-contact">Contact Number *</label>
+                        <input type="tel" id="edit-contact" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-produceName">Produce Name *</label>
+                        <input type="text" id="edit-produceName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-produceType">Produce Type *</label>
+                        <input type="text" id="edit-produceType" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-tonnage">Quantity (kg) *</label>
+                        <input type="number" id="edit-tonnage" required min="0.1" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-amountDue">Amount Due (UGX) *</label>
+                        <input type="number" id="edit-amountDue" required min="10000">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-salesAgent">Sales Agent *</label>
+                        <input type="text" id="edit-salesAgent" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-dispatchDate">Dispatch Date *</label>
+                        <input type="date" id="edit-dispatchDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-dueDate">Payment Due Date *</label>
+                        <input type="date" id="edit-dueDate" required>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline" onclick="closeEditModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="updateBtn">Update Sale</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <script src="../js/utils.js"></script>
     <script>
@@ -151,20 +223,36 @@
 
         async function loadRecentCredits() {
             try {
-                const data = await apiRequest('/sales/credit');
+                const showDeletedCheckbox = document.getElementById('showDeleted');
+                const showDeleted = showDeletedCheckbox ? showDeletedCheckbox.checked : false;
+                
+                // Build query string
+                const queryParams = new URLSearchParams({
+                    limit: '50'
+                });
+                
+                if (showDeleted) {
+                    queryParams.append('showDeleted', 'true');
+                }
+                
+                const data = await apiRequest(`/sales/credit?${queryParams.toString()}`);
                 const tbody = document.getElementById('creditTable');
                 
-                if (!data.creditSales || data.creditSales.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-light);">No credit sales found</td></tr>';
+                // API returns data.data, not data.creditSales
+                const creditSales = data.data || [];
+                
+                if (creditSales.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-light);">No credit sales found</td></tr>';
                     return;
                 }
 
-                tbody.innerHTML = data.creditSales.slice(0, 10).map(credit => {
+                tbody.innerHTML = creditSales.map(credit => {
                     const isPaid = credit.paid;
                     const isOverdue = !isPaid && new Date(credit.dueDate) < new Date();
+                    const isDeleted = credit.deleted === true;
                     
                     return `
-                        <tr>
+                        <tr style="${isDeleted ? 'opacity: 0.6; background: #f9f9f9;' : ''}">
                             <td><strong>${credit.buyerName}</strong></td>
                             <td>${credit.produceName}</td>
                             <td>${formatCurrency(credit.amountDue)}</td>
@@ -174,11 +262,20 @@
                                     ${isPaid ? 'Paid' : isOverdue ? 'Overdue' : 'Pending'}
                                 </span>
                             </td>
+                            <td>
+                                ${isDeleted ? `
+                                    <button class="btn btn-sm btn-success" onclick="restoreSale('${credit._id}')">Restore</button>
+                                ` : `
+                                    <button class="btn btn-sm btn-primary" onclick="openEditModal('${credit._id}')">Edit</button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteSale('${credit._id}')">Delete</button>
+                                `}
+                            </td>
                         </tr>
                     `;
                 }).join('');
             } catch (error) {
                 console.error('Failed to load credit sales:', error);
+                document.getElementById('creditTable').innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Failed to load credit sales</td></tr>';
             }
         }
 
@@ -234,6 +331,113 @@
                 alertBox.innerHTML = `<div class="alert alert-error">${error.message || 'Failed to record credit sale'}</div>`;
             } finally {
                 setLoading(submitBtn, false);
+            }
+        }
+
+        function openEditModal(saleId) {
+            apiRequest('/sales/credit?limit=100').then(data => {
+                const creditSales = data.data || [];
+                const sale = creditSales.find(s => s._id === saleId);
+                if (!sale) {
+                    showToast('Credit sale not found', 'error');
+                    return;
+                }
+
+                document.getElementById('edit-saleId').value = sale._id;
+                document.getElementById('edit-buyerName').value = sale.buyerName;
+                document.getElementById('edit-nin').value = sale.nin;
+                document.getElementById('edit-location').value = sale.location;
+                document.getElementById('edit-contact').value = sale.contact;
+                document.getElementById('edit-produceName').value = sale.produceName;
+                document.getElementById('edit-produceType').value = sale.produceType;
+                document.getElementById('edit-tonnage').value = sale.tonnage;
+                document.getElementById('edit-amountDue').value = sale.amountDue;
+                document.getElementById('edit-salesAgent').value = sale.salesAgent;
+                document.getElementById('edit-dispatchDate').value = sale.dispatchDate.split('T')[0];
+                document.getElementById('edit-dueDate').value = sale.dueDate.split('T')[0];
+
+                document.getElementById('editModal').style.display = 'flex';
+            }).catch(error => {
+                showToast('Failed to load credit sale details', 'error');
+            });
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            document.getElementById('edit-alert-box').innerHTML = '';
+        }
+
+        async function updateSale(event) {
+            event.preventDefault();
+            
+            const saleId = document.getElementById('edit-saleId').value;
+            const updateBtn = document.getElementById('updateBtn');
+            const alertBox = document.getElementById('edit-alert-box');
+            
+            const updateData = {
+                buyerName: document.getElementById('edit-buyerName').value.trim(),
+                nin: document.getElementById('edit-nin').value.trim(),
+                location: document.getElementById('edit-location').value.trim(),
+                contact: document.getElementById('edit-contact').value.trim(),
+                produceName: document.getElementById('edit-produceName').value.trim(),
+                produceType: document.getElementById('edit-produceType').value.trim(),
+                tonnage: parseFloat(document.getElementById('edit-tonnage').value),
+                amountDue: parseFloat(document.getElementById('edit-amountDue').value),
+                salesAgent: document.getElementById('edit-salesAgent').value.trim(),
+                dispatchDate: document.getElementById('edit-dispatchDate').value,
+                dueDate: document.getElementById('edit-dueDate').value
+            };
+
+            setLoading(updateBtn, true);
+            alertBox.innerHTML = '';
+
+            try {
+                await apiRequest(`/sales/credit/${saleId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(updateData)
+                });
+
+                showToast('Credit sale updated successfully!', 'success');
+                closeEditModal();
+                await loadRecentCredits();
+            } catch (error) {
+                alertBox.innerHTML = `<div class="alert alert-error">${error.message || 'Failed to update credit sale'}</div>`;
+            } finally {
+                setLoading(updateBtn, false);
+            }
+        }
+
+        async function deleteSale(saleId) {
+            if (!confirm('Are you sure you want to delete this credit sale? The inventory will be restored.')) {
+                return;
+            }
+
+            try {
+                await apiRequest(`/sales/credit/${saleId}`, {
+                    method: 'DELETE'
+                });
+
+                showToast('Credit sale deleted successfully!', 'success');
+                await loadRecentCredits();
+            } catch (error) {
+                showToast(error.message || 'Failed to delete credit sale', 'error');
+            }
+        }
+
+        async function restoreSale(saleId) {
+            if (!confirm('Are you sure you want to restore this credit sale?')) {
+                return;
+            }
+
+            try {
+                await apiRequest(`/sales/credit/${saleId}/restore`, {
+                    method: 'POST'
+                });
+
+                showToast('Credit sale restored successfully!', 'success');
+                await loadRecentCredits();
+            } catch (error) {
+                showToast(error.message || 'Failed to restore credit sale', 'error');
             }
         }
 

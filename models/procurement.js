@@ -13,6 +13,10 @@ const ProcurementSchema = new mongoose.Schema(
     contact: { type: String, required: true },
     sellingPrice: { type: Number, required: true, min: 0 },
     recordedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    deleted: { type: Boolean, default: false }, // NEW FIELD
+    deletedAt: { type: Date }, // NEW FIELD
+    deletedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // NEW FIELD
+    previousVersion: { type: mongoose.Schema.Types.Mixed }, // NEW FIELD
   },
   { timestamps: true },
 );
@@ -22,5 +26,6 @@ ProcurementSchema.index({ branch: 1, date: -1 });
 ProcurementSchema.index({ produceName: 1, branch: 1 });
 ProcurementSchema.index({ recordedBy: 1 });
 ProcurementSchema.index({ createdAt: -1 });
+ProcurementSchema.index({ deleted: 1 }); // NEW INDEX
 
 module.exports = mongoose.model("Procurement", ProcurementSchema);

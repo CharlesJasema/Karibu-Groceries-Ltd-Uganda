@@ -12,6 +12,7 @@
             <img src="../assets/logo/kgl-logo.png" alt="KGL Logo">
         </a>
         <nav class="nav-links">
+            <a href="../index.html">🏠 Home</a>
             <span id="manager-branch"></span>
             <a href="managerProfile.html">Profile</a>
             <a href="#" onclick="logout()">Logout</a>
@@ -98,7 +99,13 @@
 
             <!-- Procurement History -->
             <div class="card">
-                <h3 class="mb-2">Recent Procurements</h3>
+                <div class="d-flex justify-between align-center mb-2">
+                    <h3>Recent Procurements</h3>
+                    <label style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="checkbox" id="showDeleted" onchange="loadProcurements()">
+                        <span>Show Deleted</span>
+                    </label>
+                </div>
                 <div style="overflow-x: auto;">
                     <table>
                         <thead>
@@ -110,11 +117,12 @@
                                 <th>Cost (UGX)</th>
                                 <th>Dealer</th>
                                 <th>Branch</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="procurementTable">
                             <tr>
-                                <td colspan="7" style="text-align: center; color: var(--text-light);">
+                                <td colspan="8" style="text-align: center; color: var(--text-light);">
                                     Loading procurements...
                                 </td>
                             </tr>
@@ -124,6 +132,70 @@
             </div>
         </div>
     </main>
+
+    <!-- Edit Procurement Modal -->
+    <div id="editModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>Edit Procurement</h3>
+                <button class="btn-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="edit-alert-box"></div>
+                <form id="editProcurementForm" onsubmit="updateProcurement(event)">
+                    <input type="hidden" id="edit-procurementId">
+                    <div class="form-group">
+                        <label for="edit-produceName">Produce Name *</label>
+                        <input type="text" id="edit-produceName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-produceType">Produce Type *</label>
+                        <input type="text" id="edit-produceType" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-date">Date *</label>
+                        <input type="date" id="edit-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-time">Time *</label>
+                        <input type="time" id="edit-time" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-tonnage">Tonnage (kg) *</label>
+                        <input type="number" id="edit-tonnage" required min="100" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-cost">Total Cost (UGX) *</label>
+                        <input type="number" id="edit-cost" required min="10000">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-dealerName">Dealer Name *</label>
+                        <input type="text" id="edit-dealerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-contact">Contact Number *</label>
+                        <input type="tel" id="edit-contact" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-branch">Branch *</label>
+                        <select id="edit-branch" required>
+                            <option value="">Select branch</option>
+                            <option value="Maganjo">Maganjo</option>
+                            <option value="Matugga">Matugga</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-sellingPrice">Selling Price per kg (UGX) *</label>
+                        <input type="number" id="edit-sellingPrice" required min="0">
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline" onclick="closeEditModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="updateBtn">Update Procurement</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <script src="../js/utils.js"></script>
     <script>
@@ -144,16 +216,30 @@
 
         async function loadProcurements() {
             try {
-                const data = await apiRequest('/procurement');
+                const showDeletedCheckbox = document.getElementById('showDeleted');
+                const showDeleted = showDeletedCheckbox ? showDeletedCheckbox.checked : false;
+                
+                // Build query string
+                const queryParams = new URLSearchParams({
+                    limit: '50'
+                });
+                
+                if (showDeleted) {
+                    queryParams.append('showDeleted', 'true');
+                }
+                
+                const data = await apiRequest(`/procurement?${queryParams.toString()}`);
                 const tbody = document.getElementById('procurementTable');
                 
                 if (!data.data || data.data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-light);">No procurements found</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-light);">No procurements found</td></tr>';
                     return;
                 }
 
-                tbody.innerHTML = data.data.slice(0, 10).map(item => `
-                    <tr>
+                tbody.innerHTML = data.data.map(item => {
+                    const isDeleted = item.deleted === true;
+                    return `
+                    <tr style="${isDeleted ? 'opacity: 0.6; background: #f9f9f9;' : ''}">
                         <td>${formatDate(item.date)}</td>
                         <td><strong>${item.produceName}</strong></td>
                         <td>${item.produceType}</td>
@@ -161,10 +247,20 @@
                         <td>${formatCurrency(item.cost)}</td>
                         <td>${item.dealerName}</td>
                         <td><span class="badge badge-default">${item.branch}</span></td>
+                        <td>
+                            ${isDeleted ? `
+                                <button class="btn btn-sm btn-success" onclick="restoreProcurement('${item._id}')">Restore</button>
+                            ` : `
+                                <button class="btn btn-sm btn-primary" onclick="openEditModal('${item._id}')">Edit</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteProcurement('${item._id}')">Delete</button>
+                            `}
+                        </td>
                     </tr>
-                `).join('');
+                `;
+                }).join('');
             } catch (error) {
                 showToast(error.message || 'Failed to load procurements', 'error');
+                document.getElementById('procurementTable').innerHTML = '<tr><td colspan="8" style="text-align: center; color: red;">Failed to load procurements</td></tr>';
             }
         }
 
@@ -209,6 +305,110 @@
                 alertBox.innerHTML = `<div class="alert alert-error">${error.message || 'Failed to record procurement'}</div>`;
             } finally {
                 setLoading(submitBtn, false);
+            }
+        }
+
+        function openEditModal(procurementId) {
+            apiRequest('/procurement?limit=100').then(data => {
+                const procurement = data.data.find(p => p._id === procurementId);
+                if (!procurement) {
+                    showToast('Procurement not found', 'error');
+                    return;
+                }
+
+                document.getElementById('edit-procurementId').value = procurement._id;
+                document.getElementById('edit-produceName').value = procurement.produceName;
+                document.getElementById('edit-produceType').value = procurement.produceType;
+                document.getElementById('edit-date').value = procurement.date.split('T')[0];
+                document.getElementById('edit-time').value = procurement.time;
+                document.getElementById('edit-tonnage').value = procurement.tonnage;
+                document.getElementById('edit-cost').value = procurement.cost;
+                document.getElementById('edit-dealerName').value = procurement.dealerName;
+                document.getElementById('edit-contact').value = procurement.contact;
+                document.getElementById('edit-branch').value = procurement.branch;
+                document.getElementById('edit-sellingPrice').value = procurement.sellingPrice;
+
+                document.getElementById('editModal').style.display = 'flex';
+            }).catch(error => {
+                showToast('Failed to load procurement details', 'error');
+            });
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            document.getElementById('edit-alert-box').innerHTML = '';
+        }
+
+        async function updateProcurement(event) {
+            event.preventDefault();
+            
+            const procurementId = document.getElementById('edit-procurementId').value;
+            const updateBtn = document.getElementById('updateBtn');
+            const alertBox = document.getElementById('edit-alert-box');
+            
+            const updateData = {
+                produceName: document.getElementById('edit-produceName').value.trim(),
+                produceType: document.getElementById('edit-produceType').value.trim(),
+                date: document.getElementById('edit-date').value,
+                time: document.getElementById('edit-time').value,
+                tonnage: parseFloat(document.getElementById('edit-tonnage').value),
+                cost: parseFloat(document.getElementById('edit-cost').value),
+                dealerName: document.getElementById('edit-dealerName').value.trim(),
+                contact: document.getElementById('edit-contact').value.trim(),
+                branch: document.getElementById('edit-branch').value,
+                sellingPrice: parseFloat(document.getElementById('edit-sellingPrice').value)
+            };
+
+            setLoading(updateBtn, true);
+            alertBox.innerHTML = '';
+
+            try {
+                await apiRequest(`/procurement/${procurementId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(updateData)
+                });
+
+                showToast('Procurement updated successfully!', 'success');
+                closeEditModal();
+                await loadProcurements();
+            } catch (error) {
+                alertBox.innerHTML = `<div class="alert alert-error">${error.message || 'Failed to update procurement'}</div>`;
+            } finally {
+                setLoading(updateBtn, false);
+            }
+        }
+
+        async function deleteProcurement(procurementId) {
+            if (!confirm('Are you sure you want to delete this procurement? This will fail if any inventory has been sold.')) {
+                return;
+            }
+
+            try {
+                await apiRequest(`/procurement/${procurementId}`, {
+                    method: 'DELETE'
+                });
+
+                showToast('Procurement deleted successfully!', 'success');
+                await loadProcurements();
+            } catch (error) {
+                showToast(error.message || 'Failed to delete procurement', 'error');
+            }
+        }
+
+        async function restoreProcurement(procurementId) {
+            if (!confirm('Are you sure you want to restore this procurement?')) {
+                return;
+            }
+
+            try {
+                await apiRequest(`/procurement/${procurementId}/restore`, {
+                    method: 'POST'
+                });
+
+                showToast('Procurement restored successfully!', 'success');
+                await loadProcurements();
+            } catch (error) {
+                showToast(error.message || 'Failed to restore procurement', 'error');
             }
         }
 

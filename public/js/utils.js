@@ -3,6 +3,7 @@
  */
 
 // API Base URL
+const API_BASE_URL = "";
 const API_BASE = "";
 
 // Get auth token
@@ -40,7 +41,7 @@ function checkAuth(requiredRole = null) {
 // Logout function
 function logout() {
   localStorage.clear();
-  window.location.href = "/auth/login.html";
+  window.location.href = "/index.html";
 }
 
 // Format currency
@@ -100,6 +101,7 @@ async function apiRequest(endpoint, options = {}) {
   const token = getToken();
 
   const defaultOptions = {
+    method: 'GET',
     headers: {
       "Content-Type": "application/json",
       ...(token && { Authorization: `Bearer ${token}` }),
