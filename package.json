@@ -18,8 +18,9 @@
     "docker:run": "docker run -p 3000:3000 --env-file .env kgl-groceries-system",
     "docker:compose": "docker-compose up -d",
     "docker:compose:down": "docker-compose down",
-    "build": "echo 'No build step required for this project'",
-    "postinstall": "echo 'Installation complete. Run npm run seed to create initial users.'"
+    "build": "echo 'Build completed successfully'",
+    "postinstall": "echo 'Installation complete. Run npm run seed to create initial users.'",
+    "vercel-build": "echo 'Vercel build completed'"
   },
   "engines": {
     "node": ">=16.0.0",
