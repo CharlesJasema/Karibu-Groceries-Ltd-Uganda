@@ -33,7 +33,7 @@
 2. Click **"Add New Database User"**
 3. Authentication Method: **Password**
 4. Username: `kgl_user`
-5. Password: `KGL@2026Secure` (or generate a secure one)
+5. Password: `[Choose a secure password]` (or generate a secure one)
 6. Database User Privileges: **Read and write to any database**
 7. Click **"Add User"**
 
@@ -52,11 +52,11 @@
    ```
    mongodb+srv://kgl_user:<password>@kgl-cluster.xxxxx.mongodb.net/?retryWrites=true&w=majority
    ```
-6. Replace `<password>` with your actual password: `KGL@2026Secure`
+6. Replace `<password>` with your actual password: `[Your chosen password]`
 7. Add database name at the end: `/karibu_groceries_db`
 8. Final connection string:
    ```
-   mongodb+srv://kgl_user:KGL@2026Secure@kgl-cluster.xxxxx.mongodb.net/karibu_groceries_db?retryWrites=true&w=majority
+   mongodb+srv://kgl_user:[Your_Password]@kgl-cluster.xxxxx.mongodb.net/karibu_groceries_db?retryWrites=true&w=majority
    ```
 
 **✅ Save this connection string - you'll need it for Vercel!**
@@ -91,17 +91,17 @@ Click **"Environment Variables"** and add these:
 | `NODE_ENV` | `production` |
 | `PORT` | `3000` |
 | `DATABASE_URI` | `[Your MongoDB Atlas connection string from Part 1]` |
-| `JWT_SECRET` | `a8f5f167f44f4964e6c998dee827110c` |
+| `JWT_SECRET` | `[Generate a secure random string]` |
 | `JWT_EXPIRES_IN` | `8h` |
-| `JWT_REFRESH_SECRET` | `b9e6g278g55g5075f7d009eef938221d` |
+| `JWT_REFRESH_SECRET` | `[Generate a different secure random string]` |
 | `JWT_REFRESH_EXPIRES_IN` | `7d` |
 | `EMAIL_SERVICE` | `gmail` |
-| `EMAIL_USER` | `brocharles001@gmail.com` |
-| `EMAIL_PASSWORD` | `plgxggahhltcrsis` |
-| `SMS_API_KEY` | `atsk_9c21df656cb8d71a00e3cc35b04c622667ba5f1e914bd306ea982f2a129cfa2df8974162` |
+| `EMAIL_USER` | `[Your Gmail address]` |
+| `EMAIL_PASSWORD` | `[Your Gmail app password]` |
+| `SMS_API_KEY` | `[Your Africa's Talking API key]` |
 | `SMS_USERNAME` | `sandbox` |
-| `SMS_SENDER_ID` | `AFRICASTKNG` |
-| `DEFAULT_USER_PASSWORD` | `Manager@2026` |
+| `SMS_SENDER_ID` | `[Your SMS sender ID]` |
+| `DEFAULT_USER_PASSWORD` | `[Choose a secure password]` |
 | `LOG_LEVEL` | `info` |
 | `LOG_FILE` | `logs/app.log` |
 | `CLIENT_URL` | `https://your-app-name.vercel.app` (update after deployment) |
@@ -156,7 +156,7 @@ curl -X POST https://your-app-name.vercel.app/users \
     "name": "Manager Maganjo",
     "username": "manager",
     "email": "manager@kgl.co.ug",
-    "password": "Manager@2026",
+    "password": "[Your secure password]",
     "role": "manager",
     "branch": "Maganjo",
     "contact": "+256701234567"
