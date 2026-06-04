@@ -1,0 +1,29 @@
+{
+  "name": "crud-profile-notifications",
+  "displayName": "CRUD Operations, Profile Management & Notifications System",
+  "version": "1.0.0",
+  "type": "feature",
+  "status": "pending",
+  "workflow": "design-first",
+  "createdAt": "2026-03-07T00:00:00.000Z",
+  "updatedAt": "2026-03-07T00:00:00.000Z",
+  "description": "Comprehensive system improvements adding CRUD operations for records, profile management with photo uploads, real-time notifications, reset/undo functionality, and user distinction/filtering",
+  "designArtifacts": ["high-level-design"],
+  "files": {
+    "design": "design.md",
+    "requirements": "requirements.md",
+    "tasks": "tasks.md"
+  },
+  "metadata": {
+    "priority": "high",
+    "estimatedEffort": "51 hours",
+    "phases": 4,
+    "totalTasks": 20,
+    "dependencies": ["multer", "sharp", "mime-types"],
+    "affectedModels": ["User", "Sale", "CreditSale", "Procurement", "AuditLog", "Notification"],
+    "newModels": ["Notification"],
+    "affectedRoutes": ["salesRoutes", "procurementRoutes", "userRoutes"],
+    "newRoutes": ["profileRoutes", "notificationRoutes"],
+    "breakingChanges": false
+  }
+}
